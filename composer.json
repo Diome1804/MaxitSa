@@ -1,10 +1,11 @@
 {
     "name": "abdoulaye/maxit",
-    "description": "Projet maxit",
+    "description": "Projet  maxit",
     "autoload": {
         "psr-4": {
             "App\\Config\\": "app/config/",
             "App\\Core\\": "app/core/",
+            "App\\Core\\Abstract\\": "app/core/abstract/",
             "Src\\Controller\\": "src/controller/",
             "Src\\Entity\\": "src/entity/",
             "Src\\Repository\\": "src/repository/",

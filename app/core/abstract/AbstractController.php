@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Config\Core;
+namespace App\Core\Abstract;
 use App\core\Session;
 
 abstract class AbstractController
@@ -13,7 +13,7 @@ abstract class AbstractController
 
     abstract public function store();
 
-    abstract public function create();
+    abstract public function create(); 
 
 
     abstract public function destroy();
@@ -22,21 +22,22 @@ abstract class AbstractController
 
     abstract public function edit();
 
+
     protected function renderHtml(String $view, array $params = [])
     {
         extract($params); // rend $commandes disponible dans la vue
 
         ob_start();
-        require_once '../template/' . $view;
+        require_once '../templates/' . $view;
         $contentForLayout = ob_get_clean();
 
-        require_once '../template/layout/base.layout.php';
+        require_once '../templates/layout/base.layout.php';
     }
 
     
     protected function renderHtmlLogin(String $view, array $params = [])
     {
         extract($params);
-        require_once '../template/' . $view;
+        require_once '../templates/' . $view;
     }
 }

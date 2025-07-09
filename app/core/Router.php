@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Config\Core;
+namespace App\Core;
 
 class Router
 {
@@ -21,24 +21,12 @@ class Router
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-        // Inclure la classe Session
-        require_once __DIR__ . '/Session.php';
-        $session = \App\core\Session::getInstance();
-
         // Liste des routes publiques
         $publicRoutes = ['/', '/login', '/logout'];
 
-        // Vérifier l'authentification pour les routes protégées
-        if (!in_array($uri, $publicRoutes)) {
-            if (!$session->has('user_authenticated') || !$session->get('user_authenticated')) {
-                header('Location: /login');
-                exit;
-            }
-        }
-
-        // Redirection vers /list si on accède à /
+        // Redirection vers /login si on accède à /
         if ($uri === '/') {
-            header('Location: /list');
+            header('Location: /login');
             exit;
         }
 
@@ -52,7 +40,7 @@ class Router
         } else {
             // 404 - Route non trouvée
             http_response_code(404);
-            require_once __DIR__ . '/../../template/commande/404.php';
+            require_once __DIR__ . '/../../templates/404.php';
         }
     }
 }
