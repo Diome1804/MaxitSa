@@ -1,15 +1,22 @@
 {
-    "name": "mapathe/maxit",
-    "description": "Projet de maxit avec coach wane",
+    "name": "abdoulaye/maxit",
+    "description": "Projet maxit",
     "autoload": {
         "psr-4": {
-            "Mapathe\\Maxit\\": "src/"
+            "App\\Config\\": "app/config/",
+            "App\\Core\\": "app/core/",
+            "Src\\Controller\\": "src/controller/",
+            "Src\\Entity\\": "src/entity/",
+            "Src\\Repository\\": "src/repository/",
+            "Src\\Service\\": "src/service/"
         }
     },
     "authors": [
         {
-            "name": "Mapathe Ndiaye"
+            "name": "Abdoulaye Diome"
         }
     ],
-    "require": {}
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
 }
