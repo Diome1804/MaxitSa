@@ -32,6 +32,27 @@ Router::get('/dashboard', CompteController::class, 'index');      // Afficher da
 Router::get('/', SecurityController::class, 'index');
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // Routes d'authentification avec SecurityController
 // Router::get('/login', SecurityController::class, 'index');
 // Router::post('/login', SecurityController::class, 'store');  // Pour traiter la connexion

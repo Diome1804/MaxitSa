@@ -6,54 +6,63 @@
     <title>MAXITSA - Connexion</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 min-h-screen flex flex-col font-sans">
-    <!-- Header avec MacBook Pro -->
-    <!-- <div class="text-gray-500 text-sm p-4">
-        MacBook Pro 14" - 1
-    </div> -->
+<body class="bg-gray-900 min-h-screen flex items-center justify-center font-sans">
     
     <!-- Zone principale orange -->
-    <div class="flex-1 w-100 bg-orange-500 flex items-center justify-center">
-        <div class="text-center">
-            <!-- Titre MAXITSA -->
-            <h1 class="text-white text-3xl font-bold mb-12 tracking-wide">
-                MAXITSA
+    <div class="bg-orange-500 w-full max-w-md mx-auto p-8 rounded-lg">
+        
+        <!-- Titre Connexion -->
+        <div class="text-center mb-8">
+            <h1 class="text-white text-2xl font-bold mb-2">
+                Connexion
             </h1>
             
-            <!-- Formulaire de connexion -->
-            <form method="POST" action="/login">
-                <div class="space-y-4 w-80">
-                    <!-- Champ numéro -->
-                    <div>
-                        <input type="text" 
-                               name="numero"
-                               placeholder="entrez numero"
-                               required
-                               class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-5 py-4 rounded-lg text-sm">
-                    </div>
-                    
-                    <!-- Champ mot de passe -->
-                    <div>
-                        <input type="password" 
-                               name="password"
-                               placeholder="entrez password"
-                               required
-                               class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-5 py-4 rounded-lg text-sm">
-                    </div>
-                    
-                    <!-- Bouton de connexion -->
-                    <div class="pt-4">
-                        <button type="submit" class="bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium">
-                            Se Connecter
-                        </button>
-                    </div>
-                    
-                    <div class="text-black-400 text-sm mt-2">
-                        <a href="/register" class="text-black underline hover:text-gray-200 transition-colors duration-200"> Pas encore de compte </a>
-                    </div>
+            <!-- ✅ Affichage des erreurs -->
+            <?php if (!empty($errors)): ?>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <?php foreach ($errors as $error): ?>
+                        <p class="text-sm"><?= htmlspecialchars($error) ?></p>
+                    <?php endforeach; ?>
                 </div>
-            </form>
+            <?php endif; ?>
         </div>
+        
+        <!-- Formulaire de connexion -->
+        <form method="POST" action="/login">
+            <div class="space-y-4 w-80">
+                <!-- Champ numéro -->
+                <div>
+                    <input type="text" 
+                           name="numero"
+                           placeholder="Entrez votre numéro"
+                           value="<?= htmlspecialchars($_POST['numero'] ?? '') ?>"
+                           required
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-5 py-4 rounded-lg text-sm">
+                </div>
+                
+                <!-- Champ mot de passe -->
+                <div>
+                    <input type="password" 
+                           name="password"
+                           placeholder="Entrez votre mot de passe"
+                           required
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-5 py-4 rounded-lg text-sm">
+                </div>
+                
+                <!-- Bouton de connexion -->
+                <div class="pt-4">
+                    <button type="submit" class="bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium">
+                        Se Connecter
+                    </button>
+                </div>
+                
+                <div class="text-black-400 text-sm mt-2">
+                    <a href="/register" class="text-black underline hover:text-gray-200 transition-colors duration-200">
+                        Pas encore de compte ?
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
 </body>
 </html>
