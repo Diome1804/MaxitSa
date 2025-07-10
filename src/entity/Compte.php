@@ -7,6 +7,7 @@ class Compte extends AbstractEntity
 {
     private int $id;
     private string $numCompte;
+    private int $num_telephone;
     private float $solde;
     private string $type; // ComptePrincipal | CompteSecondaire
     private User $user;
@@ -29,25 +30,64 @@ class Compte extends AbstractEntity
     public function setUser(User $user): void { $this->user = $user; }
 
 
-          public static function toObject(array $tableau): static
-    {
-        return new static(
-            $tableau['id'] ?? 0,
-            $tableau['num_compte'],
-            (float)$tableau['solde'],
-            $tableau['type'],
-            $tableau['user_id'],
-            $tableau['transactions'] ?? [],
-            
 
-        );
+    // Ajoutez ces méthodes à votre classe Compte
+    public function getId(): int { return $this->id; }
+    public function getNumCompte(): string { return $this->numCompte; }
+    public function getNumTelephone(): int { return $this->num_telephone; }
+    public function getSolde(): float { return $this->solde; }
+    public function getType(): string { return $this->type; }
+
+
+   public static function toObject(array $tableau): static
+{
+    // Il faut d'abord récupérer l'utilisateur (ou créer un utilisateur temporaire)
+    // Pour l'instant, on va créer un utilisateur basique
+    $typeUser = new TypeUser('client');
+    $user = new User('', '', $typeUser, '', '', '', '', '', '');
+    
+    // Si on a l'user_id, on pourrait le charger depuis la base
+    // Mais pour simplifier, on va juste définir l'ID
+    if (isset($tableau['user_id'])) {
+        $reflection = new \ReflectionClass($user);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($user, $tableau['user_id']);
     }
+    
+    $compte = new static(
+        $tableau['num_compte'] ?? '',
+        (float)($tableau['solde'] ?? 0),
+        $tableau['type'] ?? 'ComptePrincipal',
+        $user
+    );
+    
+    // Définir l'ID du compte
+    if (isset($tableau['id'])) {
+        $reflection = new \ReflectionClass($compte);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($compte, $tableau['id']);
+    }
+    
+    // Définir le num_telephone
+    if (isset($tableau['num_telephone'])) {
+        $reflection = new \ReflectionClass($compte);
+        $numTelProperty = $reflection->getProperty('num_telephone');
+        $numTelProperty->setAccessible(true);
+        $numTelProperty->setValue($compte, $tableau['num_telephone']);
+    }
+    
+    return $compte;
+}
+
 
     public function toArray(object $object): array
     {
         return [
             'id' => $this->id,
             'num_compte' => $this->numCompte,
+            'telephone' => $this->num_telephone,
             'solde' => $this->solde,
             'type' => $this->type,
             'user_id' => $this->user->getId(),

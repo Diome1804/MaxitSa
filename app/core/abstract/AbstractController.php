@@ -23,16 +23,16 @@ abstract class AbstractController
     abstract public function edit();
 
 
-    protected function renderHtml(String $view, array $params = [])
-    {
-        extract($params); // rend $commandes disponible dans la vue
+    // protected function renderHtml(String $view, array $params = [])
+    // {
+    //     extract($params); // rend $commandes disponible dans la vue
 
-        ob_start();
-        require_once '../templates/' . $view;
-        $contentForLayout = ob_get_clean();
+    //     ob_start();
+    //     require_once '../templates/' . $view;
+    //     $contentForLayout = ob_get_clean();
 
-        require_once '../templates/layout/base.layout.php';
-    }
+    //     require_once '../templates/layout/base.layout.php';
+    // }
 
     
     protected function renderHtmlLogin(String $view, array $params = [])
@@ -40,4 +40,7 @@ abstract class AbstractController
         extract($params);
         require_once '../templates/' . $view;
     }
+
+
+    
 }

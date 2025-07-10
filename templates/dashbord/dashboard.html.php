@@ -39,7 +39,8 @@
             
             <!-- Bouton déconnexion -->
             <button class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700">
-                deconnexion
+                <a href="/logout">deconnexion</a>
+                
             </button>
         </div>
     </div>

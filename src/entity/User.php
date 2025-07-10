@@ -44,23 +44,50 @@ class User extends AbstractEntity
          $this->type = $type;
     }
 
+    public function getId(): int { return $this->id; }
+    public function getNom(): string { return $this->nom; }
+    public function getPrenom(): string { return $this->prenom; }
+    public function getAdresse(): string { return $this->adresse; }
+    public function getNumCarteIdentite(): string { return $this->numCarteIdentite; }
+    public function getPhotorecto(): string { return $this->photorecto; }
+    public function getPhotoverso(): string { return $this->photoverso; }
+    public function getTelephone(): string { return $this->telephone; }
+    public function getPassword(): string { return $this->password; }
 
-          public static function toObject(array $tableau): static
-    {
-        return new static(
-            $tableau['id'] ?? 0,
-            $tableau['nom'] ?? '',
-            $tableau['prenom'] ?? '',
-            $tableau['adresse'] ?? '',
-            $tableau['numCarteIdentite'] ?? '',
-            $tableau['photorecto'] ?? '',
-            $tableau['photoverso'] ?? '',
-            $tableau['telephone'] ?? '',
-            $tableau['password'] ?? '',
-            $tableau['type'],
-            $tableau['comptes'] ?? []
-        );
+
+
+
+
+
+
+
+public static function toObject(array $tableau): static
+{
+    // Il faut d'abord créer l'objet TypeUser
+    $typeUser = new TypeUser($tableau['type'] ?? 'client');
+    
+    $user = new static(
+        $tableau['nom'] ?? '',
+        $tableau['prenom'] ?? '',
+        $typeUser,
+        $tableau['adresse'] ?? '',
+        $tableau['numCarteIdentite'] ?? '',
+        $tableau['photorecto'] ?? '',
+        $tableau['photoverso'] ?? '',
+        $tableau['telephone'] ?? '',
+        $tableau['password'] ?? ''
+    );
+    
+    // Définir l'ID via réflexion
+    if (isset($tableau['id'])) {
+        $reflection = new \ReflectionClass($user);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($user, $tableau['id']);
     }
+    
+    return $user;
+}
 
     public function toArray(object $object): array
     //public function toArray(): array
