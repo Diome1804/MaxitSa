@@ -38,9 +38,31 @@ abstract class AbstractController
     protected function renderHtmlLogin(String $view, array $params = [])
     {
         extract($params);
+        //require_once '../../templates/dashboard/dashboard.html.php';
         require_once '../templates/' . $view;
     }
 
+
+     protected function render(string $view, array $data = []): void
+    {
+        // Extraire les données pour les rendre disponibles dans la vue
+        extract($data);
+        
+        // Chemin vers le template
+        $viewPath = '../templates/' . $view;
+        // var_dump($viewPath);
+        // die();
+        // Si le chemin ne contient pas d'extension, ajouter .php
+        if (!pathinfo($viewPath, PATHINFO_EXTENSION)) {
+            $viewPath .= '.php';
+        }
+        
+        if (file_exists($viewPath)) {
+            require_once $viewPath;
+        } else {
+            throw new \Exception("Vue non trouvée : " . $viewPath);
+        }
+    }
 
     
 }

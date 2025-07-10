@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Maxit\Core;
+namespace App\Core;
 
 use PDO;
 use PDOException;
@@ -18,11 +18,11 @@ class Database
             $dotenv->load();
 
             $driver = $_ENV['DB_DRIVER'] ?? 'pgsql';
-            $host   = $_ENV['DB_HOST'] ?? 'localhost';
-            $port   = $_ENV['DB_PORT'] ?? '5432';
+            $host = $_ENV['DB_HOST'] ?? 'localhost';
+            $port = $_ENV['DB_PORT'] ?? '5432';
             $dbname = $_ENV['DB_NAME'] ?? '';
-            $user   = $_ENV['DB_USER'] ?? '';
-            $pass   = $_ENV['DB_PASS'] ?? '';
+            $user = $_ENV['DB_USER'] ?? '';
+            $pass = $_ENV['DB_PASS'] ?? '';
 
             $dsn = "$driver:host=$host;port=$port;dbname=$dbname";
 
@@ -36,5 +36,33 @@ class Database
         }
 
         return self::$pdo;
+    }
+
+    // Méthode getInstance() pour compatibilité avec votre code existant
+    public static function getInstance(): PDO
+    {
+        return self::getConnection();
+    }
+
+    // Méthodes de transaction
+    public static function beginTransaction(): bool
+    {
+        return self::getConnection()->beginTransaction();
+    }
+
+    public static function commit(): bool
+    {
+        return self::getConnection()->commit();
+    }
+
+    public static function rollback(): bool
+    {
+        return self::getConnection()->rollback();
+    }
+
+    // Vérifier si une transaction est active
+    public static function inTransaction(): bool
+    {
+        return self::getConnection()->inTransaction();
     }
 }

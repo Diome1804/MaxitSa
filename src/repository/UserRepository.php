@@ -2,20 +2,17 @@
 
 namespace Src\Repository;
 
-use App\Config\Database;
-use Src\Entity\User;
-use Src\Entity\TypeUser;
-use App\Core\Abstract\AbstractRepository;
+use App\Core\Database;
 use PDO;
 
-class UserRepository extends AbstractRepository
+class UserRepository
 {
-    protected \PDO $pdo;
     private static ?UserRepository $instance = null;
+    private PDO $db;
 
-    public function __construct()
+    private function __construct()
     {
-        $this->pdo = Database::getConnection();
+        $this->db = Database::getInstance();
     }
 
     public static function getInstance(): UserRepository
@@ -26,139 +23,89 @@ class UserRepository extends AbstractRepository
         return self::$instance;
     }
 
+    public function create(array $userData): ?int
+    {
+        $sql = "INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, telephone, password, type_id) 
+                VALUES (:nom, :prenom, :adresse, :num_carte_identite, :photorecto, :photoverso, :telephone, :password, :type_id)
+                RETURNING id";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        if ($stmt->execute($userData)) {
+            return $stmt->fetchColumn();
+        }
+        
+        return null;
+    }
+
+    public function createCompte(array $compteData): ?int
+    {
+        $sql = "INSERT INTO compte (num_compte, solde, user_id, type, num_telephone) 
+                VALUES (:num_compte, :solde, :user_id, :type, :num_telephone)
+                RETURNING id";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        if ($stmt->execute($compteData)) {
+            return $stmt->fetchColumn();
+        }
+        
+        return null;
+    }
+
+    public function findByTelephone(string $telephone): ?array
+    {
+        $sql = "SELECT * FROM \"user\" WHERE telephone = :telephone";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['telephone' => $telephone]);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function findByNumCarteIdentite(string $numCarte): ?array
+    {
+        $sql = "SELECT * FROM \"user\" WHERE num_carte_identite = :num_carte";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['num_carte' => $numCarte]);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function findById(int $id): ?array
+    {
+        $sql = "SELECT u.*, t.type as user_type FROM \"user\" u 
+                LEFT JOIN typeuser t ON u.type_id = t.id 
+                WHERE u.id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function getCompteByUserId(int $userId): ?array
+    {
+        $sql = "SELECT * FROM compte WHERE user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function getTransactionsByUserId(int $userId): array
+    {
+        $sql = "SELECT t.* FROM transactions t 
+                INNER JOIN compte c ON t.compte_id = c.id 
+                WHERE c.user_id = :user_id 
+                ORDER BY t.date DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     private function __clone() {}
 
     public function __wakeup() {
         throw new \Exception("Cannot unserialize singleton");
-    }
-
-    public function getTableName(): string 
-    {
-        return 'user';
-    }
-
-    /**
-     * Créer un nouvel utilisateur
-     */
-    public function create(User $user): bool
-    {
-        $sql = "INSERT INTO user (nom, prenom, adresse, numCarteIdentite, photorecto, photoverso, telephone, password, type_id) 
-                VALUES (:nom, :prenom, :adresse, :numCarteIdentite, :photorecto, :photoverso, :telephone, :password, :type_id)";
-        
-        $stmt = $this->pdo->prepare($sql);
-        
-        return $stmt->execute([
-            ':nom' => $user->getNom(),
-            ':prenom' => $user->getPrenom(),
-            ':adresse' => $user->getAdresse(),
-            ':numCarteIdentite' => $user->getNumCarteIdentite(),
-            ':photorecto' => $user->getPhotorecto(),
-            ':photoverso' => $user->getPhotoverso(),
-            ':telephone' => $user->getTelephone(),
-            ':password' => password_hash($user->getPassword(), PASSWORD_DEFAULT),
-            ':type_id' => $user->getType()->getId()
-        ]);
-    }
-
-    /**
-     * Vérifier si un numéro de téléphone existe déjà
-     */
-    public function existsByTelephone(string $telephone): bool
-    {
-        $sql = "SELECT COUNT(*) FROM user WHERE telephone = :telephone";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':telephone' => $telephone]);
-        
-        return $stmt->fetchColumn() > 0;
-    }
-
-    /**
-     * Vérifier si un numéro de CNI existe déjà
-     */
-    public function existsByNumCarteIdentite(string $numCarteIdentite): bool
-    {
-        $sql = "SELECT COUNT(*) FROM user WHERE numCarteIdentite = :numCarteIdentite";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':numCarteIdentite' => $numCarteIdentite]);
-        
-        return $stmt->fetchColumn() > 0;
-    }
-
-    /**
-     * Récupérer le dernier ID inséré
-     */
-    public function getLastInsertId(): int
-    {
-        return (int) $this->pdo->lastInsertId();
-    }
-
-    /**
-     * Trouver un utilisateur par son téléphone
-     */
-    public function findByTelephone(string $telephone): ?User
-    {
-        $sql = "SELECT u.*, t.type as type_name 
-                FROM user u 
-                LEFT JOIN type_user t ON u.type_id = t.id 
-                WHERE u.telephone = :telephone";
-        
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':telephone' => $telephone]);
-        
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$data) {
-            return null;
-        }
-        
-        // Utilisation de votre méthode toObject
-        return User::toObject([
-            'id' => $data['id'],
-            'nom' => $data['nom'],
-            'prenom' => $data['prenom'],
-            'adresse' => $data['adresse'],
-            'numCarteIdentite' => $data['numCarteIdentite'],
-            'photorecto' => $data['photorecto'],
-            'photoverso' => $data['photoverso'],
-            'telephone' => $data['telephone'],
-            'password' => $data['password'],
-            'type' => $data['type_name'] ?? 'client',
-            'comptes' => []
-        ]);
-    }
-
-    /**
-     * Trouver un utilisateur par son ID
-     */
-    public function findById(int $id): ?User
-    {
-        $sql = "SELECT u.*, t.type as type_name 
-                FROM user u 
-                LEFT JOIN type_user t ON u.type_id = t.id 
-                WHERE u.id = :id";
-        
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$data) {
-            return null;
-        }
-        
-        // Utilisation de votre méthode toObject
-        return User::toObject([
-            'id' => $data['id'],
-            'nom' => $data['nom'],
-            'prenom' => $data['prenom'],
-            'adresse' => $data['adresse'],
-            'numCarteIdentite' => $data['numCarteIdentite'],
-            'photorecto' => $data['photorecto'],
-            'photoverso' => $data['photoverso'],
-            'telephone' => $data['telephone'],
-            'password' => $data['password'],
-            'type' => $data['type_name'] ?? 'client',
-            'comptes' => []
-        ]);
     }
 }

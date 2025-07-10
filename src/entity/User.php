@@ -56,11 +56,6 @@ class User extends AbstractEntity
 
 
 
-
-
-
-
-
 public static function toObject(array $tableau): static
 {
     // Il faut d'abord créer l'objet TypeUser

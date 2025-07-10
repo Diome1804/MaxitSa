@@ -16,6 +16,17 @@
             Inscription
         </h1>
         
+        <!-- Affichage des erreurs -->
+        <?php if (isset($errors) && !empty($errors)): ?>
+            <div class="bg-red-500 text-white p-4 rounded-lg mb-6">
+                <ul class="list-disc list-inside">
+                    <?php foreach ($errors as $error): ?>
+                        <li><?= htmlspecialchars($error) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+        
         <!-- Formulaire en deux colonnes -->
         <form method="POST" action="/register" enctype="multipart/form-data">
             <div class="grid grid-cols-2 gap-8">
@@ -29,6 +40,7 @@
                     <input type="text" 
                            name="nom"
                            placeholder="entrer votre nom" 
+                           value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>"
                            required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
@@ -39,6 +51,7 @@
                     <input type="text" 
                            name="prenom"
                            placeholder="entrer votre prenom" 
+                           value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>"
                            required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
@@ -49,6 +62,7 @@
                     <input type="tel" 
                            name="telephone"
                            placeholder="Entrer votre numero" 
+                           value="<?= htmlspecialchars($_POST['telephone'] ?? '') ?>"
                            required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
@@ -59,6 +73,7 @@
                     <input type="text" 
                            name="adresse"
                            placeholder="adresse" 
+                           value="<?= htmlspecialchars($_POST['adresse'] ?? '') ?>"
                            required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
@@ -67,8 +82,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">numero CNI</label>
                     <input type="text" 
-                           name="numero_cni"
+                           name="num_carte_identite"
                            placeholder="votre CNI" 
+                           value="<?= htmlspecialchars($_POST['num_carte_identite'] ?? '') ?>"
                            required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>

@@ -3,146 +3,207 @@
 namespace Src\Controller;
 
 use App\Core\Abstract\AbstractController;
-use Exception;
+use App\Core\Database;
+use App\Core\Validator;
+use Src\Repository\UserRepository;
 
 class CompteController extends AbstractController
 {
+    private UserRepository $userRepository;
+
     public function __construct()
     {
-        // Initialisation si nécessaire
+        $this->userRepository = UserRepository::getInstance();
     }
 
-    /**
-     * Afficher le dashboard
-     */
-    public function index()
-    {
-        $data = [
-            'success_message' => $_GET['success_message'] ?? null,
-            'error_message' => $_GET['error_message'] ?? null,
-            'user_numero' => $_GET['user_numero'] ?? 'Utilisateur',
-            'user' => [
-                'nom' => 'Utilisateur',
-                'prenom' => 'Test',
-                'solde' => '13.000 FCFA',
-                'numero' => $_GET['user_numero'] ?? '123456789'
-            ]
-        ];
-
-        $this->renderHtml('dashbord/dashboard.html.php', $data);
-    }
-
-    /**
-     * Traiter l'inscription
-     */
     public function store()
     {
-        try {
-            error_log("CompteController::store() - Traitement inscription");
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Récupérer les données du formulaire d'inscription
+            $nom = $_POST['nom'] ?? '';
+            $prenom = $_POST['prenom'] ?? '';
+            $adresse = $_POST['adresse'] ?? '';
+            $num_carte_identite = $_POST['num_carte_identite'] ?? '';
+            $telephone = $_POST['telephone'] ?? '';
+            $password = $_POST['password'] ?? '';
             
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                throw new Exception('Méthode non autorisée');
-            }
-
-            // Récupérer les données
-            $userData = [
-                'nom' => trim($_POST['nom'] ?? ''),
-                'prenom' => trim($_POST['prenom'] ?? ''),
-                'telephone' => trim($_POST['telephone'] ?? ''),
-                'adresse' => trim($_POST['adresse'] ?? ''),
-                'numero_cni' => trim($_POST['numero_cni'] ?? ''),
-                'password' => $_POST['password'] ?? ''
-            ];
-
-            error_log("Données inscription: " . print_r($userData, true));
-
-            // Validation
+            // Validation des données
             $errors = [];
-            if (empty($userData['nom'])) $errors[] = 'Le nom est obligatoire';
-            if (empty($userData['prenom'])) $errors[] = 'Le prénom est obligatoire';
-            if (empty($userData['telephone'])) $errors[] = 'Le téléphone est obligatoire';
-            if (empty($userData['adresse'])) $errors[] = 'L\'adresse est obligatoire';
-            if (empty($userData['numero_cni'])) $errors[] = 'Le numéro CNI est obligatoire';
-            if (empty($userData['password'])) $errors[] = 'Le mot de passe est obligatoire';
-
-            if (!empty($errors)) {
-                throw new Exception(implode(', ', $errors));
-            }
-
-            // Validation des fichiers (simplifiée)
-            if (!isset($_FILES['photo_cni_recto']) || $_FILES['photo_cni_recto']['error'] !== UPLOAD_ERR_OK) {
-                throw new Exception('Photo CNI recto obligatoire');
-            }
-            if (!isset($_FILES['photo_cni_verso']) || $_FILES['photo_cni_verso']['error'] !== UPLOAD_ERR_OK) {
-                throw new Exception('Photo CNI verso obligatoire');
-            }
-
-            // Simuler la création du compte
-            $numCompte = 'CPT' . date('Y') . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
             
-            error_log("Inscription réussie - Compte: {$numCompte}, Nom: {$userData['nom']} {$userData['prenom']}");
-
-            // REDIRECTION DIRECTE VERS DASHBOARD APRÈS INSCRIPTION
-            $message = urlencode("Inscription réussie ! Bienvenue {$userData['prenom']} ! Votre numéro de compte: {$numCompte}");
-            $userNumero = urlencode($userData['telephone']); // Utiliser le téléphone comme identifiant
+            if (empty($nom)) {
+                $errors[] = "Le nom est requis";
+            }
             
-            header("Location: /dashboard?success_message={$message}&user_numero={$userNumero}");
-            exit;
-
-        } catch (Exception $e) {
-            error_log("Erreur inscription: " . $e->getMessage());
-            $errorMessage = urlencode($e->getMessage());
-            header("Location: /register?error_message={$errorMessage}");
-            exit;
+            if (empty($prenom)) {
+                $errors[] = "Le prénom est requis";
+            }
+            
+            if (empty($telephone)) {
+                $errors[] = "Le numéro de téléphone est requis";
+            }
+            
+            if (empty($num_carte_identite)) {
+                $errors[] = "Le numéro de carte d'identité est requis";
+            }
+            
+            if (!Validator::validatePassword($password)) {
+                $errors = array_merge($errors, Validator::getErrors());
+            }
+            
+            // Vérifier si le téléphone existe déjà
+            if ($this->userRepository->findByTelephone($telephone)) {
+                $errors[] = "Ce numéro de téléphone est déjà utilisé";
+            }
+            
+            // Vérifier si le numéro de carte d'identité existe déjà
+            if ($this->userRepository->findByNumCarteIdentite($num_carte_identite)) {
+                $errors[] = "Ce numéro de carte d'identité est déjà utilisé";
+            }
+            
+            // Gestion des fichiers uploadés
+            $photoRecto = null;
+            $photoVerso = null;
+            
+            if (isset($_FILES['photo_cni_recto']) && $_FILES['photo_cni_recto']['error'] === 0) {
+                $photoRecto = $this->uploadFile($_FILES['photo_cni_recto'], 'recto');
+            }
+            
+            if (isset($_FILES['photo_cni_verso']) && $_FILES['photo_cni_verso']['error'] === 0) {
+                $photoVerso = $this->uploadFile($_FILES['photo_cni_verso'], 'verso');
+            }
+            
+            // Si pas d'erreurs, sauvegarder en base
+            if (empty($errors)) {
+                try {
+                    // Commencer une transaction
+                    Database::getInstance()->beginTransaction();
+                    
+                    // 1. Créer l'utilisateur
+                    $userData = [
+                        'nom' => $nom,
+                        'prenom' => $prenom,
+                        'adresse' => $adresse,
+                        'num_carte_identite' => $num_carte_identite,
+                        'photorecto' => $photoRecto,
+                        'photoverso' => $photoVerso,
+                        'telephone' => $telephone,
+                        'password' => password_hash($password, PASSWORD_DEFAULT),
+                        'type_id' => 1 // 1 = client par défaut
+                    ];
+                    
+                    $userId = $this->userRepository->create($userData);
+                    
+                    if ($userId) {
+                        // 2. Créer un compte principal pour l'utilisateur
+                        $numCompte = $this->generateNumCompte();
+                        $compteData = [
+                            'num_compte' => $numCompte,
+                            'solde' => 0.00,
+                            'user_id' => $userId,
+                            'type' => 'ComptePrincipal',
+                            'num_telephone' => $telephone
+                        ];
+                        
+                        $compteId = $this->userRepository->createCompte($compteData);
+                        
+                        if ($compteId) {
+                            // Valider la transaction
+                            Database::getInstance()->commit();
+                            
+                            // Inscription réussie, créer la session et rediriger
+                            session_start();
+                            $_SESSION['user_id'] = $userId;
+                            $_SESSION['user_telephone'] = $telephone;
+                            $_SESSION['user_nom'] = $nom . ' ' . $prenom;
+                            $_SESSION['compte_id'] = $compteId;
+                            $_SESSION['num_compte'] = $numCompte;
+                            
+                            header('Location: /dashboard');
+                            exit;
+                        } else {
+                            throw new \Exception("Erreur lors de la création du compte");
+                        }
+                    } else {
+                        throw new \Exception("Erreur lors de la création de l'utilisateur");
+                    }
+                    
+                } catch (\Exception $e) {
+                    // Annuler la transaction en cas d'erreur
+                    Database::getInstance()->rollback();
+                    $errors[] = "Erreur lors de la création du compte: " . $e->getMessage();
+                }
+            }
+            
+            // Si erreurs, retourner au formulaire avec les erreurs
+            $this->renderHtmlLogin('login/inscription.html.php', ['errors' => $errors]);
         }
     }
-
-    /**
-     * Méthodes abstraites obligatoires
-     */
-    public function show() 
-    {
-        // header("Location: /dashboard");
-        // exit;
+    
+    public function index()
+{
+    // ✅ Vérification manuelle de l'authentification
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: /login');
+        exit;
     }
 
-    public function create() 
-    {
-        // header("Location: /register");
-        // exit;
+    // Récupérer les données de l'utilisateur et du compte
+    $userId = $_SESSION['user_id'];
+    
+    try {
+        $user = $this->userRepository->findById($userId);
+        $compte = $this->userRepository->getCompteByUserId($userId);
+        $transactions = $this->userRepository->getTransactionsByUserId($userId);
+    } catch (\Exception $e) {
+        // En cas d'erreur, initialiser avec des valeurs par défaut
+        $user = ['nom' => 'Utilisateur', 'prenom' => ''];
+        $compte = ['num_compte' => 'N/A', 'type' => 'N/A', 'solde' => 0, 'num_telephone' => 'N/A'];
+        $transactions = [];
     }
 
-    public function edit() 
-    {
-        // header("Location: /dashboard");
-        // exit;
-    }
+    $data = [
+        'user' => $user,
+        'compte' => $compte,
+        'transactions' => $transactions
+    ];
 
-    public function destroy() 
-    {
-        // $message = urlencode('Déconnexion réussie');
-        // header("Location: /login?success_message={$message}");
-        // exit;
-    }
-
-    /**
-     * Méthode pour rendre les vues
-     */
-    protected function renderHtml(string $template, array $data = []): void
-    {
-        // Extraire les données pour les rendre disponibles dans la vue
-        extract($data);
-        
-        // Construire le chemin du template
-        $templatePath = __DIR__ . '/../../templates/' . $template;
-        
-        if (file_exists($templatePath)) {
-            include $templatePath;
-        } else {
-            echo "<h1>Template introuvable: {$template}</h1>";
-            echo "<p>Chemin: {$templatePath}</p>";
-        }
-    }
+    // Rendre le template dashboard
+    $this->render('dashboard/dashboard.html.php', $data);
+}
 
     
+    private function uploadFile($file, $prefix)
+    {
+        $uploadDir = 'uploads/cni/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        $fileName = $prefix . '_' . uniqid() . '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filePath = $uploadDir . $fileName;
+        
+        if (move_uploaded_file($file['tmp_name'], $filePath)) {
+            return $fileName; // Stocker seulement le nom du fichier
+        }
+        
+        return null;
+    }
+    
+    private function generateNumCompte(): string
+    {
+        return 'CPT' . date('Y') . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+    }
+
+    public function destroy() {}
+    public function show() {}
+    public function edit() {}
+    public function update() {}
+    public function create() {}
+
+
+
+    
+
+
 }
