@@ -22,8 +22,6 @@ class SecurityController extends AbstractController
 
     public function show() {
         $this->renderHtmlLogin('login/inscription.html.php');
-        //$this->renderHtml('login/inscription.html.php');
-        //header('Location: /register');
     }
 
 

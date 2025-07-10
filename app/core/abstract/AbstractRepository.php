@@ -18,14 +18,10 @@ abstract class AbstractRepository
 
     
     public function getTableName(): string{}
-
-
     protected function getPrimaryKey(): string
     {
         return 'id';
     }
-
-    
     public function selectAll(): array
     {
         try {

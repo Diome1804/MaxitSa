@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Entity;
+use App\Core\abstract\AbstractEntity;
 
-class Compte
+class Compte extends AbstractEntity
 {
     private int $id;
     private string $numCompte;
     private float $solde;
     private string $type; // ComptePrincipal | CompteSecondaire
-
     private User $user;
     private array $transactions = [];
 
@@ -28,5 +28,32 @@ class Compte
     public function getUser(): User { return $this->user; }
     public function setUser(User $user): void { $this->user = $user; }
 
-    // Getters / Setters...
+
+          public static function toObject(array $tableau): static
+    {
+        return new static(
+            $tableau['id'] ?? 0,
+            $tableau['num_compte'],
+            (float)$tableau['solde'],
+            $tableau['type'],
+            $tableau['user_id'],
+            $tableau['transactions'] ?? [],
+            
+
+        );
+    }
+
+    public function toArray(object $object): array
+    {
+        return [
+            'id' => $this->id,
+            'num_compte' => $this->numCompte,
+            'solde' => $this->solde,
+            'type' => $this->type,
+            'user_id' => $this->user->getId(),
+            'transactions' => $this->transactions,
+        ];
+    }
+
+    
 }

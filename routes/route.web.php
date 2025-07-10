@@ -10,6 +10,7 @@ use Src\Controller\SecurityController;
 // Routes de sécurité
 Router::get('/login', SecurityController::class, 'index');
 Router::get('/register', SecurityController::class, 'show');
+Router::post('/register', SecurityController::class, 'createCompte');
 
 
 

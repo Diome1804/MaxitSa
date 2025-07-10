@@ -17,7 +17,8 @@
         </h1>
         
         <!-- Formulaire en deux colonnes -->
-        <div class="grid grid-cols-2 gap-8">
+        <form method="POST" action="/register" enctype="multipart/form-data">
+            <div class="grid grid-cols-2 gap-8">
             
             <!-- Colonne gauche -->
             <div class="space-y-6">
@@ -26,7 +27,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">Nom</label>
                     <input type="text" 
+                           name="nom"
                            placeholder="entrer votre nom" 
+                           required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
                 
@@ -34,7 +37,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">Prenom</label>
                     <input type="text" 
+                           name="prenom"
                            placeholder="entrer votre prenom" 
+                           required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
                 
@@ -42,7 +47,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">Telephone</label>
                     <input type="tel" 
+                           name="telephone"
                            placeholder="Entrer votre numero" 
+                           required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
                 
@@ -50,7 +57,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">Adresse</label>
                     <input type="text" 
+                           name="adresse"
                            placeholder="adresse" 
+                           required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
                 
@@ -58,7 +67,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">numero CNI</label>
                     <input type="text" 
+                           name="numero_cni"
                            placeholder="votre CNI" 
+                           required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
                 
@@ -71,7 +82,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">password</label>
                     <input type="password" 
+                           name="password"
                            placeholder="password" 
+                           required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
                 </div>
                 
@@ -79,7 +92,9 @@
                 <div>
                     <label class="text-white text-sm block mb-2">photo carte d'identité recto</label>
                     <input type="file" 
+                           name="photo_cni_recto"
                            accept="image/*"
+                           required
                            class="w-full bg-gray-800 text-gray-400 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-300 hover:file:bg-gray-600">
                     <div class="text-gray-400 text-sm mt-1"></div>
                 </div>
@@ -88,29 +103,31 @@
                 <div>
                     <label class="text-white text-sm block mb-2">photo carte d'identité verso</label>
                     <input type="file" 
+                           name="photo_cni_verso"
                            accept="image/*"
+                           required
                            class="w-full bg-gray-800 text-gray-400 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-300 hover:file:bg-gray-600">
                     <div class="text-gray-400 text-sm mt-1"></div>
                 </div>
                 
             </div>
             
-        </div>
-        
-        <!-- Boutons -->
-        <div class="flex justify-center space-x-4 mt-8">
+            <!-- Boutons -->
+            <div class="flex justify-center space-x-4 mt-8">
+                
+                <!-- Bouton Créer le compte -->
+                <button type="submit" class="bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors duration-200 px-8 py-3 rounded-full text-sm font-medium">
+                    Créer le compte
+                </button>
+                
+                <!-- Bouton retour à la page de connexion -->
+                <a href="/login" class="bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium inline-block">
+                    retour à la page de connexion
+                </a>
+                
+            </div>
             
-            <!-- Bouton Créer le compte -->
-            <button class="bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors duration-200 px-8 py-3 rounded-full text-sm font-medium">
-                Créer le compte
-            </button>
-            
-            <!-- Bouton retour à la page de connexion -->
-            <button class="bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium">
-                <a href="/login">retour à la page de connexion</a>
-            </button>
-            
-        </div>
+        </form>
         
     </div>
     

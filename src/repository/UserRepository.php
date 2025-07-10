@@ -4,47 +4,41 @@ namespace Src\Repository;
 
 use App\Config\Database;
 use Src\Entity\User;
+use App\Core\Abstract\AbstractRepository;
 use PDO;
 
 class UserRepository extends AbstractRepository
 {
-    private PDO $db;
+    protected \PDO $pdo;
+    private static ?UserRepository $instance = null;
 
     public function __construct()
     {
         $this->db = Database::getConnection();
     }
 
-    // public function findAll(): array
-    // {
-    //     $stmt = $this->db->query("SELECT * FROM \"user\"");
-    //     $users = [];
+    public static function getInstance(): UserRepository{
+        if (self::$instance === null) {
+            self::$instance = new UserRepository();
+        }
+        return self::$instance;
+    }
 
-    //     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    //         $typeRepo = new TypeUserRepository();
-    //         $type = $typeRepo->findById($row['type_id']);
+    // Empêcher le clonage
+    private function __clone() {}
 
-    //         $user = new User($row['nom'], $row['prenom'], $type);
-    //         // hydrate plus d’infos si besoin
-    //         $users[] = $user;
-    //     }
+    // Empêcher la désérialisation
+    public function __wakeup() {
+        throw new \Exception("Cannot unserialize singleton");
+    }
 
-    //     return $users;
-    // }
+    public function getTableName():string {
+        return  'user';
+    }
 
-    // public function findById(int $id): ?User
-    // {
-    //     $stmt = $this->db->prepare("SELECT * FROM \"user\" WHERE id = :id");
-    //     $stmt->execute(['id' => $id]);
 
-    //     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    //     if ($row) {
-    //         $typeRepo = new TypeUserRepository();
-    //         $type = $typeRepo->findById($row['type_id']);
 
-    //         return new User($row['nom'], $row['prenom'], $type);
-    //     }
 
-    //     return null;
-    // }
+
+
 }
