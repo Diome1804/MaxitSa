@@ -69,38 +69,38 @@
             </div>
         </div>
         
-        <!-- Section Dernières transactions -->
-        <div>
-            <h2 class="text-white text-lg font-semibold mb-4">Dernières transactions</h2>
+        <!-- Section des transactions récentes -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Historique des Transactions</h2>
             
-            <!-- Tableau des transactions -->
-            <div class="bg-orange-600 rounded-lg overflow-hidden mb-4">
-                <!-- En-tête du tableau -->
-                <div class="grid grid-cols-4 gap-4 p-4 border-b border-orange-500">
-                    <div class="text-white font-medium">Date</div>
-                    <div class="text-white font-medium">Compte</div>
-                    <div class="text-white font-medium">Montant</div>
-                    <div class="text-white font-medium">Type</div>
-                </div>
-                
-                <!-- Lignes du tableau (vides comme dans le design) -->
-                <div class="bg-gray-800 h-48">
-                    <!-- Lignes vides avec séparateurs -->
-                    <div class="border-b border-gray-600 h-8"></div>
-                    <div class="border-b border-gray-600 h-8"></div>
-                    <div class="border-b border-gray-600 h-8"></div>
-                    <div class="border-b border-gray-600 h-8"></div>
-                    <div class="border-b border-gray-600 h-8"></div>
-                    <div class="border-b border-gray-600 h-8"></div>
-                </div>
-            </div>
-            
-            <!-- Bouton Voir plus -->
-            <div class="text-right">
-                <button class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700">
-                    Voir plus
-                </button>
-            </div>
+            <?php if (!empty($transactions)): ?>
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
+                            <th class="border border-gray-300 px-4 py-2 text-right">Montant</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($transactions as $transaction): ?>
+                            <tr class="hover:bg-gray-50">
+                                <td class="border border-gray-300 px-4 py-2">
+                                    <?= strtoupper($transaction['type']) ?>
+                                </td>
+                                <td class="border border-gray-300 px-4 py-2 text-right font-mono">
+                                    <?= number_format($transaction['montant'], 2, ',', ' ') ?> FCFA
+                                </td>
+                                <td class="border border-gray-300 px-4 py-2">
+                                    <?= date('d/m/Y', strtotime($transaction['date'])) ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p class="text-gray-500 text-center py-8">Aucune transaction à afficher</p>
+            <?php endif; ?>
         </div>
         
     </div>

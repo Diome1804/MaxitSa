@@ -104,21 +104,98 @@ class UserRepository
         }
     }
 
-    public function getCompteByUserId(int $userId): ?array
-    {
-        // Retourner des données par défaut en attendant la vraie table compte
-        return [
-            'num_compte' => 'MAX' . str_pad($userId, 7, '0', STR_PAD_LEFT),
-            'type' => 'courant',
-            'solde' => 0,
-            'num_telephone' => 'N/A'
-        ];
-    }
-
+    /**
+     * ✅ Récupérer seulement les 3 colonnes nécessaires
+     */
     public function getTransactionsByUserId(int $userId, int $limit = 10): array
     {
-        // Retourner un tableau vide en attendant la vraie table transactions
-        return [];
+        try {
+            $stmt = $this->pdo->prepare('
+                SELECT 
+                    t.type,
+                    t.montant,
+                    t.date
+                FROM transactions t
+                INNER JOIN compte c ON t.compte_id = c.id
+                WHERE c.user_id = :user_id
+                ORDER BY t.date DESC, t.id DESC
+                LIMIT :limit
+            ');
+        
+            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+        
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        } catch (\Exception $e) {
+            error_log("Erreur getTransactionsByUserId: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * ✅ Récupérer le compte d'un utilisateur (PostgreSQL)
+     */
+    public function getCompteByUserId(int $userId): ?array
+    {
+        try {
+            $stmt = $this->pdo->prepare('
+                SELECT 
+                    c.id,
+                    c.num_compte,
+                    c.solde,
+                    c.type,
+                    c.date_creation,
+                    u.telephone as num_telephone
+                FROM compte c
+                INNER JOIN "user" u ON c.user_id = u.id
+                WHERE c.user_id = :user_id
+                LIMIT 1
+            ');
+        
+            $stmt->execute(['user_id' => $userId]);
+            $compte = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+            return $compte ?: null;
+        
+        } catch (\Exception $e) {
+            error_log("Erreur getCompteByUserId: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * ✅ Calculer le solde réel d'un compte basé sur les transactions
+     */
+    public function calculateSoldeByUserId(int $userId): float
+    {
+        try {
+            $stmt = $this->pdo->prepare('
+                SELECT 
+                    COALESCE(SUM(
+                        CASE 
+                            WHEN t.type = \'depot\' THEN t.montant
+                            WHEN t.type = \'retrait\' THEN -t.montant
+                            WHEN t.type = \'transfert\' AND t.montant < 0 THEN t.montant
+                            WHEN t.type = \'transfert\' AND t.montant > 0 THEN t.montant
+                            ELSE 0
+                        END
+                    ), 0) as solde_total
+                FROM transactions t
+                INNER JOIN compte c ON t.compte_id = c.id
+                WHERE c.user_id = :user_id
+            ');
+        
+            $stmt->execute(['user_id' => $userId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+            return (float) ($result['solde_total'] ?? 0);
+        
+        } catch (\Exception $e) {
+            error_log("Erreur calculateSoldeByUserId: " . $e->getMessage());
+            return 0.0;
+        }
     }
 
     private function __clone() {}

@@ -141,34 +141,96 @@ class CompteController extends AbstractController
     
     public function index()
 {
-    // ✅ Vérification manuelle de l'authentification
+    // Vérification de l'authentification
     session_start();
     if (!isset($_SESSION['user_id'])) {
         header('Location: /login');
         exit;
     }
 
-    // Récupérer les données de l'utilisateur et du compte
     $userId = $_SESSION['user_id'];
     
     try {
+        // ✅ Récupérer les données réelles de l'utilisateur
         $user = $this->userRepository->findById($userId);
         $compte = $this->userRepository->getCompteByUserId($userId);
-        $transactions = $this->userRepository->getTransactionsByUserId($userId);
+        $transactions = $this->userRepository->getTransactionsByUserId($userId, 10);
+        
+        // Vérifier si les données existent
+        if (!$user) {
+            throw new \Exception("Utilisateur non trouvé");
+        }
+
+        // Si pas de compte, créer des données par défaut
+        if (!$compte) {
+            $compte = [
+                'num_compte' => 'Compte en cours de création',
+                'type' => 'courant',
+                'solde' => 0,
+                'num_telephone' => $user['telephone']
+            ];
+        } else {
+            // ✅ Calculer le solde réel basé sur les transactions
+            $soldeReel = $this->userRepository->calculateSoldeByUserId($userId);
+            $compte['solde'] = $soldeReel;
+        }
+
+        // ✅ Calculer les statistiques
+        $stats = [
+            'total_transactions' => count($transactions),
+            'solde_formate' => number_format($compte['solde'], 0, ',', ' '),
+            'derniere_connexion' => date('d/m/Y H:i'),
+            'depots_total' => 0,
+            'retraits_total' => 0
+        ];
+
+        // Calculer les totaux par type
+        foreach ($transactions as $transaction) {
+            if ($transaction['type'] === 'depot') {
+                $stats['depots_total'] += $transaction['montant'];
+            } elseif ($transaction['type'] === 'retrait') {
+                $stats['retraits_total'] += abs($transaction['montant']);
+            }
+        }
+
+        $stats['depots_formate'] = number_format($stats['depots_total'], 0, ',', ' ');
+        $stats['retraits_formate'] = number_format($stats['retraits_total'], 0, ',', ' ');
+
     } catch (\Exception $e) {
-        // En cas d'erreur, initialiser avec des valeurs par défaut
-        $user = ['nom' => 'Utilisateur', 'prenom' => ''];
-        $compte = ['num_compte' => 'N/A', 'type' => 'N/A', 'solde' => 0, 'num_telephone' => 'N/A'];
+        // En cas d'erreur, utiliser des données par défaut
+        error_log("Erreur dashboard: " . $e->getMessage());
+        
+        $user = [
+            'nom' => $_SESSION['user_nom'] ?? 'Utilisateur',
+            'prenom' => $_SESSION['user_prenom'] ?? '',
+            'telephone' => $_SESSION['user_telephone'] ?? 'N/A'
+        ];
+        
+        $compte = [
+            'num_compte' => 'Erreur de chargement',
+            'type' => 'courant',
+            'solde' => 0,
+            'num_telephone' => $user['telephone']
+        ];
+        
         $transactions = [];
+        $stats = [
+            'total_transactions' => 0,
+            'solde_formate' => '0',
+            'derniere_connexion' => date('d/m/Y H:i'),
+            'depots_formate' => '0',
+            'retraits_formate' => '0'
+        ];
     }
 
     $data = [
         'user' => $user,
         'compte' => $compte,
-        'transactions' => $transactions
+        'transactions' => $transactions,
+        'stats' => $stats
     ];
 
-    // Rendre le template dashboard
+    // Rendre le template
     $this->render('dashboard/dashboard.html.php', $data);
 }
 
