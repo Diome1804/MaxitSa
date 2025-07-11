@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Core;
-
+//ici aussi on dois le changer 
 class Validator
 {
     private static array $errors = [];

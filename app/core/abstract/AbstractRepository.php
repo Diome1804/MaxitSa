@@ -17,7 +17,9 @@ abstract class AbstractRepository
     }
 
     
-    public function getTableName(): string{}
+    public function getTableName(): string{
+        //return $this->table;
+    }
     protected function getPrimaryKey(): string
     {
         return 'id';

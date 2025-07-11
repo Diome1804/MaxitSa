@@ -64,5 +64,14 @@ abstract class AbstractController
         }
     }
 
+
+
+    // public function render(string $view, array $data = []): void
+    
+    // {
+    // extract($data);
+    // require_once '../templates/' . $view;
+    // }
+
     
 }
