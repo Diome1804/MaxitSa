@@ -151,7 +151,7 @@ class CompteController extends AbstractController
     $userId = $_SESSION['user_id'];
     
     try {
-        // ✅ Récupérer les données réelles de l'utilisateur
+        //Récupérer les données réelles de l'utilisateur
         $user = $this->userRepository->findById($userId);
         $compte = $this->userRepository->getCompteByUserId($userId);
         $transactions = $this->userRepository->getTransactionsByUserId($userId, 10);
@@ -170,12 +170,12 @@ class CompteController extends AbstractController
                 'num_telephone' => $user['telephone']
             ];
         } else {
-            // ✅ Calculer le solde réel basé sur les transactions
+            // Calculer le solde réel basé sur les transactions
             $soldeReel = $this->userRepository->calculateSoldeByUserId($userId);
             $compte['solde'] = $soldeReel;
         }
 
-        // ✅ Calculer les statistiques
+        // Calculer les statistiques
         $stats = [
             'total_transactions' => count($transactions),
             'solde_formate' => number_format($compte['solde'], 0, ',', ' '),
@@ -257,6 +257,11 @@ class CompteController extends AbstractController
         return 'CPT' . date('Y') . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
     }
 
+
+
+
+
+    
     public function destroy() {}
     public function show() {}
     public function edit() {}

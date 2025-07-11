@@ -15,9 +15,9 @@
         <div class="flex items-center space-x-6">
             <div class="text-white text-lg font-bold">MAXIT</div>
             <nav class="flex space-x-4">
-                <a href="#" class="text-white text-sm hover:text-gray-200">test</a>
-                <a href="#" class="text-white text-sm hover:text-gray-200">test</a>
-                <a href="#" class="text-white text-sm hover:text-gray-200">Frame</a>
+                <a href="#" class="text-white text-sm hover:text-gray-200">mes comptes </a>
+                <a href="#" class="text-white text-sm hover:text-gray-200">a propos </a>
+                <a href="#" class="text-white text-sm hover:text-gray-200">Contacter nous </a>
             </nav>
         </div>
         
