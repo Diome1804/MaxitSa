@@ -30,6 +30,15 @@ class SecurityController extends AbstractController
     }
     public function index()
 {
+    // ✅ SI DÉJÀ CONNECTÉ, REDIRIGER VERS DASHBOARD
+    if (isset($_SESSION['user'])) {
+        header("Location: /dashboard");
+        exit();
+    }
+    // ✅ HEADERS ANTI-CACHE
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log("=== TENTATIVE DE CONNEXION ===");
         error_log("Numéro: " . ($_POST['numero'] ?? 'non fourni'));

@@ -6,6 +6,7 @@
             "App\\Config\\": "app/config/",
             "App\\Core\\": "app/core/",
             "App\\Core\\Abstract\\": "app/core/abstract/",
+            "App\\Core\\Middlewares\\": "app/core/midlewares/",
             "Src\\Controller\\": "src/controller/",
             "Src\\Entity\\": "src/entity/",
             "Src\\Repository\\": "src/repository/",
