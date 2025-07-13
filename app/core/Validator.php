@@ -1,76 +1,98 @@
 <?php
-
 namespace App\Core;
-//ici aussi on dois le changer 
+
 class Validator
 {
     private static array $errors = [];
+    private static $instance = null;
 
-    public static function isEmail(string $email): bool{
-        if(filter_var($email, FILTER_VALIDATE_EMAIL)){
-            return true;
-        }
-        self::$errors['email_valid'] = "L'email n'est pas valide";
-        return false;   
+    private static array $rules;
+
+    public function __construct()
+    {
+        self::$errors = [];
+        self::$rules = [
+            "required" => function ($key, $value, $message = "Champ obligatoire") {
+                if (empty($value)) {
+                    self::addError($key, $message);
+                }
+            },
+            "minLength" => function ($key, $value, $minLength, $message = "Trop court") {
+                if (strlen($value) < $minLength) {
+                    self::addError($key, $message);
+                }
+            },
+            "isMail" => function ($key, $value, $message = "Email invalide") {
+                if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                    self::addError($key, $message);
+                }
+            },
+            "isPassword" => function ($key, $value, $message = "Mot de passe invalide") {
+                if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/', $value)) {
+                    self::addError($key, $message);
+                }
+            },
+            "isSenegalPhone" => function ($key, $value, $message = "Numéro de téléphone invalide") {
+                $value = preg_replace('/\D/', '', $value);
+                $prefixes = ['70', '75', '76', '77', '78'];
+                if (!(strlen($value) === 9 && in_array(substr($value, 0, 2), $prefixes))) {
+                    self::addError($key, $message);
+                }
+            },
+            "isCNI" => function ($key, $value, $message = "Numéro de CNI invalide") {
+                $value = preg_replace('/\D/', '', $value);
+                if (!preg_match('/^1\d{12}$/', $value)) {
+                    self::addError($key, $message);
+                }
+            },
+            
+        ];
     }
 
-    public static function isEmpty(string $value, string $field = 'field'): bool{
-        if(empty($value)){
-            self::$errors[$field . '_empty'] = "Le champ " . $field . " est vide";
-            return true;
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new Validator();
         }
-        return false;
+        return self::$instance;
     }
 
-    public static function minLength(string $value, int $minLength, string $field = 'field'): bool{
-        if(strlen($value) < $minLength){
-            self::$errors[$field . '_min_length'] = "Le champ " . $field . " doit contenir au moins " . $minLength . " caractères";
-            return false;
+    public function validate(array $data, array $rules): bool
+    {
+        foreach ($rules as $field => $fieldRules) {
+            $value = $data[$field] ?? null;
+
+            foreach ($fieldRules as $rule) {
+                if (is_string($rule)) {
+                    $callback = self::$rules[$rule] ?? null;
+                    if ($callback) {
+                        $callback($field, $value);
+                    }
+                }
+                elseif (is_array($rule)) {
+                    $ruleName = $rule[0];
+                    $params = array_slice($rule, 1);
+                    $callback = self::$rules[$ruleName] ?? null;
+
+                    if ($callback) {
+                        $callback($field, $value, ...$params);
+                    }
+                }
+            }
         }
-        return true;
+
+        return empty(self::$errors);
     }
 
-    public static function validatePassword(string $password): bool{
-        $isValid = true;
-        
-        if(self::isEmpty($password, 'mot de passe')){
-            $isValid = false;
-        }
-        
-        if(!self::minLength($password, 6, 'mot de passe')){
-            $isValid = false;
-        }
-        
-        return $isValid;
+    public static function addError(string $field, string $message)
+    {
+        self::$errors[$field] = $message;
     }
 
-    public static function validateLogin(string $login): bool{
-        $isValid = true;
-        
-        if(self::isEmpty($login, 'login')){
-            $isValid = false;
-        }
-        
-        if(!self::minLength($login, 3, 'login')){
-            $isValid = false;
-        }
-        
-        return $isValid;
-    }
-
-    public static function addError(string $key, string $message): void{
-        self::$errors[$key] = $message;
-    }
-
-    public static function isValid(): bool{
-        return count(self::$errors) === 0;
-    }
-
-    public static function getErrors(): array{
+    public static function getErrors()
+    {
         return self::$errors;
     }
 
-    public static function clearErrors(): void{
-        self::$errors = [];
-    }
+    
 }

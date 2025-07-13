@@ -16,26 +16,41 @@
             <h1 class="text-white text-2xl font-bold mb-2">
                 Connexion
             </h1>
-            
-            <!-- ✅ Affichage des erreurs -->
-            <?php if (!empty($errors)): ?>
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    <?php foreach ($errors as $error): ?>
-                        <p class="text-sm"><?= htmlspecialchars($error) ?></p>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
         </div>
         
+        <!-- Ajoutez ceci après le titre "Connexion" -->
+        <?php if (isset($success) && $success): ?>
+            <div class="bg-green-600 text-white p-4 rounded-lg mb-6 text-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <?= htmlspecialchars($success) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($errors['login'])): ?>
+            <div class="bg-red-600 text-white p-4 rounded-lg mb-6 text-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <?= htmlspecialchars($errors['login']) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($errors['telephone'])): ?>
+            <div class="bg-red-600 text-white p-4 rounded-lg mb-6 text-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <?= htmlspecialchars($errors['telephone']) ?>
+            </div>
+        <?php endif; ?>
+        
         <!-- Formulaire de connexion -->
+
         <form method="POST" action="/login">
             <div class="space-y-4 w-80">
                 <!-- Champ numéro -->
                 <div>
                     <input type="text" 
+
                            name="numero"
                            placeholder="Entrez votre numéro"
-                           value="<?= htmlspecialchars($_POST['numero'] ?? '') ?>"
+                           value="<?= htmlspecialchars($old['numero'] ?? '') ?>"
                            required
                            class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-5 py-4 rounded-lg text-sm">
                 </div>

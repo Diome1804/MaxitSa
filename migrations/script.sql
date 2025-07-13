@@ -13,7 +13,7 @@ CREATE TABLE typeuser (
     type type_user_enum NOT NULL
 );
 select * from compte ;
--- 3. Table user
+-- 3. Table user 
 CREATE TABLE "user" (
     id SERIAL PRIMARY KEY,
     nom VARCHAR(100),

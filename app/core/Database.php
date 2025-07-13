@@ -2,67 +2,42 @@
 
 namespace App\Core;
 
-use PDO;
-use PDOException;
-use Dotenv\Dotenv;
+use \PDO;
+use \PDOException;
 
-class Database
-{
-    private static ?PDO $pdo = null;
+class Database{
+    
+    private $connection;
+    private  static $instance = null;
 
-    public static function getConnection(): PDO
-    {
-        if (self::$pdo === null) {
-            // Charger le fichier .env
-            $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2)); // Va à la racine
-            $dotenv->load();
+      private function __construct() {
+        try {
+           
+            $this->connection = new PDO(
+              dsn,
+              DB_USER,
+              DB_PASSWORD,
+              [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false
+              ]
+              );
 
-            $driver = $_ENV['DB_DRIVER'] ?? 'pgsql';
-            $host = $_ENV['DB_HOST'] ?? 'localhost';
-            $port = $_ENV['DB_PORT'] ?? '5432';
-            $dbname = $_ENV['DB_NAME'] ?? '';
-            $user = $_ENV['DB_USER'] ?? '';
-            $pass = $_ENV['DB_PASS'] ?? '';
-
-            $dsn = "$driver:host=$host;port=$port;dbname=$dbname";
-
-            try {
-                self::$pdo = new PDO($dsn, $user, $pass, [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-                ]);
-            } catch (PDOException $e) {
-                die("Erreur de connexion : " . $e->getMessage());
-            }
+             
+        }catch(PDOException $e){
+            die("Erreur de connexion à la base de données : " . $e->getMessage());
         }
-
-        return self::$pdo;
     }
 
-    // Méthode getInstance() pour compatibilité avec votre code existant
-    public static function getInstance(): PDO
-    {
-        return self::getConnection();
+    public static function getInstance(){
+        if(self::$instance === null){
+            self::$instance = new Database();
+        }
+        return self::$instance;
     }
 
-    // Méthodes de transaction
-    public static function beginTransaction(): bool
-    {
-        return self::getConnection()->beginTransaction();
-    }
-
-    public static function commit(): bool
-    {
-        return self::getConnection()->commit();
-    }
-
-    public static function rollback(): bool
-    {
-        return self::getConnection()->rollback();
-    }
-
-    // Vérifier si une transaction est active
-    public static function inTransaction(): bool
-    {
-        return self::getConnection()->inTransaction();
+    public function getConnection():PDO{
+        return $this->connection;
     }
 }

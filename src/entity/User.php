@@ -1,5 +1,7 @@
 <?php
-namespace App\Entity;
+
+namespace Src\Entity;
+
 use App\Core\abstract\AbstractEntity;
 
 class User extends AbstractEntity
@@ -16,7 +18,7 @@ class User extends AbstractEntity
     private TypeUser $type;
     private array $comptes = [];
 
-    public function __construct(string $nom, string $prenom, TypeUser $type , string $adresse, string $numCarteIdentite, string $photorecto, string $photoverso, string $telephone, string $password)
+    public function __construct(string $nom, string $prenom, TypeUser $type, string $adresse, string $numCarteIdentite, string $photorecto, string $photoverso, string $telephone, string $password)
     {
         $this->nom = $nom;
         $this->prenom = $prenom;
@@ -29,21 +31,11 @@ class User extends AbstractEntity
         $this->password = $password;
     }
 
-    
-
+    // Getters
     public function getComptes(): array { return $this->comptes; }
-    public function addCompte(Compte $compte): void {
-        $this->comptes[] = $compte;
-    }
-
-    public function getType(): TypeUser {
-         return $this->type; 
-    }
-
-    public function setType(TypeUser $type): void {
-         $this->type = $type;
-    }
-
+    public function addCompte(Compte $compte): void { $this->comptes[] = $compte; }
+    public function getType(): TypeUser { return $this->type; }
+    public function setType(TypeUser $type): void { $this->type = $type; }
     public function getId(): int { return $this->id; }
     public function getNom(): string { return $this->nom; }
     public function getPrenom(): string { return $this->prenom; }
@@ -54,38 +46,36 @@ class User extends AbstractEntity
     public function getTelephone(): string { return $this->telephone; }
     public function getPassword(): string { return $this->password; }
 
+    public static function toObject(array $tableau): static
+    {
+        // Il faut d'abord créer l'objet TypeUser
+        $typeUser = new TypeUser($tableau['type'] ?? 'client');
+        
+        $user = new static(
+            $tableau['nom'] ?? '',
+            $tableau['prenom'] ?? '',
+            $typeUser,
+            $tableau['adresse'] ?? '',
+            $tableau['numCarteIdentite'] ?? '',
+            $tableau['photorecto'] ?? '',
+            $tableau['photoverso'] ?? '',
+            $tableau['telephone'] ?? '',
+            $tableau['password'] ?? ''
+        );
 
+        // Définir l'ID via réflexion
+        if (isset($tableau['id'])) {
+            $reflection = new \ReflectionClass($user);
+            $idProperty = $reflection->getProperty('id');
+            $idProperty->setAccessible(true);
+            $idProperty->setValue($user, $tableau['id']);
+        }
 
-public static function toObject(array $tableau): static
-{
-    // Il faut d'abord créer l'objet TypeUser
-    $typeUser = new TypeUser($tableau['type'] ?? 'client');
-    
-    $user = new static(
-        $tableau['nom'] ?? '',
-        $tableau['prenom'] ?? '',
-        $typeUser,
-        $tableau['adresse'] ?? '',
-        $tableau['numCarteIdentite'] ?? '',
-        $tableau['photorecto'] ?? '',
-        $tableau['photoverso'] ?? '',
-        $tableau['telephone'] ?? '',
-        $tableau['password'] ?? ''
-    );
-    
-    // Définir l'ID via réflexion
-    if (isset($tableau['id'])) {
-        $reflection = new \ReflectionClass($user);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($user, $tableau['id']);
+        return $user;
     }
-    
-    return $user;
-}
 
-    public function toArray(object $object): array
-    //public function toArray(): array
+    // ✅ CORRECTION: Enlever le paramètre pour correspondre à AbstractEntity
+    public function toArray(): array
     {
         return [
             'id' => $this->id,
@@ -97,15 +87,8 @@ public static function toObject(array $tableau): static
             'photoverso' => $this->photoverso,
             'telephone' => $this->telephone,
             'password' => $this->password,
-            'type' => $this->type,
+            'type' => $this->type->getType(), // ✅ Récupérer juste le string du type
             'comptes' => $this->comptes
-
         ];
     }
-
-
 }
-//pour faire lintanciation de la classe cest a dire pour creer un objetde tuppe user on le fais en dehors de la classe  
-
-
-

@@ -12,19 +12,23 @@
     <div class="bg-orange-500 w-full max-w-4xl mx-auto p-8 rounded-lg">
         
         <!-- Titre Inscription -->
-        <h1 class="text-white text-2xl font-bold text-center mb-8">
-            Inscription
-        </h1>
+        <h1 class="text-white text-2xl font-bold text-center mb-8">Inscription</h1>
         
-        <!-- Affichage des erreurs -->
-        <?php if (isset($errors) && !empty($errors)): ?>
-            <div class="bg-red-500 text-white p-4 rounded-lg mb-6">
-                <ul class="list-disc list-inside">
-                    <?php foreach ($errors as $error): ?>
-                        <li><?= htmlspecialchars($error) ?></li>
-                    <?php endforeach; ?>
-                </ul>
+        <!-- Message d'erreur général -->
+        <?php if (isset($errors['general'])): ?>
+            <div class="bg-red-600 text-white p-4 rounded-lg mb-6 text-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <?= htmlspecialchars($errors['general']) ?>
             </div>
+        <?php endif; ?>
+        
+        <!-- Message de succès -->
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="bg-green-600 text-white p-4 rounded-lg mb-6 text-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <?= htmlspecialchars($_SESSION['success']) ?>
+            </div>
+            <?php unset($_SESSION['success']); ?>
         <?php endif; ?>
         
         <!-- Formulaire en deux colonnes -->
@@ -39,10 +43,16 @@
                     <label class="text-white text-sm block mb-2">Nom</label>
                     <input type="text" 
                            name="nom"
+                           value="<?= htmlspecialchars($old['nom'] ?? '') ?>"
                            placeholder="entrer votre nom" 
-                           value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>"
                            required
-                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm <?= isset($errors['nom']) ? 'border-2 border-red-500' : '' ?>">
+                    <?php if (isset($errors['nom'])): ?>
+                        <p class="text-red-300 text-sm mt-1">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <?= htmlspecialchars($errors['nom']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Prénom -->
@@ -50,10 +60,16 @@
                     <label class="text-white text-sm block mb-2">Prenom</label>
                     <input type="text" 
                            name="prenom"
+                           value="<?= htmlspecialchars($old['prenom'] ?? '') ?>"
                            placeholder="entrer votre prenom" 
-                           value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>"
                            required
-                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm <?= isset($errors['prenom']) ? 'border-2 border-red-500' : '' ?>">
+                    <?php if (isset($errors['prenom'])): ?>
+                        <p class="text-red-300 text-sm mt-1">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <?= htmlspecialchars($errors['prenom']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Téléphone -->
@@ -61,10 +77,16 @@
                     <label class="text-white text-sm block mb-2">Telephone</label>
                     <input type="tel" 
                            name="telephone"
+                           value="<?= htmlspecialchars($old['telephone'] ?? '') ?>"
                            placeholder="Entrer votre numero" 
-                           value="<?= htmlspecialchars($_POST['telephone'] ?? '') ?>"
                            required
-                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm <?= isset($errors['telephone']) ? 'border-2 border-red-500' : '' ?>">
+                    <?php if (isset($errors['telephone'])): ?>
+                        <p class="text-red-300 text-sm mt-1">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <?= htmlspecialchars($errors['telephone']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Adresse -->
@@ -72,10 +94,16 @@
                     <label class="text-white text-sm block mb-2">Adresse</label>
                     <input type="text" 
                            name="adresse"
+                           value="<?= htmlspecialchars($old['adresse'] ?? '') ?>"
                            placeholder="adresse" 
-                           value="<?= htmlspecialchars($_POST['adresse'] ?? '') ?>"
                            required
-                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm <?= isset($errors['adresse']) ? 'border-2 border-red-500' : '' ?>">
+                    <?php if (isset($errors['adresse'])): ?>
+                        <p class="text-red-300 text-sm mt-1">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <?= htmlspecialchars($errors['adresse']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Numéro CNI -->
@@ -83,10 +111,16 @@
                     <label class="text-white text-sm block mb-2">numero CNI</label>
                     <input type="text" 
                            name="num_carte_identite"
+                           value="<?= htmlspecialchars($old['num_carte_identite'] ?? '') ?>"
                            placeholder="votre CNI" 
-                           value="<?= htmlspecialchars($_POST['num_carte_identite'] ?? '') ?>"
                            required
-                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm <?= isset($errors['num_carte_identite']) ? 'border-2 border-red-500' : '' ?>">
+                    <?php if (isset($errors['num_carte_identite'])): ?>
+                        <p class="text-red-300 text-sm mt-1">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <?= htmlspecialchars($errors['num_carte_identite']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 
             </div>
@@ -101,29 +135,33 @@
                            name="password"
                            placeholder="password" 
                            required
-                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm">
+                           class="w-full bg-gray-800 text-gray-400 placeholder-gray-500 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm <?= isset($errors['password']) ? 'border-2 border-red-500' : '' ?>">
+                    <?php if (isset($errors['password'])): ?>
+                        <p class="text-red-300 text-sm mt-1">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <?= htmlspecialchars($errors['password']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Photo carte d'identité recto -->
                 <div>
-                    <label class="text-white text-sm block mb-2">photo carte d'identité recto</label>
-                    <input type="file" 
-                           name="photo_cni_recto"
+                    <label class="text-white text-sm block mb-2">photo carte d'identité recto (optionnel)</label>
+                    <input type="file"
+                           name="photorecto"
                            accept="image/*"
-                           required
                            class="w-full bg-gray-800 text-gray-400 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-300 hover:file:bg-gray-600">
-                    <div class="text-gray-400 text-sm mt-1"></div>
+                    <div class="text-gray-400 text-sm mt-1">JPG, PNG, GIF acceptés</div>
                 </div>
                 
                 <!-- Photo carte d'identité verso -->
                 <div>
-                    <label class="text-white text-sm block mb-2">photo carte d'identité verso</label>
-                    <input type="file" 
-                           name="photo_cni_verso"
+                    <label class="text-white text-sm block mb-2">photo carte d'identité verso (optionnel)</label>
+                    <input type="file"
+                           name="photoverso"
                            accept="image/*"
-                           required
                            class="w-full bg-gray-800 text-gray-400 border-none outline-none focus:outline-none focus:text-white px-4 py-3 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-300 hover:file:bg-gray-600">
-                    <div class="text-gray-400 text-sm mt-1"></div>
+                    <div class="text-gray-400 text-sm mt-1">JPG, PNG, GIF acceptés</div>
                 </div>
                 
             </div>
@@ -137,7 +175,7 @@
                 </button>
                 
                 <!-- Bouton retour à la page de connexion -->
-                <a href="/login" class="bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium inline-block">
+                <a href="/" class="bg-white text-gray-800 hover:bg-gray-100 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium inline-block">
                     retour à la page de connexion
                 </a>
                 
@@ -146,6 +184,9 @@
         </form>
         
     </div>
+    
+    <!-- Inclure Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
     
 </body>
 </html>

@@ -1,106 +1,55 @@
 <?php
 
 namespace Src\Repository;
-
-use App\Config\Database;
-use Src\Entity\Compte;
-use Src\Entity\User;
 use App\Core\Abstract\AbstractRepository;
-use PDO;
 
-class CompteRepository extends AbstractRepository
-{
-    protected \PDO $pdo;
-    private static ?CompteRepository $instance = null;
+class CompteRepository extends AbstractRepository{
 
-    public function __construct()
-    {
-        $this->pdo = Database::getConnection();
-    }
+    private string $table = 'compte';
 
-    public static function getInstance(): CompteRepository
-    {
-        if (self::$instance === null) {
+    private static CompteRepository|null $instance = null;
+
+    public static function getInstance():CompteRepository{
+        if(self::$instance == null){
             self::$instance = new CompteRepository();
         }
         return self::$instance;
     }
 
-    public function getTableName(): string 
-    {
-        return 'compte';
+    public function __construct(){
+        parent::__construct();
     }
 
-    /**
-     * Créer un nouveau compte
-     */
-    public function create(Compte $compte): bool
-    {
-        $sql = "INSERT INTO compte (numCompte, num_telephone, solde, type, user_id) 
-                VALUES (:numCompte, :num_telephone, :solde, :type, :user_id)";
-        
-        $stmt = $this->pdo->prepare($sql);
-        
-        return $stmt->execute([
-            ':numCompte' => $compte->getNumCompte(),
-            ':num_telephone' => $compte->getNumTelephone(),
-            ':solde' => $compte->getSolde(),
-            ':type' => $compte->getType(),
-            ':user_id' => $compte->getUser()->getId()
-        ]);
+     public function selectAll(){}
+   
+
+    public function insert(array $data): bool {
+    $query = "INSERT INTO compte (num_compte,solde,user_id,type,num_telephone) 
+              VALUES (:num_compte, :solde, :user_id, :type, :num_telephone)";
+    $stmt = $this->pdo->prepare($query);
+    return $stmt->execute($data);
     }
 
-    /**
-     * Générer un numéro de compte unique
-     */
-    public function generateNumCompte(): string
-    {
-        do {
-            $numCompte = 'CPT' . date('Y') . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-        } while ($this->existsByNumCompte($numCompte));
-        
-        return $numCompte;
-    }
+// public function findPrincipalByUserId($userId): ?array {
+//     $query = "SELECT * FROM compte WHERE id_user = :id_user AND typeCompte = 'Principal'";
+//     $stmt = $this->pdo->prepare($query);
+//     $stmt->execute(['id_user' => $userId]);
+//     return $stmt->fetch() ?: null;
+// }
+// public function selectByClient($user_id){
+//         $sql = "SELECT * from $this->table where id_user = :user_id";
+//         $stmt = $this->pdo->prepare($sql);
+//         $result = $stmt->execute(['user_id' => $user_id]);
+//         if($result){
+//             return $stmt->fetchAll();
+//         }
+//         return null;
+// }
 
-    /**
-     * Vérifier si un numéro de compte existe
-     */
-    public function existsByNumCompte(string $numCompte): bool
-    {
-        $sql = "SELECT COUNT(*) FROM compte WHERE numCompte = :numCompte";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':numCompte' => $numCompte]);
-        
-        return $stmt->fetchColumn() > 0;
-    }
 
-    /**
-     * Trouver les comptes d'un utilisateur
-     */
-    public function findByUserId(int $userId): array
-    {
-        $sql = "SELECT c.*, u.telephone 
-                FROM compte c 
-                LEFT JOIN user u ON c.user_id = u.id 
-                WHERE c.user_id = :user_id";
-        
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':user_id' => $userId]);
-        
-        $comptes = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            // Utilisation de votre méthode toObject
-            $comptes[] = Compte::toObject([
-                'id' => $data['id'],
-                'num_compte' => $data['numCompte'],
-                'num_telephone' => $data['num_telephone'],
-                'solde' => $data['solde'],
-                'type' => $data['type'],
-                'user_id' => $data['user_id'],
-                'transactions' => []
-            ]);
-        }
-        
-        return $comptes;
-    }
+     public function update(){}
+     public function delete(){}
+     public function selectById(){}
+     public function selectBy(array $filter){}
+
 }

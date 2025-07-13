@@ -1,9 +1,10 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../routes/route.web.php';
-//require_once __DIR__ . '/../config/config/bootstrap.php';
 
-// Résoudre la route
-//App\Core\Router::resolve();
-// Démarrer la session
-//session_start();
+require_once "../vendor/autoload.php";
+require_once "../app/config/bootstrap.php";
+require_once '../routes/route.web.php';
+
+use App\Core\Router;
+
+
+Router::resolve($routes);

@@ -40,7 +40,6 @@
             <!-- Bouton déconnexion -->
             <button class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700">
                 <a href="/logout">deconnexion</a>
-                
             </button>
         </div>
     </div>
@@ -73,34 +72,7 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold mb-4 text-gray-800">Historique des Transactions</h2>
             
-            <?php if (!empty($transactions)): ?>
-                <table class="w-full border-collapse border border-gray-300">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
-                            <th class="border border-gray-300 px-4 py-2 text-right">Montant</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($transactions as $transaction): ?>
-                            <tr class="hover:bg-gray-50">
-                                <td class="border border-gray-300 px-4 py-2">
-                                    <?= strtoupper($transaction['type']) ?>
-                                </td>
-                                <td class="border border-gray-300 px-4 py-2 text-right font-mono">
-                                    <?= number_format($transaction['montant'], 2, ',', ' ') ?> FCFA
-                                </td>
-                                <td class="border border-gray-300 px-4 py-2">
-                                    <?= date('d/m/Y', strtotime($transaction['date'])) ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php else: ?>
-                <p class="text-gray-500 text-center py-8">Aucune transaction à afficher</p>
-            <?php endif; ?>
+            <p class="text-gray-500 text-center py-8">Aucune transaction à afficher</p>
         </div>
         
     </div>

@@ -1,77 +1,46 @@
 <?php
 
 namespace App\Core\Abstract;
-use App\core\Session;
+use App\Core\App;
+use App\Core\Session;
 
-abstract class AbstractController
-{
-
+abstract class AbstractController extends Session{
  
+     protected $session;
+     private static AbstractController|null $instance = null;
+
+    public static function getInstance(){
+        if(self::$instance === null){
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+    public function __construct(){
+        $this->session = App::getDependency('core', 'session');
+    }
 
 
     abstract public function index();
-
+    abstract public function create();
     abstract public function store();
-
-    abstract public function create(); 
-
-
-    abstract public function destroy();
-
+    abstract public function edit();
     abstract public function show();
 
-    abstract public function edit();
+    
+                public function render(string $view, array $data = []): void
+            {
+                extract($data);
+                require_once '../templates/' . $view;
+            }
 
 
-    // protected function renderHtml(String $view, array $params = [])
-    // {
-    //     extract($params); // rend $commandes disponible dans la vue
-
+    // public function render(string $views, array $data = []){
+    //     extract($data);
     //     ob_start();
-    //     require_once '../templates/' . $view;
+    //     require_once '../templates/'.$views;
     //     $contentForLayout = ob_get_clean();
-
-    //     require_once '../templates/layout/base.layout.php';
+    //     require_once '../templates/layout/'. $this->layout . '.layout.php';
     // }
 
-    
-    protected function renderHtmlLogin(String $view, array $params = [])
-    {
-        extract($params);
-        //require_once '../../templates/dashboard/dashboard.html.php';
-        require_once '../templates/' . $view;
-    }
-
-
-     protected function render(string $view, array $data = []): void
-    {
-        // Extraire les données pour les rendre disponibles dans la vue
-        extract($data);
-        
-        // Chemin vers le template
-        $viewPath = '../templates/' . $view;
-        // var_dump($viewPath);
-        // die();
-        // Si le chemin ne contient pas d'extension, ajouter .php
-        if (!pathinfo($viewPath, PATHINFO_EXTENSION)) {
-            $viewPath .= '.php';
-        }
-        
-        if (file_exists($viewPath)) {
-            require_once $viewPath;
-        } else {
-            throw new \Exception("Vue non trouvée : " . $viewPath);
-        }
-    }
-
-
-
-    // public function render(string $view, array $data = []): void
-    
-    // {
-    // extract($data);
-    // require_once '../templates/' . $view;
-    // }
-
-    
 }
