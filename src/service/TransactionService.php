@@ -31,7 +31,6 @@ class TransactionService
         try {
             return $this->transactionRepository->findByUserId($userId);
         } catch (\Exception $e) {
-            error_log("❌ Erreur getTransactionsByUserId: " . $e->getMessage());
             return [];
         }
     }
@@ -41,7 +40,6 @@ class TransactionService
         try {
             return $this->transactionRepository->findRecentTransactions($userId, $limit);
         } catch (\Exception $e) {
-            error_log("❌ Erreur getRecentTransactions: " . $e->getMessage());
             return [];
         }
     }

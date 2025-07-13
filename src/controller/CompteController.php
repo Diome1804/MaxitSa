@@ -26,10 +26,10 @@ class CompteController extends AbstractController
 
         $user = $_SESSION['user'];
         
-        // ✅ RÉCUPÉRER LES TRANSACTIONS
+        
         $transactions = $this->transactionService->getRecentTransactions($user['id'], 10);
         
-        // ✅ FORMATER LES TRANSACTIONS POUR L'AFFICHAGE
+        
         $formattedTransactions = [];
         foreach ($transactions as $transaction) {
             $formattedTransactions[] = $this->transactionService->formatTransactionForDisplay($transaction);

@@ -35,13 +35,10 @@ class SecurityController extends AbstractController
         header("Location: /dashboard");
         exit();
     }
-    // ✅ HEADERS ANTI-CACHE
-    header('Cache-Control: no-cache, no-store, must-revalidate');
-    header('Pragma: no-cache');
-    header('Expires: 0');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        error_log("=== TENTATIVE DE CONNEXION ===");
-        error_log("Numéro: " . ($_POST['numero'] ?? 'non fourni'));
         
         $user = $this->securityService->authenticate($_POST);
         
@@ -68,26 +65,19 @@ class SecurityController extends AbstractController
     public function create()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Debug
-            error_log("POST Data reçu: " . print_r($_POST, true));
-            error_log("FILES Data reçu: " . print_r($_FILES, true));
-
-            // UTILISATION DE VOTRE CLASSE VALIDATOR
+            
             $rules = [
                 'nom' => ['required', ['minLength', 2, 'Le nom doit contenir au moins 2 caractères']],
                 'prenom' => ['required', ['minLength', 2, 'Le prénom doit contenir au moins 2 caractères']],
-                'telephone' => ['required', ['isSenegalPhone', 'Format de téléphone sénégalais invalide']],
-                'password' => ['required', ['isPassword', 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial']],
+                'telephone' => ['required', 'isSenegalPhone'],
+                'password' => ['required', 'isPassword'],
                 'adresse' => ['required', ['minLength', 5, 'L\'adresse doit contenir au moins 5 caractères']],
-                'num_carte_identite' => ['required', ['isCNI', 'Le numéro de CNI doit commencer par 1 et contenir 13 chiffres']]
+                'num_carte_identite' => ['required', 'isCNI']
             ];
 
-            // Validation des données POST
-            if ($this->validator->validate($_POST, $rules)) {
-                error_log("Validation réussie, tentative de création d'utilisateur...");
-
-                try {
-                    // Upload simple des photos
+             if ($this->validator->validate($_POST, $rules)) {
+               try {
+                    
                     $photorectoUrl = '';
                     $photoversoUrl = '';
 
@@ -101,7 +91,7 @@ class SecurityController extends AbstractController
                         $photoversoUrl = $this->uploadSimple($_FILES['photoverso'], 'verso');
                     }
 
-                    // Préparer les données utilisateur
+                    
                     $userData = [
                         'nom' => trim($_POST['nom']),
                         'prenom' => trim($_POST['prenom']),
@@ -113,45 +103,30 @@ class SecurityController extends AbstractController
                         'photoverso' => $photoversoUrl,
                     ];
 
-                    error_log("UserData préparé: " . print_r($userData, true));
-
-                    // Créer le client avec compte principal
                     $userId = $this->securityService->creerClientAvecComptePrincipal($userData, 0.0);
 
                     if ($userId !== false) {
-                        error_log("Inscription réussie, redirection vers /");
                         Session::set('success', 'Inscription réussie ! Votre compte principal a été créé.');
                         $this->redirect('/');
                         exit;
                     } else {
-                        error_log("Échec de l'inscription");
                         Session::set('errors', ['general' => 'Erreur lors de l\'inscription. Veuillez réessayer.']);
                     }
 
                 } catch (\Exception $e) {
-                    error_log("Exception lors de l'inscription: " . $e->getMessage());
                     Session::set('errors', ['general' => 'Erreur lors de l\'inscription: ' . $e->getMessage()]);
                 }
             } else {
-                // Erreurs de validation
-                error_log("Erreurs de validation: " . print_r(Validator::getErrors(), true));
                 Session::set('errors', Validator::getErrors());
             }
         }
-
-        // Affichage du formulaire
         $this->render('login/inscription.html.php', [
             'old' => $_POST ?? [],
             'errors' => Session::isset('errors') ? $_SESSION['errors'] : [],
         ]);
-        
-        // Nettoyer les erreurs après affichage
         Session::unset('errors');
     }
 
-    /**
-     * Upload simple d'une photo
-     */
     private function uploadSimple($file, $prefix = 'photo'): string
     {
         try {

@@ -30,23 +30,6 @@ class CompteRepository extends AbstractRepository{
     return $stmt->execute($data);
     }
 
-// public function findPrincipalByUserId($userId): ?array {
-//     $query = "SELECT * FROM compte WHERE id_user = :id_user AND typeCompte = 'Principal'";
-//     $stmt = $this->pdo->prepare($query);
-//     $stmt->execute(['id_user' => $userId]);
-//     return $stmt->fetch() ?: null;
-// }
-// public function selectByClient($user_id){
-//         $sql = "SELECT * from $this->table where id_user = :user_id";
-//         $stmt = $this->pdo->prepare($sql);
-//         $result = $stmt->execute(['user_id' => $user_id]);
-//         if($result){
-//             return $stmt->fetchAll();
-//         }
-//         return null;
-// }
-
-
      public function update(){}
      public function delete(){}
      public function selectById(){}

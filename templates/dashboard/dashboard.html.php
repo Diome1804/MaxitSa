@@ -82,22 +82,28 @@
                     <!-- Card Comptes -->
                     <div class="bg-white overflow-hidden shadow rounded-lg">
                         <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                        <span class="text-white font-bold">C</span>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white font-bold">C</span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">
+                                                Mes Comptes
+                                            </dt>
+                                            <dd class="text-lg font-medium text-gray-900">
+                                                1
+                                            </dd>
+                                        </dl>
                                     </div>
                                 </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">
-                                            Mes Comptes
-                                        </dt>
-                                        <dd class="text-lg font-medium text-gray-900">
-                                            1
-                                        </dd>
-                                    </dl>
-                                </div>
+                                <!-- Bouton Nouveau compte -->
+                                <a href="/compte/create" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-xs font-semibold ml-4">
+                                    Nouveau compte
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -107,6 +113,8 @@
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold text-gray-800">Historique des Transactions</h2>
+                        <!-- Lien voir plus -->
+                        <a href="/transactions" class="text-blue-500 hover:text-blue-700 text-sm font-semibold underline">Voir plus</a>
                     </div>
                     
                     <?php if (!empty($transactions)): ?>
