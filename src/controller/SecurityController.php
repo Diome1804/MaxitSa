@@ -30,7 +30,7 @@ class SecurityController extends AbstractController
     }
     public function index()
 {
-    // ✅ SI DÉJÀ CONNECTÉ, REDIRIGER VERS DASHBOARD
+   
     if (isset($_SESSION['user'])) {
         header("Location: /dashboard");
         exit();

@@ -3,79 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAXITSA - Tableau de bord</title>
+    <title>Dashboard - MaxitSa</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 min-h-screen font-sans">
-    
-    <!-- Header -->
-    <div class="bg-orange-500 flex items-center justify-between px-6 py-3">
-        
-        <!-- Logo et navigation -->
-        <div class="flex items-center space-x-6">
-            <div class="text-white text-lg font-bold">MAXIT</div>
-            <nav class="flex space-x-4">
-                <a href="#" class="text-white text-sm hover:text-gray-200">mes comptes </a>
-                <a href="#" class="text-white text-sm hover:text-gray-200">a propos </a>
-                <a href="#" class="text-white text-sm hover:text-gray-200">Contacter nous </a>
-            </nav>
-        </div>
-        
-        <!-- Partie droite avec recherche, profil et déconnexion -->
-        <div class="flex items-center space-x-4">
-            <!-- Icône de recherche -->
-            <div class="text-white cursor-pointer">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-            </div>
-            
-            <!-- Photo de profil -->
-            <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-            </div>
-            
-            <!-- Bouton déconnexion -->
-            <button class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700">
-                <a href="/logout">deconnexion</a>
-            </button>
-        </div>
-    </div>
-    
-    <!-- Contenu principal -->
-    <div class="bg-orange-500 min-h-screen p-6">
-        
-        <!-- Titre principal -->
-        <h1 class="text-white text-2xl font-bold mb-8">Tableau de bord</h1>
-        
-        <!-- Section Solde du compte -->
-        <div class="mb-8">
-            <h2 class="text-white text-lg font-semibold mb-4">Solde du compte</h2>
-            
-            <!-- Dropdown solde -->
-            <div class="bg-gray-800 rounded-lg p-4 w-80 flex items-center justify-between cursor-pointer">
-                <div>
-                    <div class="text-white font-semibold">10.000 FCFA</div>
-                    <div class="text-gray-400 text-sm">Compte principal</div>
-                </div>
-                <div class="text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-semibold text-gray-900">Dashboard MaxitSa</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-700">
+                            Bienvenue, <?= htmlspecialchars($user['nom'] ?? 'Utilisateur') ?> <?= htmlspecialchars($user['prenom'] ?? '') ?>
+                        </span>
+                        <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                            Déconnexion
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Section des transactions récentes -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Historique des Transactions</h2>
-            
-            <p class="text-gray-500 text-center py-8">Aucune transaction à afficher</p>
-        </div>
-        
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Card Transactions -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold">T</span>
+                                    </div>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Transactions
+                                        </dt>
+                                        <dd class="text-lg font-medium text-gray-900">
+                                            <?= count($transactions ?? []) ?>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Solde -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold">€</span>
+                                    </div>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Solde Total
+                                        </dt>
+                                        <dd class="text-lg font-medium text-gray-900">
+                                            0 FCFA
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Comptes -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold">C</span>
+                                    </div>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Mes Comptes
+                                        </dt>
+                                        <dd class="text-lg font-medium text-gray-900">
+                                            1
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ✅ SECTION TRANSACTIONS -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">Historique des Transactions</h2>
+                    </div>
+                    
+                    <?php if (!empty($transactions)): ?>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Type
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Montant
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php foreach ($transactions as $transaction): ?>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <?= htmlspecialchars($transaction['type']) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <?= htmlspecialchars($transaction['montant']) ?> FCFA
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <?= htmlspecialchars($transaction['date']) ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php else: ?>
+                        <p class="text-gray-500 text-center py-8">Aucune transaction à afficher</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </main>
     </div>
-    
 </body>
 </html>
