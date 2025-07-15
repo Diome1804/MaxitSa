@@ -74,8 +74,8 @@ class SecurityService{
 
     public function authenticate(array $data): ?User
 {
-    error_log("=== AUTHENTICATE ===");
-    error_log("Données reçues: " . print_r($data, true));
+    // error_log("=== AUTHENTICATE ===");
+    // error_log("Données reçues: " . print_r($data, true));
     
     // Vérification simple des champs requis
     if (empty($data['numero']) || empty($data['password'])) {
@@ -96,9 +96,9 @@ class SecurityService{
 
 public function login(string $numero, string $password): ?User
 {
-    error_log("=== LOGIN ===");
-    error_log("Numéro: '$numero'");
-    error_log("Mot de passe fourni: " . (empty($password) ? 'VIDE' : 'OK'));
+    // error_log("=== LOGIN ===");
+    // error_log("Numéro: '$numero'");
+    // error_log("Mot de passe fourni: " . (empty($password) ? 'VIDE' : 'OK'));
     
     try {
         // Recherche par numéro (téléphone)
@@ -110,13 +110,13 @@ public function login(string $numero, string $password): ?User
             
             // Vérification du mot de passe
             if (password_verify($password, $user->getPassword())) {
-                error_log("✅ Connexion réussie");
+                // error_log("✅ Connexion réussie");
                 return $user;
             } else {
-                error_log("❌ Mot de passe incorrect");
+                //error_log("❌ Mot de passe incorrect");
             }
         } else {
-            error_log("❌ Aucun utilisateur trouvé avec ce numéro");
+            //error_log("❌ Aucun utilisateur trouvé avec ce numéro");
         }
     } catch (\Exception $e) {
         error_log("Erreur dans login: " . $e->getMessage());

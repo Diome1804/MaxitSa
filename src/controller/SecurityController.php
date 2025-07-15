@@ -32,7 +32,7 @@ class SecurityController extends AbstractController
 {
    
     if (isset($_SESSION['user'])) {
-        header("Location: /dashboard");
+        $this->redirect(APP_URL . '/dashboard');
         exit();
     }
         header('Cache-Control: no-cache, no-store, must-revalidate');
@@ -107,7 +107,7 @@ class SecurityController extends AbstractController
 
                     if ($userId !== false) {
                         Session::set('success', 'Inscription réussie ! Votre compte principal a été créé.');
-                        $this->redirect('/');
+                        $this->redirect(APP_URL . '/');
                         exit;
                     } else {
                         Session::set('errors', ['general' => 'Erreur lors de l\'inscription. Veuillez réessayer.']);
@@ -168,21 +168,26 @@ class SecurityController extends AbstractController
 
     public function edit()
     {
-        $this->redirect('/');
+        //$this->redirect('/');
     }
 
     public function show()
     {
-        $this->redirect('/');
+        //$this->redirect('/');
     }
      public function store()
     {
     }
 
+    // public function logout()
+    // {
+    //     Session::destroy();
+    //     $this->redirect('/');
+    // }
     public function logout()
     {
         Session::destroy();
-        $this->redirect('/');
+        $this->redirect(APP_URL . '/');
     }
 
     private function redirect(string $url)

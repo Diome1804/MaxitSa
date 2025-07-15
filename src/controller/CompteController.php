@@ -20,16 +20,14 @@ class CompteController extends AbstractController
     {
         // Vérifier si l'utilisateur est connecté
         if (!isset($_SESSION['user'])) {
-            header("Location: /");
+            $this->redirect(APP_URL . '/');
             exit();
         }
 
         $user = $_SESSION['user'];
-        
-        
+
         $transactions = $this->transactionService->getRecentTransactions($user['id'], 10);
-        
-        
+
         $formattedTransactions = [];
         foreach ($transactions as $transaction) {
             $formattedTransactions[] = $this->transactionService->formatTransactionForDisplay($transaction);
@@ -41,6 +39,13 @@ class CompteController extends AbstractController
             'user' => $user,
             'transactions' => $formattedTransactions
         ]);
+    }
+
+    // Ajoute cette méthode si elle n'existe pas déjà
+    private function redirect(string $url)
+    {
+        header("Location: $url");
+        exit;
     }
 
     public function create() {}

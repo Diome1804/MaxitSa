@@ -13,9 +13,7 @@ $routes = [
          'controller' => SecurityController::class, 
          'method' => 'create',
      ],
-
-
-     '/dashboard' => [
+    '/dashboard' => [
          'controller' => CompteController::class,
          'method' => 'index',
          'middlewares' => ['auth']

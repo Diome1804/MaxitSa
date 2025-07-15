@@ -19,7 +19,7 @@
                         <span class="text-gray-700">
                             Bienvenue, <?= htmlspecialchars($user['nom'] ?? 'Utilisateur') ?> <?= htmlspecialchars($user['prenom'] ?? '') ?>
                         </span>
-                        <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                        <a href="<?= APP_URL ?>/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
                             Déconnexion
                         </a>
                     </div>
@@ -101,7 +101,7 @@
                                     </div>
                                 </div>
                                 <!-- Bouton Nouveau compte -->
-                                <a href="/compte/create" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-xs font-semibold ml-4">
+                                <a href="<?= APP_URL ?>/create" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-xs font-semibold ml-4">
                                     Nouveau compte
                                 </a>
                             </div>
@@ -114,7 +114,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold text-gray-800">Historique des Transactions</h2>
                         <!-- Lien voir plus -->
-                        <a href="/transactions" class="text-blue-500 hover:text-blue-700 text-sm font-semibold underline">Voir plus</a>
+                        <a href="<?= APP_URL ?>/transactions" class="text-blue-500 hover:text-blue-700 text-sm font-semibold underline">Voir plus</a>
                     </div>
                     
                     <?php if (!empty($transactions)): ?>
