@@ -3,13 +3,13 @@
 namespace Src\Repository;
 use Src\Entity\User;
 use App\Core\Abstract\AbstractRepository;
-use App\Core\App;
 use Src\Entity\TypeUser;
 use PDO;
 
 class UserRepository extends AbstractRepository
 {
     private static UserRepository|null $instance = null;
+    private string $table = '"user"';
 
     public static function getInstance(): UserRepository
     {
@@ -19,21 +19,19 @@ class UserRepository extends AbstractRepository
         return self::$instance;
     }
 
+
     public function __construct()
     {
         parent::__construct();
-        $this->table = '"user"'; // Nom de votre table
+        $this->table = '"user"';
     }
 
-    /**
-     * Insérer un nouvel utilisateur
-     */
     public function insert(array $userData): int|false
     {
         try {
             $sql = "INSERT INTO {$this->table} (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, telephone, password, type_id) 
                     VALUES (:nom, :prenom, :adresse, :num_carte_identite, :photorecto, :photoverso, :telephone, :password, :type_id)";
-            
+
             $stmt = $this->pdo->prepare($sql); // Utiliser $this->pdo
             $result = $stmt->execute([
                 ':nom' => $userData['nom'],
@@ -53,67 +51,60 @@ class UserRepository extends AbstractRepository
             return false;
 
         } catch (\Exception $e) {
-            error_log("Erreur insert UserRepository: " . $e->getMessage());
             return false;
         }
     }
 
-        public function findByTelephone(string $telephone): ?User
-{
-    error_log("=== RECHERCHE UTILISATEUR ===");
-    error_log("Numéro recherché: '$telephone'");
-    
-    try {
-        $sql = "SELECT u.*, t.type as type_name 
+    public function findByTelephone(string $telephone): ?User
+    {
+
+
+        try {
+            $sql = "SELECT u.*, t.type as type_name 
                 FROM \"user\" u 
                 JOIN typeuser t ON u.type_id = t.id 
                 WHERE u.telephone = :telephone";
-        
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':telephone', $telephone);
-        $stmt->execute();
-        
-        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($userData) {
-            error_log("✅ Utilisateur trouvé: " . $userData['nom']);
-            
-            // Créer TypeUser
-            $typeUser = new TypeUser($userData['type_name']);
-            
-            // Créer User
-            $user = new User(
-                $userData['nom'],
-                $userData['prenom'],
-                $typeUser,
-                $userData['adresse'],
-                $userData['num_carte_identite'],
-                $userData['photorecto'],
-                $userData['photoverso'],
-                $userData['telephone'],
-                $userData['password']
-            );
-            
-            // Définir l'ID
-            if (isset($userData['id'])) {
-                $reflection = new \ReflectionClass($user);
-                $idProperty = $reflection->getProperty('id');
-                $idProperty->setAccessible(true);
-                $idProperty->setValue($user, $userData['id']);
-            }
-            
-            return $user;
-        }
-        
-        error_log("❌ Aucun utilisateur trouvé");
-        return null;
-        
-    } catch (\Exception $e) {
-        error_log("Erreur SQL: " . $e->getMessage());
-        return null;
-    }
-}
 
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':telephone', $telephone);
+            $stmt->execute();
+
+            $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($userData) {
+                // Créer TypeUser
+                $typeUser = new TypeUser($userData['type_name']);
+
+                // Créer User
+                $user = new User(
+                    $userData['nom'],
+                    $userData['prenom'],
+                    $typeUser,
+                    $userData['adresse'],
+                    $userData['num_carte_identite'],
+                    $userData['photorecto'],
+                    $userData['photoverso'],
+                    $userData['telephone'],
+                    $userData['password']
+                );
+
+                // Définir l'ID
+                if (isset($userData['id'])) {
+                    $reflection = new \ReflectionClass($user);
+                    $idProperty = $reflection->getProperty('id');
+                    $idProperty->setAccessible(true);
+                    $idProperty->setValue($user, $userData['id']);
+                }
+
+                return $user;
+            }
+            return null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    
     /**
      * Trouver un utilisateur par ID
      */
@@ -123,7 +114,7 @@ class UserRepository extends AbstractRepository
             $sql = "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1";
             $stmt = $this->pdo->prepare($sql); // Utiliser $this->pdo
             $stmt->execute([':id' => $id]);
-            
+
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result ?: false;
 
@@ -134,23 +125,28 @@ class UserRepository extends AbstractRepository
     }
 
     // Méthodes abstraites obligatoires
-    public function selectAll() {
+    public function selectAll()
+    {
         // Implémentation si nécessaire
     }
 
-    public function update() {
+    public function update()
+    {
         // Implémentation si nécessaire
     }
 
-    public function delete() {
+    public function delete()
+    {
         // Implémentation si nécessaire
     }
 
-    public function selectById() {
+    public function selectById()
+    {
         // Implémentation si nécessaire
     }
 
-    public function selectBy(array $filter) {
+    public function selectBy(array $filter)
+    {
         // Implémentation si nécessaire
     }
 }

@@ -23,8 +23,6 @@ class Database{
                 PDO::ATTR_EMULATE_PREPARES => false
               ]
               );
-
-             
         }catch(PDOException $e){
             die("Erreur de connexion à la base de données : " . $e->getMessage());
         }

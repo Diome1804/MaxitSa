@@ -3,7 +3,7 @@
 namespace App\Core;
 
 use App\Core\Middlewares\Auth;
-use App\Core\Middlewares\Guest;
+//use App\Core\Middlewares\Guest;
 
 class Router
 {

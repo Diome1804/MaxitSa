@@ -34,6 +34,8 @@ abstract class AbstractController extends Session{
                 require_once '../templates/' . $view;
             }
 
+             
+
 
     // public function render(string $views, array $data = []){
     //     extract($data);

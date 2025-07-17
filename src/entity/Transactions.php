@@ -38,9 +38,10 @@ class Transactions extends AbstractEntity
             'montant' => $this->montant,
             'description' => $this->description,
             'date_transaction' => $this->dateTransaction,
-            'statut' => $this->statut,
-            'compte_destinataire' => $this->compteDestinataire
+            'statut' => $this->statut
         ];
     }
+
+
     public function toObject(): object{}
 }

@@ -33,7 +33,11 @@ class User extends AbstractEntity
 
     // Getters
     public function getComptes(): array { return $this->comptes; }
-    public function addCompte(Compte $compte): void { $this->comptes[] = $compte; }
+
+    public function addCompte(Compte $compte): void {
+         $this->comptes[] = $compte;
+         }
+
     public function getType(): TypeUser { return $this->type; }
     public function setType(TypeUser $type): void { $this->type = $type; }
     public function getId(): int { return $this->id; }
@@ -48,9 +52,8 @@ class User extends AbstractEntity
 
     public static function toObject(array $tableau): static
     {
-        // Il faut d'abord créer l'objet TypeUser
-        $typeUser = new TypeUser($tableau['type'] ?? 'client');
         
+        $typeUser = new TypeUser($tableau['type'] ?? 'client');
         $user = new static(
             $tableau['nom'] ?? '',
             $tableau['prenom'] ?? '',
@@ -63,7 +66,7 @@ class User extends AbstractEntity
             $tableau['password'] ?? ''
         );
 
-        // Définir l'ID via réflexion
+        
         if (isset($tableau['id'])) {
             $reflection = new \ReflectionClass($user);
             $idProperty = $reflection->getProperty('id');
@@ -74,7 +77,7 @@ class User extends AbstractEntity
         return $user;
     }
 
-    // ✅ CORRECTION: Enlever le paramètre pour correspondre à AbstractEntity
+    
     public function toArray(): array
     {
         return [
@@ -87,7 +90,7 @@ class User extends AbstractEntity
             'photoverso' => $this->photoverso,
             'telephone' => $this->telephone,
             'password' => $this->password,
-            'type' => $this->type->getType(), // ✅ Récupérer juste le string du type
+            'type' => $this->type->getType(),
             'comptes' => $this->comptes
         ];
     }

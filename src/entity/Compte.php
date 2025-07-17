@@ -7,15 +7,17 @@ class Compte extends AbstractEntity
 {
     private int $id;
     private string $numCompte;
+    private date $dateCreation;
     private int $num_telephone;
     private float $solde;
     private string $type; // ComptePrincipal | CompteSecondaire
     private User $user;
     private array $transactions = [];
 
-    public function __construct(string $numCompte, float $solde, string $type, User $user)
+    public function __construct(string $numCompte, float $solde, string $type, User $user,)
     {
         $this->numCompte = $numCompte;
+        $this->dateCreation = date('Y-m-d');
         $this->solde = $solde;
         $this->type = $type;
         $this->user = $user;

@@ -2,7 +2,6 @@
 
 namespace Src\Repository;
 
-use Src\Entity\Transaction;
 use App\Core\Abstract\AbstractRepository;
 use PDO;
 

@@ -71,7 +71,7 @@
                                             Solde Total
                                         </dt>
                                         <dd class="text-lg font-medium text-gray-900">
-                                            0 FCFA
+                                            <?= number_format($solde ?? 0, 0, ',', ' ') ?> FCFA
                                         </dd>
                                     </dl>
                                 </div>
