@@ -17,7 +17,6 @@ class CompteController extends AbstractController
         parent::__construct();
         $this->transactionService = App::getDependency('services', 'transactionServ');
         $this->compteService = App::getDependency('services', 'compteServ');
-
     }
 
     public function index() 
@@ -29,6 +28,7 @@ class CompteController extends AbstractController
         }
 
         $user = $_SESSION['user'];
+
         $solde = $this->compteService->getSoldePrincipalByUserId($user['id']);
 
         $transactions = $this->transactionService->getRecentTransactions($user['id'], 10);
@@ -38,8 +38,6 @@ class CompteController extends AbstractController
             $formattedTransactions[] = $this->transactionService->formatTransactionForDisplay($transaction);
         }
 
-        error_log("Transactions trouvées: " . count($formattedTransactions));
-        
         $this->render('dashboard/dashboard.html.php', [
             'user' => $user,
             'transactions' => $formattedTransactions,

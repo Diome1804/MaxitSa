@@ -23,7 +23,6 @@ class CompteService{
 
     public function getSoldePrincipalByUserId(int $userId): float
     {
-        // Ici tu peux ajouter de la logique métier si besoin
         return $this->compteRepository->getSoldeByUserId($userId);
     }
 
