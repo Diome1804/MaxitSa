@@ -22,30 +22,25 @@ class CompteRepository extends AbstractRepository{
     }
 
      public function selectAll(){}
-   
+
+    
+     // Méthode pour récupérer le solde principal d'un utilisateur par son ID
     public function getSoldeByUserId(int $userId): float
     {
         try {
-            $sql = "SELECT solde FROM compte WHERE user_id = :user_id LIMIT 1";
+            $sql = "SELECT solde FROM $this->table WHERE user_id = :user_id LIMIT 1";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([':user_id' => $userId]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result ? (float) $result['solde'] : 0.0;
         } catch (\Exception $e) {
-            error_log("Erreur getSoldeByUserId: " . $e->getMessage());
-            return 0.0;
+                return 0.0;
         }
     }
 
 
 
-    public function insert(array $data): bool {
-    $query = "INSERT INTO compte (num_compte,solde,user_id,type,num_telephone) 
-              VALUES (:num_compte, :solde, :user_id, :type, :num_telephone)";
-    $stmt = $this->pdo->prepare($query);
-    return $stmt->execute($data);
-    }
-
+     public function insert(array $data){}
      public function update(){}
      public function delete(){}
      public function selectById(){}

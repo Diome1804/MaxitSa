@@ -71,7 +71,7 @@ INSERT INTO typeuser (type) VALUES
 INSERT INTO "user" (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, telephone, password, type_id) VALUES
 ('Diop', 'Fatou', 'Dakar', '1234567890', 'photo1recto.png', 'photo1verso.png', '771234567', 'pass123', 1),
 ('Ndoye', 'Amadou', 'Thies', '9876543210', 'photo2recto.png', 'photo2verso.png', '776543210', 'pass456', 2);
-select * from compte ;
+
 -- 8. Insertion de comptes
 INSERT INTO compte (num_compte, solde, user_id, type, num_telephone) VALUES
 ('CPT1001', 500000.00, 1, 'ComptePrincipal'),
