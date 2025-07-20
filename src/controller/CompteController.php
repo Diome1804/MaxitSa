@@ -8,6 +8,7 @@ use Src\Service\TransactionService;
 use App\Core\App;
 use App\Core\Session;
 use App\Core\Validator;
+use App\Core\Lang;
 
 class CompteController extends AbstractController
 {
@@ -19,6 +20,9 @@ class CompteController extends AbstractController
         parent::__construct();
         $this->transactionService = App::getDependency('services', 'transactionServ');
         $this->compteService = App::getDependency('services', 'compteServ');
+        
+        // Détecter et configurer la langue
+        Lang::detectLang();
     }
 
     public function index()
@@ -79,8 +83,8 @@ class CompteController extends AbstractController
             'telephone' => $telephone,
             'solde' => $solde
         ], [
-            'telephone' => ['required', ['isSenegalPhone', 'Numéro de téléphone invalide']],
-            'solde' => ['required']
+            'telephone' => ['required', ['isSenegalPhone', Lang::get('validation.phone_invalid')]],
+            'solde' => ['required', Lang::get('validation.required')]
         ]);
 
         if (!$isValid) {
@@ -93,7 +97,7 @@ class CompteController extends AbstractController
 
         $soldeFloat = (float) $solde;
         if ($soldeFloat <= 0) {
-            Session::set('error', 'Le solde initial doit être supérieur à 0');
+            Session::set('error', Lang::get('account.balance_initial_positive'));
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
@@ -133,14 +137,14 @@ class CompteController extends AbstractController
         ]);
 
         if (!$isValid) {
-            Session::set('error', 'ID de compte manquant');
+            Session::set('error', Lang::get('account.id_required'));
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
 
         $compteIdInt = (int) $compteId;
         if ($compteIdInt <= 0) {
-            Session::set('error', 'ID de compte invalide');
+            Session::set('error', Lang::get('account.id_invalid'));
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
@@ -204,7 +208,7 @@ class CompteController extends AbstractController
         // Validation cohérence des dates
         if (isset($filters['date_debut']) && isset($filters['date_fin'])) {
             if (strtotime($filters['date_debut']) > strtotime($filters['date_fin'])) {
-                Session::set('error', 'La date de début doit être antérieure à la date de fin');
+                Session::set('error', Lang::get('transaction.date_range_invalid'));
                 $this->redirect(APP_URL . '/transactions');
                 exit();
             }
@@ -236,6 +240,23 @@ class CompteController extends AbstractController
     {
         $d = \DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') === $date;
+    }
+
+    /**
+     * Changer la langue de l'application
+     */
+    public function changeLang()
+    {
+        $lang = $_GET['lang'] ?? 'fr';
+        
+        if (in_array($lang, ['fr', 'en'])) {
+            Session::set('lang', $lang);
+            Lang::setLang($lang);
+        }
+        
+        // Rediriger vers la page précédente ou dashboard
+        $redirect = $_GET['redirect'] ?? '/dashboard';
+        $this->redirect(APP_URL . $redirect);
     }
 
        public function create()

@@ -36,6 +36,10 @@ $routes = [
          'method' => 'transactions',
          'middlewares' => ['auth']
      ],
+     "/change-lang" => [
+         'controller' => CompteController::class,
+         'method' => 'changeLang'
+     ],
     "/logout" => [
          'controller' => SecurityController::class, 
          'method' => 'logout'

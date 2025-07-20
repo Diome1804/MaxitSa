@@ -7,6 +7,7 @@ core:
   validator: App\Core\Validator
   router: App\Core\Router
   FileUpload: App\Core\FileUpload
+  lang: App\Core\Lang
 
 abstract:
   abstractRepo: App\Core\Abstract\AbstractRepository

@@ -19,6 +19,19 @@
                         <span class="text-gray-700">
                             Bienvenue, <?= htmlspecialchars($user['nom'] ?? 'Utilisateur') ?> <?= htmlspecialchars($user['prenom'] ?? '') ?>
                         </span>
+                        
+                        <!-- Sélecteur de langue -->
+                        <div class="flex items-center space-x-2">
+                            <a href="<?= APP_URL ?>/change-lang?lang=fr&redirect=/dashboard" 
+                               class="<?= App\Core\Lang::getCurrentLang() === 'fr' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' ?> px-2 py-1 rounded text-sm">
+                                FR
+                            </a>
+                            <a href="<?= APP_URL ?>/change-lang?lang=en&redirect=/dashboard" 
+                               class="<?= App\Core\Lang::getCurrentLang() === 'en' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' ?> px-2 py-1 rounded text-sm">
+                                EN
+                            </a>
+                        </div>
+                        
                         <a href="<?= APP_URL ?>/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
                             Déconnexion
                         </a>
