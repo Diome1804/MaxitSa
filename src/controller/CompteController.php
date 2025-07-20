@@ -20,7 +20,7 @@ class CompteController extends AbstractController
         parent::__construct();
         $this->transactionService = App::getDependency('services', 'transactionServ');
         $this->compteService = App::getDependency('services', 'compteServ');
-        
+
         // Détecter et configurer la langue
         Lang::detectLang();
     }
@@ -47,7 +47,7 @@ class CompteController extends AbstractController
         ]);
     }
 
- 
+
 
     private function redirect(string $url)
     {
@@ -55,7 +55,7 @@ class CompteController extends AbstractController
         exit;
     }
 
- 
+
 
     public function createCompteSecondaire()
     {
@@ -164,61 +164,16 @@ class CompteController extends AbstractController
 
         $userId = Session::get('user')['id'];
         $user = Session::get('user');
-        
-        // Récupération et validation des filtres
-        $filters = [];
-        $filterData = [
-            'type' => $_GET['type'] ?? '',
-            'date_debut' => $_GET['date_debut'] ?? '',
-            'date_fin' => $_GET['date_fin'] ?? ''
-        ];
 
-        // Validation des filtres optionnels
-        if (!empty($filterData['type'])) {
-            $validator = Validator::getInstance();
-            $isValidType = $validator->validate([
-                'type' => $filterData['type']
-            ], [
-                'type' => ['required']
-            ]);
-            
-            if ($isValidType) {
-                $filters['type'] = $filterData['type'];
-            }
-        }
+        $filterData = $this->getFilterData();
+        $filters = $this->validateFilters($filterData);
+        $this->validateDateCoherence($filters);
 
-        // Validation des dates si présentes
-        if (!empty($filterData['date_debut'])) {
-            if ($this->isValidDate($filterData['date_debut'])) {
-                $filters['date_debut'] = $filterData['date_debut'];
-            }
-        }
-
-        if (!empty($filterData['date_fin'])) {
-            if ($this->isValidDate($filterData['date_fin'])) {
-                $filters['date_fin'] = $filterData['date_fin'];
-            }
-        }
-
-        // Validation cohérence des dates
-        if (isset($filters['date_debut']) && isset($filters['date_fin'])) {
-            if (strtotime($filters['date_debut']) > strtotime($filters['date_fin'])) {
-                Session::set('error', Lang::get('transaction.date_range_invalid'));
-                $this->redirect(APP_URL . '/transactions');
-                exit();
-            }
-        }
-        
-        // Pagination avec validation
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = 10;
-        
-        // Récupération des transactions avec filtres
         $result = $this->transactionService->getTransactionsWithFilters($userId, $filters, $page, $perPage);
-        
-        // Types de transactions disponibles
         $transactionTypes = $this->transactionService->getTransactionTypes();
-        
+
         $this->render('transactions/transactions.html.php', [
             'user' => $user,
             'transactions' => $result['transactions'],
@@ -228,13 +183,96 @@ class CompteController extends AbstractController
         ]);
     }
 
+
+
     /**
-     * Valide si une chaîne est une date valide au format Y-m-d
+     * Récupérer les données de filtres depuis les paramètres GET
      */
-    private function isValidDate(string $date): bool
+    private function getFilterData(): array
     {
-        $d = \DateTime::createFromFormat('Y-m-d', $date);
-        return $d && $d->format('Y-m-d') === $date;
+        return [
+            'type' => $_GET['type'] ?? '',
+            'date_debut' => $_GET['date_debut'] ?? '',
+            'date_fin' => $_GET['date_fin'] ?? ''
+        ];
+    }
+
+    /**
+     * Valider les filtres et retourner les filtres valides
+     */
+    private function validateFilters(array $filterData): array
+    {
+        $filters = [];
+        
+        // Validation du filtre type
+        if (!empty($filterData['type'])) {
+            $filters = array_merge($filters, $this->validateTypeFilter($filterData['type']));
+        }
+        
+        // Validation des filtres de dates
+        if (!empty($filterData['date_debut']) || !empty($filterData['date_fin'])) {
+            $filters = array_merge($filters, $this->validateDateFilters($filterData));
+        }
+        
+        return $filters;
+    }
+
+    /**
+     * Valider le filtre de type
+     */
+    private function validateTypeFilter(string $type): array
+    {
+        $validator = Validator::getInstance();
+        $isValidType = $validator->validate(['type' => $type], ['type' => ['required']]);
+        
+        return $isValidType ? ['type' => $type] : [];
+    }
+
+    /**
+     * Valider les filtres de dates
+     */
+    private function validateDateFilters(array $filterData): array
+    {
+        $validator = Validator::getInstance();
+        $dateValidation = [];
+        $dateRules = [];
+        
+        if (!empty($filterData['date_debut'])) {
+            $dateValidation['date_debut'] = $filterData['date_debut'];
+            $dateRules['date_debut'] = ['date'];
+        }
+        
+        if (!empty($filterData['date_fin'])) {
+            $dateValidation['date_fin'] = $filterData['date_fin'];
+            $dateRules['date_fin'] = ['date'];
+        }
+        
+        if ($validator->validate($dateValidation, $dateRules)) {
+            $validDates = [];
+            if (!empty($filterData['date_debut'])) {
+                $validDates['date_debut'] = $filterData['date_debut'];
+            }
+            if (!empty($filterData['date_fin'])) {
+                $validDates['date_fin'] = $filterData['date_fin'];
+            }
+            return $validDates;
+        }
+        
+        return [];
+    }
+
+    /**
+     * Valider la cohérence des dates (début <= fin)
+     */
+    private function validateDateCoherence(array $filters): void
+    {
+        if (isset($filters['date_debut']) && isset($filters['date_fin'])) {
+            if (strtotime($filters['date_debut']) > strtotime($filters['date_fin'])) {
+                Session::set('error', Lang::get('transaction.date_range_invalid'));
+                $this->redirect(APP_URL . '/transactions');
+                exit();
+            }
+        }
     }
 
     /**
@@ -243,18 +281,18 @@ class CompteController extends AbstractController
     public function changeLang()
     {
         $lang = $_GET['lang'] ?? 'fr';
-        
+
         if (in_array($lang, ['fr', 'en'])) {
             Session::set('lang', $lang);
             Lang::setLang($lang);
         }
-        
+
         // Rediriger vers la page précédente ou dashboard
         $redirect = $_GET['redirect'] ?? '/dashboard';
         $this->redirect(APP_URL . $redirect);
     }
 
-       public function create()
+    public function create()
     {
     }
     public function store()
