@@ -44,6 +44,71 @@ class TransactionService
         }
     }
 
+    public function getTransactionsWithPagination(int $userId, int $page = 1, int $perPage = 10): array
+    {
+        try {
+            $result = $this->transactionRepository->findTransactionsWithPagination($userId, $page, $perPage);
+            
+            // Formater les transactions pour l'affichage
+            $formattedTransactions = [];
+            foreach ($result['transactions'] as $transaction) {
+                $formattedTransactions[] = $this->formatTransactionForDisplay($transaction);
+            }
+            
+            return [
+                'transactions' => $formattedTransactions,
+                'pagination' => $result['pagination']
+            ];
+        } catch (\Exception $e) {
+            return [
+                'transactions' => [],
+                'pagination' => [
+                    'current_page' => 1,
+                    'per_page' => $perPage,
+                    'total' => 0,
+                    'total_pages' => 0,
+                    'has_next' => false,
+                    'has_prev' => false
+                ]
+            ];
+        }
+    }
+
+    public function getTransactionsWithFilters(int $userId, array $filters = [], int $page = 1, int $perPage = 10): array
+    {
+        try {
+            $result = $this->transactionRepository->findTransactionsWithFilters($userId, $filters, $page, $perPage);
+            
+            // Formater les transactions pour l'affichage
+            $formattedTransactions = [];
+            foreach ($result['transactions'] as $transaction) {
+                $formattedTransactions[] = $this->formatTransactionForDisplay($transaction);
+            }
+            
+            return [
+                'transactions' => $formattedTransactions,
+                'pagination' => $result['pagination']
+            ];
+        } catch (\Exception $e) {
+            return [
+                'transactions' => [],
+                'pagination' => [
+                    'current_page' => 1,
+                    'per_page' => $perPage,
+                    'total' => 0,
+                    'total_pages' => 0,
+                    'has_next' => false,
+                    'has_prev' => false
+                ]
+            ];
+        }
+    }
+
+    public function getTransactionTypes(): array
+    {
+        return $this->transactionRepository->getTransactionTypes();
+    }
+
     public function formatTransactionForDisplay(array $transaction): array
     {
         return [

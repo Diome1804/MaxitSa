@@ -28,7 +28,7 @@ class CompteRepository extends AbstractRepository{
     public function getSoldeByUserId(int $userId): float
     {
         try {
-            $sql = "SELECT solde FROM $this->table WHERE user_id = :user_id LIMIT 1";
+            $sql = "SELECT solde FROM $this->table WHERE user_id = :user_id AND type = 'ComptePrincipal' LIMIT 1";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([':user_id' => $userId]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -38,9 +38,83 @@ class CompteRepository extends AbstractRepository{
         }
     }
 
+  
+
+  
 
 
-     public function insert(array $data){}
+ 
+
+     public function insert(array $data)
+     {
+         try {
+             $sql = "INSERT INTO $this->table (user_id, num_compte, solde, type, num_telephone) VALUES (:user_id, :num_compte, :solde, :type, :num_telephone)";
+             $stmt = $this->pdo->prepare($sql);
+             return $stmt->execute([
+                 ':user_id' => $data['user_id'],
+                 ':num_compte' => $data['num_compte'],
+                 ':solde' => $data['solde'],
+                 ':type' => $data['type'],
+                 ':num_telephone' => $data['num_telephone']
+             ]);
+         } catch (\Exception $e) {
+             return false;
+         }
+     }
+
+     public function updateSolde(int $userId, float $nouveauSolde): bool
+     {
+         try {
+             $sql = "UPDATE $this->table SET solde = :solde WHERE user_id = :user_id AND type = 'ComptePrincipal'";
+             $stmt = $this->pdo->prepare($sql);
+             return $stmt->execute([
+                 ':solde' => $nouveauSolde,
+                 ':user_id' => $userId
+             ]);
+         } catch (\Exception $e) {
+             return false;
+         }
+     }
+
+     public function getComptesByUserId(int $userId): array
+     {
+         try {
+             $sql = "SELECT id, user_id, num_compte, solde, type, num_telephone FROM $this->table WHERE user_id = :user_id ORDER BY type DESC";
+             $stmt = $this->pdo->prepare($sql);
+             $stmt->execute([':user_id' => $userId]);
+             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+         } catch (\Exception $e) {
+             return [];
+         }
+     }
+
+     public function changeTypeCompte(int $compteId, string $nouveauType): bool
+     {
+         try {
+             $sql = "UPDATE $this->table SET type = :type WHERE id = :id";
+             $stmt = $this->pdo->prepare($sql);
+             return $stmt->execute([
+                 ':type' => $nouveauType,
+                 ':id' => $compteId
+             ]);
+         } catch (\Exception $e) {
+             return false;
+         }
+     }
+
+     public function getCompteById(int $compteId): ?array
+     {
+         try {
+             $sql = "SELECT * FROM $this->table WHERE id = :id";
+             $stmt = $this->pdo->prepare($sql);
+             $stmt->execute([':id' => $compteId]);
+             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+             return $result ?: null;
+         } catch (\Exception $e) {
+             return null;
+         }
+     }
+
      public function update(){}
      public function delete(){}
      public function selectById(){}

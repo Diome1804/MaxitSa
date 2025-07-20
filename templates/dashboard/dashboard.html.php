@@ -31,6 +31,21 @@
         <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="px-4 py-6 sm:px-0">
                 
+                <!-- Messages de succès/erreur -->
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                        <?= htmlspecialchars($_SESSION['success']) ?>
+                    </div>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <?= htmlspecialchars($_SESSION['error']) ?>
+                    </div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
+                
                 <!-- Stats Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 overflow-visible">
                     <!-- Card Transactions -->
@@ -108,15 +123,30 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
                                         </svg>
                                     </button>
-                                    <div id="dropdownCompteList" class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg z-[9999] hidden">
+                                    <div id="dropdownCompteList" class="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded shadow-lg z-[9999] hidden">
                                         <div class="py-2">
                                             <?php if (!empty($comptes)): ?>
                                                 <?php foreach ($comptes as $compte): ?>
-                                                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between">
-                                                        <span><?= htmlspecialchars($compte['numero']) ?></span>
-                                                        <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold <?= $compte['type'] === 'principale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' ?>">
-                                                            <?= ucfirst($compte['type']) ?>
-                                                        </span>
+                                                    <div class="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100 last:border-b-0">
+                                                        <div class="flex justify-between items-center">
+                                                            <div class="flex flex-col">
+                                                                <span class="font-semibold text-gray-900"><?= htmlspecialchars($compte['num_compte'] ?? 'N/A') ?></span>
+                                                                <span class="text-xs text-gray-500">Solde: <?= number_format($compte['solde'] ?? 0, 0, ',', ' ') ?> FCFA</span>
+                                                            </div>
+                                                            <div class="flex items-center space-x-2">
+                                                                <span class="px-2 py-1 rounded-full text-xs font-semibold <?= ($compte['type'] ?? '') === 'ComptePrincipal' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' ?>">
+                                                                    <?= ($compte['type'] ?? '') === 'ComptePrincipal' ? 'Principal' : 'Secondaire' ?>
+                                                                </span>
+                                                                <?php if (($compte['type'] ?? '') === 'CompteSecondaire'): ?>
+                                                                    <form method="POST" action="<?= APP_URL ?>/changer-principal" class="inline">
+                                                                        <input type="hidden" name="compte_id" value="<?= $compte['id'] ?>">
+                                                                        <button type="submit" class="text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded" onclick="return confirm('Êtes-vous sûr de vouloir faire de ce compte votre compte principal ?')">
+                                                                            Définir comme principal
+                                                                        </button>
+                                                                    </form>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 <?php endforeach; ?>
                                             <?php else: ?>
@@ -176,6 +206,61 @@
                     <?php else: ?>
                         <p class="text-gray-500 text-center py-8">Aucune transaction à afficher</p>
                     <?php endif; ?>
+
+                    <!-- Pagination -->
+                    <?php if (isset($pagination) && $pagination['total_pages'] > 1): ?>
+                        <div class="flex justify-center items-center mt-6 space-x-2">
+                            <!-- Bouton Précédent -->
+                            <?php if ($pagination['has_prev']): ?>
+                                <a href="<?= APP_URL ?>/dashboard?page=<?= $pagination['current_page'] - 1 ?>" 
+                                   class="px-3 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors">
+                                    &laquo; Précédent
+                                </a>
+                            <?php else: ?>
+                                <span class="px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-md cursor-not-allowed">
+                                    &laquo; Précédent
+                                </span>
+                            <?php endif; ?>
+
+                            <!-- Numéros de pages -->
+                            <?php 
+                            $start = max(1, $pagination['current_page'] - 2);
+                            $end = min($pagination['total_pages'], $pagination['current_page'] + 2);
+                            ?>
+                            
+                            <?php for ($i = $start; $i <= $end; $i++): ?>
+                                <?php if ($i == $pagination['current_page']): ?>
+                                    <span class="px-3 py-2 text-sm bg-blue-500 text-white rounded-md">
+                                        <?= $i ?>
+                                    </span>
+                                <?php else: ?>
+                                    <a href="<?= APP_URL ?>/dashboard?page=<?= $i ?>" 
+                                       class="px-3 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors">
+                                        <?= $i ?>
+                                    </a>
+                                <?php endif; ?>
+                            <?php endfor; ?>
+
+                            <!-- Bouton Suivant -->
+                            <?php if ($pagination['has_next']): ?>
+                                <a href="<?= APP_URL ?>/dashboard?page=<?= $pagination['current_page'] + 1 ?>" 
+                                   class="px-3 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors">
+                                    Suivant &raquo;
+                                </a>
+                            <?php else: ?>
+                                <span class="px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-md cursor-not-allowed">
+                                    Suivant &raquo;
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Informations sur la pagination -->
+                        <div class="text-center mt-3 text-sm text-gray-600">
+                            Affichage de <?= ($pagination['current_page'] - 1) * $pagination['per_page'] + 1 ?> à 
+                            <?= min($pagination['current_page'] * $pagination['per_page'], $pagination['total']) ?> 
+                            sur <?= $pagination['total'] ?> transactions
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </main>
@@ -185,7 +270,7 @@
     <div id="compteModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
             <h3 class="text-lg font-semibold mb-4 text-gray-800">Créer un compte secondaire</h3>
-            <form id="formNouveauCompte" method="POST" action="<?= APP_URL ?>/create">
+            <form id="formNouveauCompte" method="POST" action="/create">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm mb-2">Numéro téléphone</label>
                     <input type="text" name="telephone" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Numéro téléphone">

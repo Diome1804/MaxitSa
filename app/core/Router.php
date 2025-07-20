@@ -24,8 +24,9 @@ class Router
         }
 
         $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
-        // ✅ CORRIGÉ : trim avec '/' au lieu de ''
-        $currentUri = rtrim($requestUri, '/') ?: '/';
+        // Extraire seulement le path sans les paramètres GET
+        $parsedUri = parse_url($requestUri);
+        $currentUri = rtrim($parsedUri['path'] ?? '/', '/') ?: '/';
         
         error_log("=== ROUTER ===");
         error_log("URI: '$currentUri'");

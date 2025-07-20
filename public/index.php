@@ -8,3 +8,7 @@ use App\Core\Router;
 
 
 Router::resolve($routes);
+
+
+// var_dump($result);
+// die();

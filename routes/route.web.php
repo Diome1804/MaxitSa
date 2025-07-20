@@ -23,9 +23,18 @@ $routes = [
          'controller' => SecurityController::class, 
          'method' => 'index' 
      ],
-     "/principalCreated" => [
+     "/create" => [
          'controller' => CompteController::class,
-         'method' => 'createComptePrincipal'
+         'method' => 'createCompteSecondaire'
+     ],
+     "/changer-principal" => [
+         'controller' => CompteController::class,
+         'method' => 'changerPrincipal'
+     ],
+     "/transactions" => [
+         'controller' => CompteController::class,
+         'method' => 'transactions',
+         'middlewares' => ['auth']
      ],
     "/logout" => [
          'controller' => SecurityController::class, 

@@ -84,7 +84,7 @@ class Compte extends AbstractEntity
 }
 
 
-    public function toArray(object $object): array
+    public function toArray(): array
     {
         return [
             'id' => $this->id,
