@@ -4,14 +4,11 @@ namespace Src\Controller;
 
 use App\Core\Abstract\AbstractController;
 use Src\Service\SecurityService;
-use Src\Entity\User;
-use Src\Repository\UsersRepository;
 use Src\Repository\CompteRepository;
 use App\Core\FileUpload;
 use App\Core\Validator;
 use App\Core\Session;
 use App\Core\App;
-use Src\Controller\CompteController;
 
 class SecurityController extends AbstractController
 {

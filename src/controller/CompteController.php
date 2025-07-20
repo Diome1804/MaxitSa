@@ -6,6 +6,8 @@ use App\Core\Abstract\AbstractController;
 use Src\Service\CompteService;
 use Src\Service\TransactionService;
 use App\Core\App;
+use App\Core\Session;
+use App\Core\Validator;
 
 class CompteController extends AbstractController
 {
@@ -21,13 +23,12 @@ class CompteController extends AbstractController
 
     public function index()
     {
-
-        if (!isset($_SESSION['user'])) {
+        if (!Session::isset('user')) {
             $this->redirect(APP_URL . '/');
             exit();
         }
 
-        $user = $_SESSION['user'];
+        $user = Session::get('user');
 
         $solde = $this->compteService->getSolde($user['id']);
         $comptes = $this->compteService->getComptesByUserId($user['id']);
@@ -54,22 +55,11 @@ class CompteController extends AbstractController
         exit;
     }
 
-    public function create()
-    {
-    }
-    public function store()
-    {
-    }
-    public function show()
-    {
-    }
-    public function edit()
-    {
-    }
+ 
 
     public function createCompteSecondaire()
     {
-        if (!isset($_SESSION['user'])) {
+        if (!Session::isset('user')) {
             $this->redirect(APP_URL . '/');
             exit();
         }
@@ -79,22 +69,41 @@ class CompteController extends AbstractController
             exit();
         }
 
-        $userId = $_SESSION['user']['id'];
+        $userId = Session::get('user')['id'];
         $telephone = $_POST['telephone'] ?? '';
-        $solde = (float) ($_POST['solde'] ?? 0);
+        $solde = $_POST['solde'] ?? '';
 
-        if (empty($telephone) || $solde <= 0) {
-            $_SESSION['error'] = 'Veuillez remplir tous les champs correctement';
+        // Validation avec votre classe Validator
+        $validator = Validator::getInstance();
+        $isValid = $validator->validate([
+            'telephone' => $telephone,
+            'solde' => $solde
+        ], [
+            'telephone' => ['required', ['isSenegalPhone', 'Numéro de téléphone invalide']],
+            'solde' => ['required']
+        ]);
+
+        if (!$isValid) {
+            $errors = Validator::getErrors();
+            $errorMessages = implode(', ', $errors);
+            Session::set('error', $errorMessages);
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
 
-        $result = $this->compteService->createCompteSecondaire($userId, $telephone, $solde);
+        $soldeFloat = (float) $solde;
+        if ($soldeFloat <= 0) {
+            Session::set('error', 'Le solde initial doit être supérieur à 0');
+            $this->redirect(APP_URL . '/dashboard');
+            exit();
+        }
+
+        $result = $this->compteService->createCompteSecondaire($userId, $telephone, $soldeFloat);
 
         if ($result['success']) {
-            $_SESSION['success'] = $result['message'];
+            Session::set('success', $result['message']);
         } else {
-            $_SESSION['error'] = $result['message'];
+            Session::set('error', $result['message']);
         }
 
         $this->redirect(APP_URL . '/dashboard');
@@ -102,7 +111,7 @@ class CompteController extends AbstractController
 
     public function changerPrincipal()
     {
-        if (!isset($_SESSION['user'])) {
+        if (!Session::isset('user')) {
             $this->redirect(APP_URL . '/');
             exit();
         }
@@ -112,21 +121,36 @@ class CompteController extends AbstractController
             exit();
         }
 
-        $userId = $_SESSION['user']['id'];
-        $compteId = (int) ($_POST['compte_id'] ?? 0);
+        $userId = Session::get('user')['id'];
+        $compteId = $_POST['compte_id'] ?? '';
 
-        if ($compteId <= 0) {
-            $_SESSION['error'] = 'ID de compte invalide';
+        // Validation avec votre classe Validator
+        $validator = Validator::getInstance();
+        $isValid = $validator->validate([
+            'compte_id' => $compteId
+        ], [
+            'compte_id' => ['required']
+        ]);
+
+        if (!$isValid) {
+            Session::set('error', 'ID de compte manquant');
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
 
-        $result = $this->compteService->changerComptePrincipal($userId, $compteId);
+        $compteIdInt = (int) $compteId;
+        if ($compteIdInt <= 0) {
+            Session::set('error', 'ID de compte invalide');
+            $this->redirect(APP_URL . '/dashboard');
+            exit();
+        }
+
+        $result = $this->compteService->changerComptePrincipal($userId, $compteIdInt);
 
         if ($result['success']) {
-            $_SESSION['success'] = $result['message'];
+            Session::set('success', $result['message']);
         } else {
-            $_SESSION['error'] = $result['message'];
+            Session::set('error', $result['message']);
         }
 
         $this->redirect(APP_URL . '/dashboard');
@@ -134,28 +158,60 @@ class CompteController extends AbstractController
 
     public function transactions()
     {
-        if (!isset($_SESSION['user'])) {
+        if (!Session::isset('user')) {
             $this->redirect(APP_URL . '/');
             exit();
         }
 
-        $userId = $_SESSION['user']['id'];
-        $user = $_SESSION['user'];
+        $userId = Session::get('user')['id'];
+        $user = Session::get('user');
         
-        // Récupération des filtres
+        // Récupération et validation des filtres
         $filters = [];
-        if (!empty($_GET['type'])) {
-            $filters['type'] = $_GET['type'];
+        $filterData = [
+            'type' => $_GET['type'] ?? '',
+            'date_debut' => $_GET['date_debut'] ?? '',
+            'date_fin' => $_GET['date_fin'] ?? ''
+        ];
+
+        // Validation des filtres optionnels
+        if (!empty($filterData['type'])) {
+            $validator = Validator::getInstance();
+            $isValidType = $validator->validate([
+                'type' => $filterData['type']
+            ], [
+                'type' => ['required']
+            ]);
+            
+            if ($isValidType) {
+                $filters['type'] = $filterData['type'];
+            }
         }
-        if (!empty($_GET['date_debut'])) {
-            $filters['date_debut'] = $_GET['date_debut'];
+
+        // Validation des dates si présentes
+        if (!empty($filterData['date_debut'])) {
+            if ($this->isValidDate($filterData['date_debut'])) {
+                $filters['date_debut'] = $filterData['date_debut'];
+            }
         }
-        if (!empty($_GET['date_fin'])) {
-            $filters['date_fin'] = $_GET['date_fin'];
+
+        if (!empty($filterData['date_fin'])) {
+            if ($this->isValidDate($filterData['date_fin'])) {
+                $filters['date_fin'] = $filterData['date_fin'];
+            }
+        }
+
+        // Validation cohérence des dates
+        if (isset($filters['date_debut']) && isset($filters['date_fin'])) {
+            if (strtotime($filters['date_debut']) > strtotime($filters['date_fin'])) {
+                Session::set('error', 'La date de début doit être antérieure à la date de fin');
+                $this->redirect(APP_URL . '/transactions');
+                exit();
+            }
         }
         
-        // Pagination
-        $page = (int) ($_GET['page'] ?? 1);
+        // Pagination avec validation
+        $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = 10;
         
         // Récupération des transactions avec filtres
@@ -171,5 +227,27 @@ class CompteController extends AbstractController
             'filters' => $filters,
             'transactionTypes' => $transactionTypes
         ]);
+    }
+
+    /**
+     * Valide si une chaîne est une date valide au format Y-m-d
+     */
+    private function isValidDate(string $date): bool
+    {
+        $d = \DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') === $date;
+    }
+
+       public function create()
+    {
+    }
+    public function store()
+    {
+    }
+    public function show()
+    {
+    }
+    public function edit()
+    {
     }
 }

@@ -1,0 +1,24 @@
+# Configuration des dépendances de l'application
+# Structure: catégorie -> nom_service -> classe
+
+core:
+  database: App\Core\Database
+  session: App\Core\Session
+  validator: App\Core\Validator
+  router: App\Core\Router
+  FileUpload: App\Core\FileUpload
+
+abstract:
+  abstractRepo: App\Core\Abstract\AbstractRepository
+  abstractController: App\Core\Abstract\AbstractController
+  abstractEntity: App\Core\Abstract\AbstractEntity
+
+services:
+  securityServ: Src\Service\SecurityService
+  compteServ: Src\Service\CompteService
+  transactionServ: Src\Service\TransactionService
+
+repository:
+  userRepo: Src\Repository\UserRepository
+  compteRepo: Src\Repository\CompteRepository
+  transactionRepo: Src\Repository\TransactionRepository

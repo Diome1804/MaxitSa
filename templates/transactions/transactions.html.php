@@ -35,18 +35,20 @@
             <div class="px-4 py-6 sm:px-0">
                 
                 <!-- Messages de succès/erreur -->
-                <?php if (isset($_SESSION['success'])): ?>
+                <?php
+                use App\Core\Session;
+                if (Session::isset('success')): ?>
                     <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                        <?= htmlspecialchars($_SESSION['success']) ?>
+                        <?= htmlspecialchars(Session::get('success')) ?>
                     </div>
-                    <?php unset($_SESSION['success']); ?>
+                    <?php Session::unset('success'); ?>
                 <?php endif; ?>
 
-                <?php if (isset($_SESSION['error'])): ?>
+                <?php if (Session::isset('error')): ?>
                     <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        <?= htmlspecialchars($_SESSION['error']) ?>
+                        <?= htmlspecialchars(Session::get('error')) ?>
                     </div>
-                    <?php unset($_SESSION['error']); ?>
+                    <?php Session::unset('error'); ?>
                 <?php endif; ?>
 
                 <!-- Filtres -->

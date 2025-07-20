@@ -2,21 +2,7 @@
 
 namespace App\Core;
 
-use App\Core\Abstract\AbstractController;
-use App\Core\Abstract\AbstractRepository;
-use App\Core\Abstract\AbstractEntity;
-use App\Core\Database;
-use App\Core\Session;
-use App\Core\Validator;
-use App\Core\Router;
-
-use Src\Repository\UserRepository;
-use Src\Repository\CompteRepository;
-use Src\Repository\TransactionRepository;
-
-use Src\Service\SecurityService;
-use Src\Service\CompteService;
-use Src\Service\TransactionService;
+use App\Core\YamlParser;
 
 class App
 {
@@ -29,34 +15,14 @@ class App
             return;
         }
 
-        $dependencies = [
-            'core' => [
-                'database' => Database::class,
-                'session' => Session::class,
-                'validator' => Validator::class,
-                'router' => Router::class,
-                'FileUpload' => FileUpload::class,
-            ],
-            'abstract' => [
-                'abstractRepo' => AbstractRepository::class,
-                'abstractController' => AbstractController::class,
-                'abstractEntity' => AbstractEntity::class,
-            ],
-            'services' => [
-                'securityServ' => SecurityService::class,
-                'compteServ' => CompteService::class,
-                'transactionServ' => TransactionService::class,
-            ],
-            'repository' => [
-                'userRepo' => UserRepository::class,
-                'compteRepo' => CompteRepository::class,
-                'transactionRepo' => TransactionRepository::class,
-            ]
-        ];
+        // Charger les dépendances depuis le fichier services.yml
+        $configPath = __DIR__ . '/../config/services.yml';
+        $dependencies = YamlParser::parseFile($configPath);
 
         foreach ($dependencies as $category => $services) {
-            foreach ($services as $key => $class) {
-                self::$container[$category][$key] = fn() => $class::getInstance();
+            foreach ($services as $key => $className) {
+                // Convertir le nom de classe en closure qui appelle getInstance()
+                self::$container[$category][$key] = fn() => $className::getInstance();
             }
         }
 
@@ -80,5 +46,12 @@ class App
         }
 
         return self::$container[$category][$key];
+    }
+
+    // Méthode de débogage pour vérifier les dépendances chargées
+    public static function debugDependencies(): array
+    {
+        self::initialize();
+        return self::$container;
     }
 }
