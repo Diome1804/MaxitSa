@@ -87,7 +87,7 @@ class ComposerStaticInit59b4a818c9f3cf0d9d33f6830976bc43
         ),
         'App\\Core\\Middlewares\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/app/core/midlewares',
+            0 => __DIR__ . '/../..' . '/app/core/middlewares',
         ),
         'App\\Core\\Abstract\\' => 
         array (

@@ -8,6 +8,7 @@ core:
   router: App\Core\Router
   FileUpload: App\Core\FileUpload
   lang: App\Core\Lang
+  middleware: App\Core\MiddlewareLoader
 
 abstract:
   abstractRepo: App\Core\Abstract\AbstractRepository

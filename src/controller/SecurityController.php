@@ -9,6 +9,8 @@ use App\Core\FileUpload;
 use App\Core\Validator;
 use App\Core\Session;
 use App\Core\App;
+use App\Core\MiddlewareLoader;
+use App\Core\Lang;
 
 class SecurityController extends AbstractController
 {
@@ -24,45 +26,46 @@ class SecurityController extends AbstractController
         $this->securityService = App::getDependency('services', 'securityServ');
         $this->validator = Validator::getInstance();
         $this->fileUpload = FileUpload::getInstance();
+
+        // Détecter et configurer la langue
+        Lang::detectLang();
     }
     public function index()
-{
-   
-    if (isset($_SESSION['user'])) {
-        $this->redirect(APP_URL . '/dashboard');
-        exit();
-    }
-        header('Cache-Control: no-cache, no-store, must-revalidate');
-        header('Pragma: no-cache');
-        header('Expires: 0');
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        
-        $user = $this->securityService->authenticate($_POST);
-        
-        if ($user) {
-            $_SESSION['user'] = $user->toArray();
-
-        // Rediriger vers la page de tableau de bord
-             //$this->render('dashboard/dashboard.html.php');
-            header("Location: /dashboard");
-            
+    {
+        if (Session::isset('user')) {
+            $this->redirect(APP_URL . '/dashboard');
+            exit();
         }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (empty($_POST['numero']) || empty($_POST['password'])) {
+                Session::set('errors', ['login' => 'Numéro et mot de passe requis']);
+            } else {
+                $user = $this->securityService->authenticate($_POST);
+
+                if ($user) {
+                    Session::set('user', $user->toArray());
+                    // Rediriger vers la page de tableau de bord
+                    header("Location: /dashboard");
+                    exit();
+                } else {
+                    Session::set('errors', ['login' => 'Numéro ou mot de passe incorrect']);
+                }
+            }
+        }
+        $this->render("login/login.html.php", [
+            'success' => Session::get('success'),
+            'old' => $_POST ?? [],
+            'errors' => Session::get('errors'),
+        ]);
+        Session::unset('success');
+        Session::unset('errors');
     }
-
-    $this->render("login/login.html.php", [
-        'success' => $_SESSION['success'] ?? null,
-        'old' => $_POST ?? [],
-        'errors' => $_SESSION['errors'] ?? [],
-    ]);
-
-    unset($_SESSION['success'], $_SESSION['errors']);
-}
 
 
     public function create()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            
+
             $rules = [
                 'nom' => ['required', ['minLength', 2, 'Le nom doit contenir au moins 2 caractères']],
                 'prenom' => ['required', ['minLength', 2, 'Le prénom doit contenir au moins 2 caractères']],
@@ -72,9 +75,9 @@ class SecurityController extends AbstractController
                 'num_carte_identite' => ['required', 'isCNI']
             ];
 
-             if ($this->validator->validate($_POST, $rules)) {
-               try {
-                    
+            if ($this->validator->validate($_POST, $rules)) {
+                try {
+
                     $photorectoUrl = '';
                     $photoversoUrl = '';
 
@@ -88,7 +91,7 @@ class SecurityController extends AbstractController
                         $photoversoUrl = $this->uploadSimple($_FILES['photoverso'], 'verso');
                     }
 
-                    
+
                     $userData = [
                         'nom' => trim($_POST['nom']),
                         'prenom' => trim($_POST['prenom']),
@@ -119,7 +122,7 @@ class SecurityController extends AbstractController
         }
         $this->render('login/inscription.html.php', [
             'old' => $_POST ?? [],
-            'errors' => Session::isset('errors') ? $_SESSION['errors'] : [],
+            'errors' => Session::get('errors'),
         ]);
         Session::unset('errors');
     }
@@ -136,7 +139,7 @@ class SecurityController extends AbstractController
             // Vérifier l'extension
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            
+
             if (!in_array($fileExtension, $allowedExtensions)) {
                 error_log("Extension non autorisée: " . $fileExtension);
                 return '';
@@ -161,7 +164,7 @@ class SecurityController extends AbstractController
         }
     }
 
-   
+
 
     public function edit()
     {
@@ -172,7 +175,7 @@ class SecurityController extends AbstractController
     {
         //$this->redirect('/');
     }
-     public function store()
+    public function store()
     {
     }
 

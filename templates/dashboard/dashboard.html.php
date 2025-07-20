@@ -206,7 +206,9 @@
                                 <?php foreach ($transactions as $transaction): ?>
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <?= htmlspecialchars($transaction['type']) ?>
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full <?= $transaction['badge_class'] ?? 'bg-gray-100 text-gray-800' ?>">
+                                                <?= htmlspecialchars($transaction['type']) ?>
+                                            </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <?= htmlspecialchars($transaction['montant']) ?> FCFA

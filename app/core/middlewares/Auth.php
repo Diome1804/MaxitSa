@@ -2,6 +2,8 @@
 
 namespace App\Core\Middlewares;
 
+use App\Core\Session;
+
 class Auth
 {
     public function __invoke()
@@ -11,7 +13,7 @@ class Auth
         header('Pragma: no-cache');
         header('Expires: 0');
         
-        if (!isset($_SESSION['user'])) {
+        if (!Session::isset('user')) {
             error_log("❌ Middleware Auth: Utilisateur non connecté");
             header('Location: /');  // ✅ Changé de /login à /
             exit();

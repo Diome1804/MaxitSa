@@ -23,7 +23,7 @@ class CompteService
         $this->compteRepository = App::getDependency('repository', 'compteRepo');
     }
 
-   
+
 
     public function getSolde(int $userId): float
     {
@@ -33,7 +33,7 @@ class CompteService
     public function createCompteSecondaire(int $userId, string $numero, float $soldeInitial): array
     {
         $soldePrincipal = $this->compteRepository->getSoldeByUserId($userId);
-        
+
         if ($soldePrincipal < $soldeInitial) {
             return [
                 'success' => false,
@@ -42,7 +42,7 @@ class CompteService
         }
 
         $nouveauSoldePrincipal = $soldePrincipal - $soldeInitial;
-        
+
         $updateSuccess = $this->compteRepository->updateSolde($userId, $nouveauSoldePrincipal);
         if (!$updateSuccess) {
             return [
@@ -52,7 +52,7 @@ class CompteService
         }
 
         $numeroCompte = 'CPS' . time() . rand(1000, 9999);
-        
+
         $insertSuccess = $this->compteRepository->insert([
             'user_id' => $userId,
             'num_compte' => $numeroCompte,
@@ -102,7 +102,7 @@ class CompteService
         // Récupérer l'ancien compte principal
         $comptes = $this->compteRepository->getComptesByUserId($userId);
         $ancienComptePrincipalId = null;
-        
+
         foreach ($comptes as $compte) {
             if ($compte['type'] === 'ComptePrincipal') {
                 $ancienComptePrincipalId = $compte['id'];
@@ -137,7 +137,7 @@ class CompteService
         }
     }
 
- 
+
 }
 
 

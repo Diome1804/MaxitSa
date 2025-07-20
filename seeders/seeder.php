@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
+use App\Core\MiddlewareLoader;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -12,6 +13,9 @@ try {
     $pdo = new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     echo "Connexion réussie à la base de données\n";
+    
+    // Initialiser le middleware loader
+    $middlewareLoader = MiddlewareLoader::getInstance();
 } catch (PDOException $e) {
     die("Connexion échouée : " . $e->getMessage());
 }
@@ -32,11 +36,11 @@ try {
     $typeServiceId = $pdo->query("SELECT id FROM type_user WHERE libelle = 'ServiceCommercial'")->fetchColumn();
 
     // 2. Utilisateurs
-    $user = [
-        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', 'CNI001', 'recto1.png', 'verso1.png', password_hash('passer123', PASSWORD_BCRYPT), '770000001', $typeClientId],
-        ['Ousmane', 'Marra', 'Dakar Médina', 'CNI002', 'recto2.png', 'verso2.png', password_hash('passer123', PASSWORD_BCRYPT), '770000002', $typeClientId],
-        ['Astou', 'Mbow', 'Rufisque', 'CNI003', 'recto3.png', 'verso3.png', password_hash('passer123', PASSWORD_BCRYPT), '770000003', $typeClientId],
-        ['Admin', 'Service', 'Dakar Plateau', 'ADM001', 'admin_recto.png', 'admin_verso.png', password_hash('admin123', PASSWORD_BCRYPT), '770000010', $typeServiceId]
+    $users = [
+        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', 'CNI001', 'recto1.png', 'verso1.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000001', $typeClientId],
+        ['Ousmane', 'Marra', 'Dakar Médina', 'CNI002', 'recto2.png', 'verso2.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000002', $typeClientId],
+        ['Astou', 'Mbow', 'Rufisque', 'CNI003', 'recto3.png', 'verso3.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000003', $typeClientId],
+        ['Admin', 'Service', 'Dakar Plateau', 'ADM001', 'admin_recto.png', 'admin_verso.png', MiddlewareLoader::execute('crypt', 'admin123'), '770000010', $typeServiceId]
     ];
     $stmtUser = $pdo->prepare("INSERT INTO users (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, password, telephone, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $userIds = [];

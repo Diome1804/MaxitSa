@@ -13,8 +13,11 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
-                        <a href="<?= APP_URL ?>/dashboard" class="text-blue-500 hover:text-blue-700 mr-4">
-                            ← Retour au Dashboard
+                        <a href="<?= APP_URL ?>/dashboard" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md transition-colors duration-200 mr-4 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Retour au Dashboard
                         </a>
                         <h1 class="text-xl font-semibold text-gray-900">Mes Transactions</h1>
                     </div>
@@ -131,7 +134,7 @@
                                     <?php foreach ($transactions as $transaction): ?>
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full <?= $transaction['badge_class'] ?? 'bg-gray-100 text-gray-800' ?>">
                                                     <?= htmlspecialchars($transaction['type']) ?>
                                                 </span>
                                             </td>

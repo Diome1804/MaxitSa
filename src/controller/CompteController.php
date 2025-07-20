@@ -77,7 +77,6 @@ class CompteController extends AbstractController
         $telephone = $_POST['telephone'] ?? '';
         $solde = $_POST['solde'] ?? '';
 
-        // Validation avec votre classe Validator
         $validator = Validator::getInstance();
         $isValid = $validator->validate([
             'telephone' => $telephone,

@@ -5,6 +5,7 @@ use Src\Repository\UserRepository;
 use App\Core\Validator;
 use Src\Entity\User;
 use App\Core\App;
+use App\Core\MiddlewareLoader;
 
 class SecurityService{
     private CompteRepository $compteRepository;
@@ -37,7 +38,7 @@ class SecurityService{
             $pdo->beginTransaction();
 
             // Créer le client
-            $userData['password'] = password_hash($userData['password'], PASSWORD_DEFAULT);
+            $userData['password'] = MiddlewareLoader::execute('crypt', $userData['password']);
             $userData['type_id'] = 1; // Client
             
             $userId = $this->userRepository->insert($userData);
@@ -73,24 +74,18 @@ class SecurityService{
     }
 
     public function authenticate(array $data): ?User
-{
+    {
     // error_log("=== AUTHENTICATE ===");
     // error_log("Données reçues: " . print_r($data, true));
     
     // Vérification simple des champs requis
     if (empty($data['numero']) || empty($data['password'])) {
-        $_SESSION['errors'] = ['login' => 'Numéro et mot de passe requis'];
-        return null;
+    return null;
     }
 
     // Connexion directe
     $user = $this->login(trim($data['numero']), trim($data['password']));
     
-    if (!$user) {
-        $_SESSION['errors'] = ['login' => 'Numéro ou mot de passe incorrect'];
-        return null;
-    }
-
     return $user;
 }
 
@@ -109,7 +104,8 @@ public function login(string $numero, string $password): ?User
             error_log("Hash en base: " . $user->getPassword());
             
             // Vérification du mot de passe
-            if (password_verify($password, $user->getPassword())) {
+            $cryptMiddleware = new \App\Core\Middlewares\CryptPassword();
+        if ($cryptMiddleware->verify($password, $user->getPassword())) {
                 // error_log("✅ Connexion réussie");
                 return $user;
             } else {

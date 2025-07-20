@@ -115,9 +115,10 @@ class TransactionService
             'id' => $transaction['id'],
             'type' => $this->getTypeLabel($transaction['type']),
             'montant' => number_format($transaction['montant'], 0, ',', ' ') . ' FCFA',
-            'date' => date('d/m/Y', strtotime($transaction['date'])), // ✅ 'date' au lieu de 'date_transaction'
-            'numero_compte' => $transaction['num_compte'] ?? '', // ✅ 'num_compte' au lieu de 'numero_compte'
-            'css_class' => $this->getTypeClass($transaction['type'])
+            'date' => date('d/m/Y', strtotime($transaction['date'])),
+            'numero_compte' => $transaction['num_compte'] ?? '', 
+            'css_class' => $this->getTypeClass($transaction['type']),
+            'badge_class' => $this->getTypeBadgeClass($transaction['type'])
         ];
     }
 
@@ -140,6 +141,17 @@ class TransactionService
             'retrait' => 'text-red-600',
             'transfert' => 'text-blue-600',
             default => 'text-gray-600'
+        };
+    }
+
+    private function getTypeBadgeClass(string $type): string
+    {
+        return match($type) {
+            'paiement' => 'bg-green-100 text-green-800',
+            'depot' => 'bg-green-100 text-green-800',
+            'retrait' => 'bg-red-100 text-red-800',
+            'transfert' => 'bg-blue-100 text-blue-800',
+            default => 'bg-gray-100 text-gray-800'
         };
     }
 }
