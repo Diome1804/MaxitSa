@@ -20,12 +20,9 @@ class CompteController extends AbstractController
         parent::__construct();
         $this->transactionService = App::getDependency('services', 'transactionServ');
         $this->compteService = App::getDependency('services', 'compteServ');
-
-        // Détecter et configurer la langue
         Lang::detectLang();
     }
-
-    public function index()
+     public function index()
     {
         if (!Session::isset('user')) {
             $this->redirect(APP_URL . '/');
@@ -45,34 +42,20 @@ class CompteController extends AbstractController
             'solde' => $solde,
             'comptes' => $comptes,
         ]);
-    }
-
-
-
-    private function redirect(string $url)
-    {
-        header("Location: $url");
-        exit;
-    }
-
-
-
+    }    
     public function createCompteSecondaire()
     {
         if (!Session::isset('user')) {
             $this->redirect(APP_URL . '/');
             exit();
         }
-
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
-
         $userId = Session::get('user')['id'];
         $telephone = $_POST['telephone'] ?? '';
         $solde = $_POST['solde'] ?? '';
-
         $validator = Validator::getInstance();
         $isValid = $validator->validate([
             'telephone' => $telephone,
@@ -81,7 +64,6 @@ class CompteController extends AbstractController
             'telephone' => ['required', ['isSenegalPhone', Lang::get('validation.phone_invalid')]],
             'solde' => ['required', Lang::get('validation.required')]
         ]);
-
         if (!$isValid) {
             $errors = Validator::getErrors();
             $errorMessages = implode(', ', $errors);
@@ -89,22 +71,18 @@ class CompteController extends AbstractController
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
-
         $soldeFloat = (float) $solde;
         if ($soldeFloat <= 0) {
             Session::set('error', Lang::get('account.balance_initial_positive'));
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
-
         $result = $this->compteService->createCompteSecondaire($userId, $telephone, $soldeFloat);
-
         if ($result['success']) {
             Session::set('success', $result['message']);
         } else {
             Session::set('error', $result['message']);
         }
-
         $this->redirect(APP_URL . '/dashboard');
     }
 
@@ -114,44 +92,35 @@ class CompteController extends AbstractController
             $this->redirect(APP_URL . '/');
             exit();
         }
-
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
-
         $userId = Session::get('user')['id'];
         $compteId = $_POST['compte_id'] ?? '';
-
-        // Validation avec votre classe Validator
         $validator = Validator::getInstance();
         $isValid = $validator->validate([
             'compte_id' => $compteId
         ], [
             'compte_id' => ['required']
         ]);
-
         if (!$isValid) {
             Session::set('error', Lang::get('account.id_required'));
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
-
         $compteIdInt = (int) $compteId;
         if ($compteIdInt <= 0) {
             Session::set('error', Lang::get('account.id_invalid'));
             $this->redirect(APP_URL . '/dashboard');
             exit();
         }
-
         $result = $this->compteService->changerComptePrincipal($userId, $compteIdInt);
-
         if ($result['success']) {
             Session::set('success', $result['message']);
         } else {
             Session::set('error', $result['message']);
         }
-
         $this->redirect(APP_URL . '/dashboard');
     }
 
@@ -193,10 +162,11 @@ class CompteController extends AbstractController
             'date_fin' => $_GET['date_fin'] ?? ''
         ];
     }
-
-    /**
-     * Changer la langue de l'application
-     */
+    private function redirect(string $url)
+    {
+        header("Location: $url");
+        exit;
+    }
     public function changeLang()
     {
         $lang = $_GET['lang'] ?? 'fr';

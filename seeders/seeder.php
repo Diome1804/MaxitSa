@@ -36,7 +36,7 @@ try {
     $typeServiceId = $pdo->query("SELECT id FROM type_user WHERE libelle = 'ServiceCommercial'")->fetchColumn();
 
     // 2. Utilisateurs
-    $users = [
+    $user = [
         ['Fallou', 'Ndiaye', 'Dakar Liberté 6', 'CNI001', 'recto1.png', 'verso1.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000001', $typeClientId],
         ['Ousmane', 'Marra', 'Dakar Médina', 'CNI002', 'recto2.png', 'verso2.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000002', $typeClientId],
         ['Astou', 'Mbow', 'Rufisque', 'CNI003', 'recto3.png', 'verso3.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000003', $typeClientId],

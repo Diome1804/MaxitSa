@@ -81,17 +81,12 @@ class SecurityController extends AbstractController
                     $photorectoUrl = '';
                     $photoversoUrl = '';
 
-                    // Upload photo recto (optionnel pour test)
                     if (isset($_FILES['photorecto']) && $_FILES['photorecto']['error'] === UPLOAD_ERR_OK) {
                         $photorectoUrl = $this->uploadSimple($_FILES['photorecto'], 'recto');
                     }
-
-                    // Upload photo verso (optionnel pour test)
                     if (isset($_FILES['photoverso']) && $_FILES['photoverso']['error'] === UPLOAD_ERR_OK) {
                         $photoversoUrl = $this->uploadSimple($_FILES['photoverso'], 'verso');
                     }
-
-
                     $userData = [
                         'nom' => trim($_POST['nom']),
                         'prenom' => trim($_POST['prenom']),
@@ -102,7 +97,6 @@ class SecurityController extends AbstractController
                         'photorecto' => $photorectoUrl,
                         'photoverso' => $photoversoUrl,
                     ];
-
                     $userId = $this->securityService->creerClientAvecComptePrincipal($userData, 0.0);
 
                     if ($userId !== false) {
@@ -130,26 +124,18 @@ class SecurityController extends AbstractController
     private function uploadSimple($file, $prefix = 'photo'): string
     {
         try {
-            // Créer le dossier uploads s'il n'existe pas
             $uploadDir = __DIR__ . '/../../public/uploads/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-
-            // Vérifier l'extension
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-
             if (!in_array($fileExtension, $allowedExtensions)) {
                 error_log("Extension non autorisée: " . $fileExtension);
                 return '';
             }
-
-            // Générer un nom unique
             $fileName = $prefix . '_' . uniqid() . '.' . $fileExtension;
             $targetPath = $uploadDir . $fileName;
-
-            // Déplacer le fichier
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                 error_log("Photo uploadée avec succès: " . $fileName);
                 return '/uploads/' . $fileName;
