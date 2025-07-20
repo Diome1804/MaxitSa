@@ -184,7 +184,12 @@
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold text-gray-800">Historique des Transactions</h2>
                         <!-- Lien voir plus -->
-                        <a href="<?= APP_URL ?>/transactions" class="text-blue-500 hover:text-blue-700 text-sm font-semibold underline">Voir plus</a>
+                        <a href="<?= APP_URL ?>/transactions" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md transition-all duration-200 flex items-center text-sm">
+                            Voir plus
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
                     </div>
                     
                     <?php if (!empty($transactions)): ?>
@@ -224,60 +229,7 @@
                         <p class="text-gray-500 text-center py-8">Aucune transaction à afficher</p>
                     <?php endif; ?>
 
-                    <!-- Pagination -->
-                    <?php if (isset($pagination) && $pagination['total_pages'] > 1): ?>
-                        <div class="flex justify-center items-center mt-6 space-x-2">
-                            <!-- Bouton Précédent -->
-                            <?php if ($pagination['has_prev']): ?>
-                                <a href="<?= APP_URL ?>/dashboard?page=<?= $pagination['current_page'] - 1 ?>" 
-                                   class="px-3 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors">
-                                    &laquo; Précédent
-                                </a>
-                            <?php else: ?>
-                                <span class="px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-md cursor-not-allowed">
-                                    &laquo; Précédent
-                                </span>
-                            <?php endif; ?>
 
-                            <!-- Numéros de pages -->
-                            <?php 
-                            $start = max(1, $pagination['current_page'] - 2);
-                            $end = min($pagination['total_pages'], $pagination['current_page'] + 2);
-                            ?>
-                            
-                            <?php for ($i = $start; $i <= $end; $i++): ?>
-                                <?php if ($i == $pagination['current_page']): ?>
-                                    <span class="px-3 py-2 text-sm bg-blue-500 text-white rounded-md">
-                                        <?= $i ?>
-                                    </span>
-                                <?php else: ?>
-                                    <a href="<?= APP_URL ?>/dashboard?page=<?= $i ?>" 
-                                       class="px-3 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors">
-                                        <?= $i ?>
-                                    </a>
-                                <?php endif; ?>
-                            <?php endfor; ?>
-
-                            <!-- Bouton Suivant -->
-                            <?php if ($pagination['has_next']): ?>
-                                <a href="<?= APP_URL ?>/dashboard?page=<?= $pagination['current_page'] + 1 ?>" 
-                                   class="px-3 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors">
-                                    Suivant &raquo;
-                                </a>
-                            <?php else: ?>
-                                <span class="px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-md cursor-not-allowed">
-                                    Suivant &raquo;
-                                </span>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Informations sur la pagination -->
-                        <div class="text-center mt-3 text-sm text-gray-600">
-                            Affichage de <?= ($pagination['current_page'] - 1) * $pagination['per_page'] + 1 ?> à 
-                            <?= min($pagination['current_page'] * $pagination['per_page'], $pagination['total']) ?> 
-                            sur <?= $pagination['total'] ?> transactions
-                        </div>
-                    <?php endif; ?>
                 </div>
             </div>
         </main>

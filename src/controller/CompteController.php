@@ -37,15 +37,11 @@ class CompteController extends AbstractController
         $solde = $this->compteService->getSolde($user['id']);
         $comptes = $this->compteService->getComptesByUserId($user['id']);
 
-        // Pagination pour les transactions
-        $page = (int) ($_GET['page'] ?? 1);
-        $perPage = 5; // 5 transactions par page pour bien voir la pagination
-        $result = $this->transactionService->getTransactionsWithPagination($user['id'], $page, $perPage);
+        $transactions = $this->transactionService->getLatestTransactions($user['id'], 10);
 
         $this->render('dashboard/dashboard.html.php', [
             'user' => $user,
-            'transactions' => $result['transactions'],
-            'pagination' => $result['pagination'],
+            'transactions' => $transactions,
             'solde' => $solde,
             'comptes' => $comptes,
         ]);

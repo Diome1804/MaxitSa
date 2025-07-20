@@ -44,6 +44,23 @@ class TransactionService
         }
     }
 
+    public function getLatestTransactions(int $userId, int $limit = 10): array
+    {
+        try {
+            $transactions = $this->transactionRepository->findRecentTransactions($userId, $limit);
+            
+            // Formater les transactions pour l'affichage
+            $formattedTransactions = [];
+            foreach ($transactions as $transaction) {
+                $formattedTransactions[] = $this->formatTransactionForDisplay($transaction);
+            }
+            
+            return $formattedTransactions;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
     public function getTransactionsWithPagination(int $userId, int $page = 1, int $perPage = 10): array
     {
         try {
