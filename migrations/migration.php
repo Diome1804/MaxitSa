@@ -69,3 +69,8 @@ try {
 } catch (PDOException $e) {
     echo "Erreur lors de la connexion ou de la migration : " . $e->getMessage() . "\n";
 }
+
+
+// "scripts": {
+//     "database:migrate": "php migrations/migration.php"
+//   }
