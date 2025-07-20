@@ -1,14 +1,20 @@
 <?php
 
-// Configuration de la connexion
-$host = 'localhost';
-$dbname = 'ton_nom_de_base';
-$user = 'ton_utilisateur';
-$password = 'ton_mot_de_passe';
+// Charger les variables d'environnement
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/config/env.php';
 
 try {
-    $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Utiliser les mêmes constantes que votre application
+    $pdo = new PDO(
+        dsn,
+        DB_USER, 
+        DB_PASSWORD,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]
+    );
 
     echo "Connexion réussie à la base PostgreSQL.\n";
 
@@ -31,8 +37,8 @@ try {
         service_com VARCHAR(255)
     );");
 
-    // Table: users
-    $pdo->exec("CREATE TABLE IF NOT EXISTS user (
+    // Table: user
+    $pdo->exec("CREATE TABLE IF NOT EXISTS \"user\" (
         id SERIAL PRIMARY KEY,
         nom VARCHAR(100),
         prenom VARCHAR(100),
@@ -50,9 +56,9 @@ try {
         id SERIAL PRIMARY KEY,
         num_compte VARCHAR(50) UNIQUE,
         solde DECIMAL(15,2),
-        user_id INTEGER REFERENCES users(id),
-        type type_compte
-        num_telephone VARCHAR(50),
+        user_id INTEGER REFERENCES \"user\"(id),
+        type type_compte,
+        num_telephone VARCHAR(50)
     );");
 
     // Table: transactions

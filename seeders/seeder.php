@@ -9,7 +9,7 @@ $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 try {
-    $dsn = $_ENV['dns'] ?? "{$_ENV['DB_DRIVER']}:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']}";
+    $dsn = $_ENV['dsn'] ?? "{$_ENV['DB_DRIVER']}:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']}";
     $pdo = new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     echo "Connexion réussie à la base de données\n";
@@ -23,26 +23,23 @@ try {
 try {
     $pdo->beginTransaction();
 
+    
     // 1. Types d'utilisateurs
-    $types = ['Client', 'ServiceCommercial'];
-    $stmtType = $pdo->prepare("INSERT INTO type_user (libelle) VALUES (?)");
-    foreach ($types as $type) {
-        $stmtType->execute([$type]);
-    }
+    $types = ['Client', 'ServiceCom'];
+    $stmtType = $pdo->prepare("INSERT INTO type_user (client, service_com) VALUES (?, ?)");
+    $stmtType->execute(['Client', 'ServiceCom']);
     echo "Types d'utilisateur insérés\n";
 
-    // Récupération des IDs
-    $typeClientId = $pdo->query("SELECT id FROM type_user WHERE libelle = 'Client'")->fetchColumn();
-    $typeServiceId = $pdo->query("SELECT id FROM type_user WHERE libelle = 'ServiceCommercial'")->fetchColumn();
+    // Récupération des IDs  
+    $typeClientId = 1; // Premier type inséré
+    $typeServiceId = 1; // Même ID car une seule ligne avec les deux types
 
     // 2. Utilisateurs
-    $user = [
-        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', 'CNI001', 'recto1.png', 'verso1.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000001', $typeClientId],
-        ['Ousmane', 'Marra', 'Dakar Médina', 'CNI002', 'recto2.png', 'verso2.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000002', $typeClientId],
-        ['Astou', 'Mbow', 'Rufisque', 'CNI003', 'recto3.png', 'verso3.png', MiddlewareLoader::execute('crypt', 'passer123'), '770000003', $typeClientId],
-        ['Admin', 'Service', 'Dakar Plateau', 'ADM001', 'admin_recto.png', 'admin_verso.png', MiddlewareLoader::execute('crypt', 'admin123'), '770000010', $typeServiceId]
+    $users = [
+        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', '1453555775775', 'recto1.png', 'verso1.png','778904433', MiddlewareLoader::execute('crypt', 'passer123'), $typeClientId],
+        ['Abdou', 'Diallo', 'Fann', '145355577577Z', 'recto2.png', 'verso2.png','778234433', MiddlewareLoader::execute('crypt', 'Dakar2026'), $typeClientId]
     ];
-    $stmtUser = $pdo->prepare("INSERT INTO users (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, password, telephone, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmtUser = $pdo->prepare("INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, telephone, password, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $userIds = [];
     foreach ($users as $user) {
         $stmtUser->execute($user);
@@ -54,7 +51,7 @@ try {
     $comptes = [
         ['CP001', 150000, $userIds[0], 'ComptePrincipal', '770000001'],
         ['CP002', 120000, $userIds[1], 'ComptePrincipal', '770000002'],
-        ['CS001', 20000, $userIds[2], 'CompteSecondaire', '770000003']
+        ['CS001', 20000, $userIds[0], 'CompteSecondaire', '770000003']
     ];
     $stmtCompte = $pdo->prepare("INSERT INTO compte (num_compte, solde, user_id, type, num_telephone) VALUES (?, ?, ?, ?, ?)");
     $compteIds = [];
