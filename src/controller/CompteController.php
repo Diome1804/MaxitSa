@@ -164,16 +164,19 @@ class CompteController extends AbstractController
 
         $userId = Session::get('user')['id'];
         $user = Session::get('user');
-
         $filterData = $this->getFilterData();
-        $filters = $this->validateFilters($filterData);
-        $this->validateDateCoherence($filters);
+        $validator = Validator::getInstance();
+        $filters = $validator->validateTransactionFilters($filterData);
 
+        if (!$validator->validateDateCoherence($filters)) {
+            Session::set('error', Lang::get('transaction.date_range_invalid'));
+            $this->redirect(APP_URL . '/transactions');
+            exit();
+        }
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = 10;
         $result = $this->transactionService->getTransactionsWithFilters($userId, $filters, $page, $perPage);
         $transactionTypes = $this->transactionService->getTransactionTypes();
-
         $this->render('transactions/transactions.html.php', [
             'user' => $user,
             'transactions' => $result['transactions'],
@@ -182,12 +185,6 @@ class CompteController extends AbstractController
             'transactionTypes' => $transactionTypes
         ]);
     }
-
-
-
-    /**
-     * Récupérer les données de filtres depuis les paramètres GET
-     */
     private function getFilterData(): array
     {
         return [
@@ -195,84 +192,6 @@ class CompteController extends AbstractController
             'date_debut' => $_GET['date_debut'] ?? '',
             'date_fin' => $_GET['date_fin'] ?? ''
         ];
-    }
-
-    /**
-     * Valider les filtres et retourner les filtres valides
-     */
-    private function validateFilters(array $filterData): array
-    {
-        $filters = [];
-        
-        // Validation du filtre type
-        if (!empty($filterData['type'])) {
-            $filters = array_merge($filters, $this->validateTypeFilter($filterData['type']));
-        }
-        
-        // Validation des filtres de dates
-        if (!empty($filterData['date_debut']) || !empty($filterData['date_fin'])) {
-            $filters = array_merge($filters, $this->validateDateFilters($filterData));
-        }
-        
-        return $filters;
-    }
-
-    /**
-     * Valider le filtre de type
-     */
-    private function validateTypeFilter(string $type): array
-    {
-        $validator = Validator::getInstance();
-        $isValidType = $validator->validate(['type' => $type], ['type' => ['required']]);
-        
-        return $isValidType ? ['type' => $type] : [];
-    }
-
-    /**
-     * Valider les filtres de dates
-     */
-    private function validateDateFilters(array $filterData): array
-    {
-        $validator = Validator::getInstance();
-        $dateValidation = [];
-        $dateRules = [];
-        
-        if (!empty($filterData['date_debut'])) {
-            $dateValidation['date_debut'] = $filterData['date_debut'];
-            $dateRules['date_debut'] = ['date'];
-        }
-        
-        if (!empty($filterData['date_fin'])) {
-            $dateValidation['date_fin'] = $filterData['date_fin'];
-            $dateRules['date_fin'] = ['date'];
-        }
-        
-        if ($validator->validate($dateValidation, $dateRules)) {
-            $validDates = [];
-            if (!empty($filterData['date_debut'])) {
-                $validDates['date_debut'] = $filterData['date_debut'];
-            }
-            if (!empty($filterData['date_fin'])) {
-                $validDates['date_fin'] = $filterData['date_fin'];
-            }
-            return $validDates;
-        }
-        
-        return [];
-    }
-
-    /**
-     * Valider la cohérence des dates (début <= fin)
-     */
-    private function validateDateCoherence(array $filters): void
-    {
-        if (isset($filters['date_debut']) && isset($filters['date_fin'])) {
-            if (strtotime($filters['date_debut']) > strtotime($filters['date_fin'])) {
-                Session::set('error', Lang::get('transaction.date_range_invalid'));
-                $this->redirect(APP_URL . '/transactions');
-                exit();
-            }
-        }
     }
 
     /**

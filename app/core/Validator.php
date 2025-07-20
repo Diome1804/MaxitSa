@@ -94,5 +94,75 @@ class Validator
         return self::$errors;
     }
 
-    
+    /**
+     * Valider les filtres de transaction
+     */
+    public function validateTransactionFilters(array $filterData): array
+    {
+        $filters = [];
+        
+        // Validation du filtre type
+        if (!empty($filterData['type'])) {
+            $filters = array_merge($filters, $this->validateTypeFilter($filterData['type']));
+        }
+        
+        // Validation des filtres de dates
+        if (!empty($filterData['date_debut']) || !empty($filterData['date_fin'])) {
+            $filters = array_merge($filters, $this->validateDateFilters($filterData));
+        }
+        
+        return $filters;
+    }
+
+    /**
+     * Valider le filtre de type
+     */
+    private function validateTypeFilter(string $type): array
+    {
+        $isValidType = $this->validate(['type' => $type], ['type' => ['required']]);
+        return $isValidType ? ['type' => $type] : [];
+    }
+
+    /**
+     * Valider les filtres de dates
+     */
+    private function validateDateFilters(array $filterData): array
+    {
+        $dateValidation = [];
+        $dateRules = [];
+        
+        if (!empty($filterData['date_debut'])) {
+            $dateValidation['date_debut'] = $filterData['date_debut'];
+            $dateRules['date_debut'] = ['date'];
+        }
+        
+        if (!empty($filterData['date_fin'])) {
+            $dateValidation['date_fin'] = $filterData['date_fin'];
+            $dateRules['date_fin'] = ['date'];
+        }
+        
+        if ($this->validate($dateValidation, $dateRules)) {
+            $validDates = [];
+            if (!empty($filterData['date_debut'])) {
+                $validDates['date_debut'] = $filterData['date_debut'];
+            }
+            if (!empty($filterData['date_fin'])) {
+                $validDates['date_fin'] = $filterData['date_fin'];
+            }
+            return $validDates;
+        }
+        
+        return [];
+    }
+
+    /**
+     * Valider la cohérence des dates (début <= fin)
+     */
+    public function validateDateCoherence(array $filters): bool
+    {
+        if (isset($filters['date_debut']) && isset($filters['date_fin'])) {
+            return strtotime($filters['date_debut']) <= strtotime($filters['date_fin']);
+        }
+        return true;
+    }
 }
