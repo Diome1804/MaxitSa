@@ -23,6 +23,9 @@ try {
 try {
     $pdo->beginTransaction();
 
+    // Nettoyer les tables existantes
+    echo "Nettoyage des tables...\n";
+    $pdo->exec('TRUNCATE transactions, compte, "user", type_user RESTART IDENTITY CASCADE');
     
     // 1. Types d'utilisateurs
     $types = ['Client', 'ServiceCom'];

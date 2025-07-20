@@ -23,6 +23,11 @@
     },
     "scripts": {
         "database:migrate": "php migrations/migration.php",
-        "database:seed": "php seeders/seeder.php"
+        "database:seed": "php seeders/seeder.php",
+        "database:clean": "php seeders/clean.php",
+        "database:fresh": [
+            "@database:clean",
+            "@database:seed"
+        ]
     }
 }
