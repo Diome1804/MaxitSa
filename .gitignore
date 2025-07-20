@@ -1,2 +1,1 @@
 .env 
-DNS="{$config['driver']}:host={$config['host']};dbname={$config['dbname']};port={$config['port']}"
