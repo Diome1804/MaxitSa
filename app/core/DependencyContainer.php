@@ -114,4 +114,9 @@ class DependencyContainer
     {
         $this->services[$serviceId] = $className;
     }
+
+    public function debugConfig(): array
+    {
+        return $this->config;
+    }
 }

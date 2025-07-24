@@ -8,17 +8,20 @@ use Src\Entity\User;
 use App\Core\Database;
 use App\Core\MiddlewareLoader;
 use App\Core\Interfaces\SecurityServiceInterface;
+use App\Core\ReflectionFactory;
 
 class SecurityService implements SecurityServiceInterface
 {
     private CompteRepository $compteRepository;
     private UserRepository $userRepository;
     private Database $database;
+    private ReflectionFactory $factory;
 
-    public function __construct(CompteRepository $compteRepository, UserRepository $userRepository, Database $database){
+    public function __construct(CompteRepository $compteRepository, UserRepository $userRepository, Database $database, ReflectionFactory $factory){
         $this->compteRepository = $compteRepository;
         $this->userRepository = $userRepository;
         $this->database = $database;
+        $this->factory = $factory;
     }
 
     /**
@@ -99,7 +102,7 @@ public function login(string $numero, string $password): ?User
             error_log("Hash en base: " . $user->getPassword());
             
             // Vérification du mot de passe
-            $cryptMiddleware = new \App\Core\Middlewares\CryptPassword();
+            $cryptMiddleware = $this->factory->create(\App\Core\Middlewares\CryptPassword::class);
         if ($cryptMiddleware->verify($password, $user->getPassword())) {
                 // error_log("✅ Connexion réussie");
                 return $user;

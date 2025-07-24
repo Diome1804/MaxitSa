@@ -9,6 +9,7 @@ router: App\Core\Router
 fileUpload: App\Core\FileUpload
 lang: App\Core\Lang
 middleware: App\Core\MiddlewareLoader
+reflectionFactory: App\Core\ReflectionFactory
 
 # Repositories
 userRepo: Src\Repository\UserRepository

@@ -2,6 +2,7 @@
 
 namespace Src\Entity;
 use App\Core\abstract\AbstractEntity;
+use App\Core\ReflectionFactory;
 
 class Compte extends AbstractEntity
 {
@@ -43,10 +44,12 @@ class Compte extends AbstractEntity
 
    public static function toObject(array $tableau): static
 {
+    $factory = ReflectionFactory::getInstance();
+    
     // Il faut d'abord récupérer l'utilisateur (ou créer un utilisateur temporaire)
     // Pour l'instant, on va créer un utilisateur basique
-    $typeUser = new TypeUser('client');
-    $user = new User('', '', $typeUser, '', '', '', '', '', '');
+    $typeUser = $factory->create(TypeUser::class, ['client']);
+    $user = $factory->create(User::class, ['', '', $typeUser, '', '', '', '', '', '']);
     
     // Si on a l'user_id, on pourrait le charger depuis la base
     // Mais pour simplifier, on va juste définir l'ID
@@ -57,12 +60,12 @@ class Compte extends AbstractEntity
         $idProperty->setValue($user, $tableau['user_id']);
     }
     
-    $compte = new static(
+    $compte = $factory->create(static::class, [
         $tableau['num_compte'] ?? '',
         (float)($tableau['solde'] ?? 0),
         $tableau['type'] ?? 'ComptePrincipal',
         $user
-    );
+    ]);
     
     // Définir l'ID du compte
     if (isset($tableau['id'])) {

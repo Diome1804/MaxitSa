@@ -4,6 +4,7 @@ namespace Src\Entity;
 
 use App\Core\abstract\AbstractEntity;
 use Src\Entity\Compte;
+use App\Core\ReflectionFactory;
 
 class User extends AbstractEntity
 {
@@ -53,9 +54,10 @@ class User extends AbstractEntity
 
     public static function toObject(array $tableau): static
     {
+        $factory = ReflectionFactory::getInstance();
         
-        $typeUser = new TypeUser($tableau['type'] ?? 'client');
-        $user = new static(
+        $typeUser = $factory->create(TypeUser::class, [$tableau['type'] ?? 'client']);
+        $user = $factory->create(static::class, [
             $tableau['nom'] ?? '',
             $tableau['prenom'] ?? '',
             $typeUser,
@@ -65,7 +67,7 @@ class User extends AbstractEntity
             $tableau['photoverso'] ?? '',
             $tableau['telephone'] ?? '',
             $tableau['password'] ?? ''
-        );
+        ]);
 
         
         if (isset($tableau['id'])) {

@@ -6,6 +6,7 @@ use Src\Entity\User;
 use App\Core\Abstract\AbstractRepository;
 use Src\Entity\TypeUser;
 use App\Core\Interfaces\RepositoryInterface;
+use App\Core\ReflectionFactory;
 use PDO;
 
 class UserRepository extends AbstractRepository implements RepositoryInterface
@@ -64,11 +65,13 @@ class UserRepository extends AbstractRepository implements RepositoryInterface
             $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($userData) {
-                // Créer TypeUser
-                $typeUser = new TypeUser($userData['type_name']);
+                $factory = ReflectionFactory::getInstance();
+                
+                // Créer TypeUser avec réflexion
+                $typeUser = $factory->create(TypeUser::class, [$userData['type_name']]);
 
-                // Créer User
-                $user = new User(
+                // Créer User avec réflexion
+                $user = $factory->create(User::class, [
                     $userData['nom'],
                     $userData['prenom'],
                     $typeUser,
@@ -78,7 +81,7 @@ class UserRepository extends AbstractRepository implements RepositoryInterface
                     $userData['photoverso'],
                     $userData['telephone'],
                     $userData['password']
-                );
+                ]);
 
                 // Définir l'ID
                 if (isset($userData['id'])) {
