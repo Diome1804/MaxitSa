@@ -21,17 +21,13 @@ try {
     // Création des ENUMS si non existants
     $pdo->exec("DO $$
     BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'type_transaction') THEN
-            CREATE TYPE type_transaction AS ENUM ('paiement', 'transfert');
-        END IF;
-
-        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'type_compte') THEN
-            CREATE TYPE type_compte AS ENUM ('ComptePrincipal', 'CompteSecondaire');
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'statut_enum') THEN
+            CREATE TYPE statut_enum AS ENUM ('success', 'error');
         END IF;
     END$$;");
 
     // Table: type_user
-    $pdo->exec("CREATE TABLE IF NOT EXISTS type_user (
+    $pdo->exec("CREATE TABLE IF NOT EXISTS Citoyen (
         id SERIAL PRIMARY KEY,
         client VARCHAR(255),
         service_com VARCHAR(255)

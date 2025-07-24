@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Entity;
+namespace Src\Entity;
 use App\Core\abstract\AbstractEntity;
 
 class Compte extends AbstractEntity
 {
     private int $id;
     private string $numCompte;
-    private date $dateCreation;
+    private string $dateCreation;
     private int $num_telephone;
     private float $solde;
     private string $type; // ComptePrincipal | CompteSecondaire

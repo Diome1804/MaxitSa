@@ -23,5 +23,5 @@ try {
     echo "✅ Tables vidées avec succès !\n";
     
 } catch (PDOException $e) {
-    echo "❌ Erreur : " . $e->getMessage() . "\n";
+    echo "Erreur : " . $e->getMessage() . "\n";
 }

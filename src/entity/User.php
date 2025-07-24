@@ -3,6 +3,7 @@
 namespace Src\Entity;
 
 use App\Core\abstract\AbstractEntity;
+use Src\Entity\Compte;
 
 class User extends AbstractEntity
 {

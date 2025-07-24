@@ -4,6 +4,7 @@ namespace Src\Controller;
 
 use App\Core\Abstract\AbstractController;
 use Src\Service\SecurityService;
+use Src\Service\AppDAFService;
 use Src\Repository\CompteRepository;
 use App\Core\FileUpload;
 use App\Core\Validator;
@@ -15,6 +16,7 @@ use App\Core\Lang;
 class SecurityController extends AbstractController
 {
     private SecurityService $securityService;
+    private AppDAFService $appDAFService;
     private CompteRepository $compteRepository;
     private Validator $validator;
     private FileUpload $fileUpload;
@@ -24,10 +26,9 @@ class SecurityController extends AbstractController
         parent::__construct();
         $this->compteRepository = App::getDependency('repository', 'compteRepo');
         $this->securityService = App::getDependency('services', 'securityServ');
+        $this->appDAFService = App::getDependency('services','appdafServ');
         $this->validator = Validator::getInstance();
-        $this->fileUpload = FileUpload::getInstance();
-
-        // Détecter et configurer la langue
+        $this->fileUpload = FileUpload::getInstance(); 
         Lang::detectLang();
     }
     public function index()
@@ -67,36 +68,38 @@ class SecurityController extends AbstractController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $rules = [
-                'nom' => ['required', ['minLength', 2, 'Le nom doit contenir au moins 2 caractères']],
-                'prenom' => ['required', ['minLength', 2, 'Le prénom doit contenir au moins 2 caractères']],
                 'telephone' => ['required', 'isSenegalPhone'],
                 'password' => ['required', 'isPassword'],
-                'adresse' => ['required', ['minLength', 5, 'L\'adresse doit contenir au moins 5 caractères']],
-                'num_carte_identite' => ['required', 'isCNI']
+                'num_carte_identite' => ['required', 'is@']
             ];
 
             if ($this->validator->validate($_POST, $rules)) {
                 try {
-
-                    $photorectoUrl = '';
-                    $photoversoUrl = '';
-
-                    if (isset($_FILES['photorecto']) && $_FILES['photorecto']['error'] === UPLOAD_ERR_OK) {
-                        $photorectoUrl = $this->uploadSimple($_FILES['photorecto'], 'recto');
+                    // Rechercher les informations du citoyen dans AppDAF
+                    $citoyenData = $this->appDAFService->rechercherCitoyenParCNI(trim($_POST['num_carte_identite']));
+                    
+                    if ($citoyenData === null) {
+                        Session::set('errors', ['num_carte_identite' => 'Numéro CNI non trouvé dans la base de données nationale']);
+                        $this->render('login/inscription.html.php', [
+                            'old' => $_POST ?? [],
+                            'errors' => Session::get('errors'),
+                        ]);
+                        Session::unset('errors');
+                        return;
                     }
-                    if (isset($_FILES['photoverso']) && $_FILES['photoverso']['error'] === UPLOAD_ERR_OK) {
-                        $photoversoUrl = $this->uploadSimple($_FILES['photoverso'], 'verso');
-                    }
+
+                    // Construire les données utilisateur avec les informations de AppDAF
                     $userData = [
-                        'nom' => trim($_POST['nom']),
-                        'prenom' => trim($_POST['prenom']),
-                        'adresse' => trim($_POST['adresse']),
+                        'nom' => $citoyenData['nom'],
+                        'prenom' => $citoyenData['prenom'],
+                        'adresse' => $citoyenData['lieuNaissance'], // Utiliser lieu de naissance comme adresse
                         'num_carte_identite' => trim($_POST['num_carte_identite']),
                         'telephone' => trim($_POST['telephone']),
                         'password' => $_POST['password'],
-                        'photorecto' => $photorectoUrl,
-                        'photoverso' => $photoversoUrl,
+                        'photorecto' => $citoyenData['photoIdentiteUrl'] ?? '', // URL de la photo depuis AppDAF
+                        'photoverso' => '',
                     ];
+                    
                     $userId = $this->securityService->creerClientAvecComptePrincipal($userData, 0.0);
 
                     if ($userId !== false) {
@@ -165,15 +168,52 @@ class SecurityController extends AbstractController
     {
     }
 
-    // public function logout()
-    // {
-    //     Session::destroy();
-    //     $this->redirect('/');
-    // }
+
     public function logout()
     {
         Session::destroy();
         $this->redirect(APP_URL . '/');
+    }
+
+    public function verifierCNI()
+    {
+        header('Content-Type: application/json');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['statut' => 'error', 'message' => 'Méthode non autorisée']);
+            return;
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!isset($input['nci']) || empty($input['nci'])) {
+            http_response_code(400);
+            echo json_encode(['statut' => 'error', 'message' => 'CNI requis']);
+            return;
+        }
+
+        try {
+            $citoyenData = $this->appDAFService->rechercherCitoyenParCNI(trim($input['nci']));
+            
+            if ($citoyenData !== null) {
+                echo json_encode([
+                    'statut' => 'success',
+                    'data' => $citoyenData
+                ]);
+            } else {
+                echo json_encode([
+                    'statut' => 'error',
+                    'message' => 'CNI non trouvé'
+                ]);
+            }
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'statut' => 'error',
+                'message' => 'Erreur serveur: ' . $e->getMessage()
+            ]);
+        }
     }
 
     private function redirect(string $url)

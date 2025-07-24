@@ -41,7 +41,11 @@ $routes = [
          'method' => 'changeLang'
      ],
     "/logout" => [
-         'controller' => SecurityController::class, 
-         'method' => 'logout'
+    'controller' => SecurityController::class, 
+    'method' => 'logout'
+    ],
+    "/api/verifier-cni" => [
+        'controller' => SecurityController::class,
+        'method' => 'verifierCNI'
     ],
 ];

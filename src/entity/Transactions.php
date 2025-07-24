@@ -1,6 +1,9 @@
 <?php
 
 namespace Src\Entity;
+use App\Core\Abstract\AbstractEntity;
+use Src\Entity\Compte;
+
 
 class Transactions extends AbstractEntity
 {

@@ -19,6 +19,7 @@ services:
   securityServ: Src\Service\SecurityService
   compteServ: Src\Service\CompteService
   transactionServ: Src\Service\TransactionService
+  appdafServ: Src\Service\AppDAFService
 
 repository:
   userRepo: Src\Repository\UserRepository
