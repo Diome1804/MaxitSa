@@ -8,14 +8,7 @@ class CompteRepository extends AbstractRepository{
 
     private string $table = 'compte';
 
-    private static CompteRepository|null $instance = null;
-
-    public static function getInstance():CompteRepository{
-        if(self::$instance == null){
-            self::$instance = new CompteRepository();
-        }
-        return self::$instance;
-    }
+    
 
     public function __construct(){
         parent::__construct();

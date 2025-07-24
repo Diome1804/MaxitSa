@@ -7,15 +7,7 @@ use PDO;
 
 class TransactionRepository extends AbstractRepository
 {
-    private static ?TransactionRepository $instance = null;
 
-    public static function getInstance(): TransactionRepository
-    {
-        if (self::$instance === null) {
-            self::$instance = new TransactionRepository();
-        }
-        return self::$instance;
-    }
 
     public function findByUserId(int $userId): array
     {

@@ -1,24 +1,16 @@
 <?php
 
 namespace Src\Repository;
+
 use Src\Entity\User;
 use App\Core\Abstract\AbstractRepository;
 use Src\Entity\TypeUser;
+use App\Core\Interfaces\RepositoryInterface;
 use PDO;
 
-class UserRepository extends AbstractRepository
+class UserRepository extends AbstractRepository implements RepositoryInterface
 {
-    private static UserRepository|null $instance = null;
     private string $table = '"user"';
-
-    public static function getInstance(): UserRepository
-    {
-        if (self::$instance === null) {
-            self::$instance = new UserRepository();
-        }
-        return self::$instance;
-    }
-
 
     public function __construct()
     {

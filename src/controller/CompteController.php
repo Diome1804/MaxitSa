@@ -5,7 +5,6 @@ namespace Src\Controller;
 use App\Core\Abstract\AbstractController;
 use Src\Service\CompteService;
 use Src\Service\TransactionService;
-use App\Core\App;
 use App\Core\Session;
 use App\Core\Validator;
 use App\Core\Lang;
@@ -14,12 +13,14 @@ class CompteController extends AbstractController
 {
     private TransactionService $transactionService;
     private CompteService $compteService;
+    private Validator $validator;
 
-    public function __construct()
+    public function __construct(Session $session, TransactionService $transactionService, CompteService $compteService, Validator $validator)
     {
-        parent::__construct();
-        $this->transactionService = App::getDependency('services', 'transactionServ');
-        $this->compteService = App::getDependency('services', 'compteServ');
+        parent::__construct($session);
+        $this->transactionService = $transactionService;
+        $this->compteService = $compteService;
+        $this->validator = $validator;
         Lang::detectLang();
     }
      public function index()
@@ -56,7 +57,7 @@ class CompteController extends AbstractController
         $userId = Session::get('user')['id'];
         $telephone = $_POST['telephone'] ?? '';
         $solde = $_POST['solde'] ?? '';
-        $validator = Validator::getInstance();
+        $validator = $this->validator;
         $isValid = $validator->validate([
             'telephone' => $telephone,
             'solde' => $solde
@@ -98,7 +99,7 @@ class CompteController extends AbstractController
         }
         $userId = Session::get('user')['id'];
         $compteId = $_POST['compte_id'] ?? '';
-        $validator = Validator::getInstance();
+        $validator = $this->validator;
         $isValid = $validator->validate([
             'compte_id' => $compteId
         ], [
@@ -134,7 +135,7 @@ class CompteController extends AbstractController
         $userId = Session::get('user')['id'];
         $user = Session::get('user');
         $filterData = $this->getFilterData();
-        $validator = Validator::getInstance();
+        $validator = $this->validator;
         $filters = $validator->validateTransactionFilters($filterData);
 
         if (!$validator->validateDateCoherence($filters)) {

@@ -3,11 +3,13 @@
 namespace App\Core;
 
 use App\Core\YamlParser;
+use App\Core\DependencyContainer;
 
 class App
 {
     private static array $container = [];
     private static bool $initialized = false;
+    private static ?DependencyContainer $diContainer = null;
 
     private static function initialize(): void
     {
@@ -15,37 +17,47 @@ class App
             return;
         }
 
-        // Charger les dépendances depuis le fichier services.yml
-        $configPath = __DIR__ . '/../config/services.yml';
-        $dependencies = YamlParser::parseFile($configPath);
-
-        foreach ($dependencies as $category => $services) {
-            foreach ($services as $key => $className) {
-                // Convertir le nom de classe en closure qui appelle getInstance()
-                self::$container[$category][$key] = fn() => $className::getInstance();
-            }
-        }
-
+        self::$diContainer = DependencyContainer::getInstance();
         self::$initialized = true;
     }
 
-    
-    public static function getDependency(string $category, string $key)
+    public static function getService(string $serviceId)
     {
         self::initialize();
+        return self::$diContainer->get($serviceId);
+    }
+    
+    /**
+     * @deprecated Use getService() instead
+     */
+    public static function getDependency(string $category, string $key)
+    {
+        // Mappage temporaire pour la compatibilité
+        $serviceMap = [
+            'core' => [
+                'session' => 'session',
+                'database' => 'database',
+                'validator' => 'validator',
+                'FileUpload' => 'fileUpload'
+            ],
+            'services' => [
+                'transactionServ' => 'transactionServ',
+                'compteServ' => 'compteServ',
+                'securityServ' => 'securityServ',
+                'appdafServ' => 'appdafServ'
+            ],
+            'repository' => [
+                'compteRepo' => 'compteRepo',
+                'userRepo' => 'userRepo',
+                'transactionRepo' => 'transactionRepo'
+            ]
+        ];
 
-        if (!isset(self::$container[$category][$key])) {
-            throw new \Exception("Dependency '{$key}' not found in category '{$category}'");
+        if (isset($serviceMap[$category][$key])) {
+            return self::getService($serviceMap[$category][$key]);
         }
 
-        $dependency = self::$container[$category][$key];
-
-
-        if (is_callable($dependency)) {
-            self::$container[$category][$key] = $dependency();
-        }
-
-        return self::$container[$category][$key];
+        throw new \Exception("Dependency '{$key}' not found in category '{$category}'");
     }
 
     // Méthode de débogage pour vérifier les dépendances chargées

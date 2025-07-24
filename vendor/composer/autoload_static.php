@@ -38,6 +38,7 @@ class ComposerStaticInit59b4a818c9f3cf0d9d33f6830976bc43
         'A' => 
         array (
             'App\\Core\\Middlewares\\' => 21,
+            'App\\Core\\Interfaces\\' => 20,
             'App\\Core\\Abstract\\' => 18,
             'App\\Core\\' => 9,
             'App\\Config\\' => 11,
@@ -88,6 +89,10 @@ class ComposerStaticInit59b4a818c9f3cf0d9d33f6830976bc43
         'App\\Core\\Middlewares\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app/core/middlewares',
+        ),
+        'App\\Core\\Interfaces\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/app/core/interfaces',
         ),
         'App\\Core\\Abstract\\' => 
         array (

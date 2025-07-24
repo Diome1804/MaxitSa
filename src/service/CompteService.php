@@ -2,25 +2,15 @@
 namespace Src\Service;
 
 use Src\Repository\CompteRepository;
-use App\Core\App;
+use App\Core\Interfaces\CompteServiceInterface;
 
-class CompteService
+class CompteService implements CompteServiceInterface
 {
     private CompteRepository $compteRepository;
 
-    private static ?CompteService $instance = null;
-
-    public static function getInstance(): CompteService
+    public function __construct(CompteRepository $compteRepository)
     {
-        if (self::$instance === null) {
-            self::$instance = new CompteService();
-        }
-        return self::$instance;
-    }
-
-    public function __construct()
-    {
-        $this->compteRepository = App::getDependency('repository', 'compteRepo');
+        $this->compteRepository = $compteRepository;
     }
 
 

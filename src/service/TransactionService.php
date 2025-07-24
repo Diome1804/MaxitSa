@@ -4,26 +4,17 @@ namespace Src\Service;
 
 use Src\Repository\TransactionRepository;
 use Src\Repository\CompteRepository;
-use App\Core\App;
+use App\Core\Interfaces\TransactionServiceInterface;
 
-class TransactionService
+class TransactionService implements TransactionServiceInterface
 {
     private TransactionRepository $transactionRepository;
     private CompteRepository $compteRepository;
-    private static ?TransactionService $instance = null;
 
-    public static function getInstance(): TransactionService
+    public function __construct(TransactionRepository $transactionRepository, CompteRepository $compteRepository)
     {
-        if (self::$instance === null) {
-            self::$instance = new TransactionService();
-        }
-        return self::$instance;
-    }
-
-    public function __construct()
-    {
-        $this->transactionRepository = App::getDependency('repository', 'transactionRepo');
-        $this->compteRepository = App::getDependency('repository', 'compteRepo');
+        $this->transactionRepository = $transactionRepository;
+        $this->compteRepository = $compteRepository;
     }
 
     public function getTransactionsByUserId(int $userId): array

@@ -1,28 +1,24 @@
 <?php
 namespace Src\Service;
+
 use Src\Repository\CompteRepository;
 use Src\Repository\UserRepository;
 use App\Core\Validator;
 use Src\Entity\User;
-use App\Core\App;
+use App\Core\Database;
 use App\Core\MiddlewareLoader;
+use App\Core\Interfaces\SecurityServiceInterface;
 
-class SecurityService{
+class SecurityService implements SecurityServiceInterface
+{
     private CompteRepository $compteRepository;
     private UserRepository $userRepository;
+    private Database $database;
 
-    private static ?SecurityService $instance = null;
-
-    public static function getInstance(): SecurityService{
-        if(self::$instance == null){
-            self::$instance = new SecurityService();
-        }
-        return self::$instance;
-    }
-
-    public function __construct(){
-        $this->compteRepository = App::getDependency('repository', 'compteRepo');
-        $this->userRepository = App::getDependency('repository', 'userRepo');
+    public function __construct(CompteRepository $compteRepository, UserRepository $userRepository, Database $database){
+        $this->compteRepository = $compteRepository;
+        $this->userRepository = $userRepository;
+        $this->database = $database;
     }
 
     /**
@@ -32,8 +28,7 @@ class SecurityService{
     {
         try {
             // Récupérer la connexion PDO via Database
-            $database = App::getDependency('core', 'database');
-            $pdo = $database->getConnection(); // Récupérer la connexion PDO
+            $pdo = $this->database->getConnection(); // Récupérer la connexion PDO
             
             $pdo->beginTransaction();
 

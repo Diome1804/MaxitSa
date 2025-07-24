@@ -9,7 +9,6 @@ use Src\Repository\CompteRepository;
 use App\Core\FileUpload;
 use App\Core\Validator;
 use App\Core\Session;
-use App\Core\App;
 use App\Core\MiddlewareLoader;
 use App\Core\Lang;
 
@@ -21,14 +20,14 @@ class SecurityController extends AbstractController
     private Validator $validator;
     private FileUpload $fileUpload;
 
-    public function __construct()
+    public function __construct(Session $session, SecurityService $securityService, AppDAFService $appDAFService, CompteRepository $compteRepository, Validator $validator, FileUpload $fileUpload)
     {
-        parent::__construct();
-        $this->compteRepository = App::getDependency('repository', 'compteRepo');
-        $this->securityService = App::getDependency('services', 'securityServ');
-        $this->appDAFService = App::getDependency('services','appdafServ');
-        $this->validator = Validator::getInstance();
-        $this->fileUpload = FileUpload::getInstance(); 
+        parent::__construct($session);
+        $this->securityService = $securityService;
+        $this->appDAFService = $appDAFService;
+        $this->compteRepository = $compteRepository;
+        $this->validator = $validator;
+        $this->fileUpload = $fileUpload;
         Lang::detectLang();
     }
     public function index()

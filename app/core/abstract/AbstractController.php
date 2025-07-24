@@ -1,25 +1,18 @@
 <?php
 
 namespace App\Core\Abstract;
-use App\Core\App;
+
 use App\Core\Session;
+use App\Core\Interfaces\ControllerInterface;
 
-abstract class AbstractController extends Session{
- 
-     protected $session;
-     private static AbstractController|null $instance = null;
+abstract class AbstractController implements ControllerInterface
+{
+    protected Session $session;
 
-    public static function getInstance(){
-        if(self::$instance === null){
-            self::$instance = new static();
-        }
-        return self::$instance;
+    public function __construct(Session $session)
+    {
+        $this->session = $session;
     }
-
-    public function __construct(){
-        $this->session = App::getDependency('core', 'session');
-    }
-
 
     abstract public function index();
     abstract public function create();

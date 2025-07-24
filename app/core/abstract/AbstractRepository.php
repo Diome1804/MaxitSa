@@ -4,12 +4,13 @@ use App\Core\Database;
 
 use \PDO;
 
-abstract class AbstractRepository extends Database{
+abstract class AbstractRepository {
 
     protected PDO $pdo;
 
     public function __construct(){
-        $this->pdo = parent::getInstance()->getConnection();
+        $database = Database::getInstance();
+        $this->pdo = $database->getConnection();
     }
 
     abstract public function selectAll();
