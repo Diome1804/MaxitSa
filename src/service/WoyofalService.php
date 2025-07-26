@@ -153,6 +153,7 @@ class WoyofalService implements WoyofalServiceInterface
                 'user_id' => $userId,
                 'type' => 'woyofal',
                 'montant' => $montant,
+                'date' => date('Y-m-d H:i:s'), // Ajouter la date obligatoire
                 'reference' => $woyofalData['reference'] ?? 'WYF' . uniqid(),
                 'statut' => 'success',
                 'details' => json_encode([

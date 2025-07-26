@@ -357,8 +357,8 @@ class TransactionRepository extends AbstractRepository
             // Pour les transactions Woyofal, on utilise une structure différente
             if (isset($data['type']) && $data['type'] === 'woyofal') {
                 $sql = "
-                    INSERT INTO transactions (user_id, type, montant, reference, statut, details, date_creation) 
-                    VALUES (:user_id, :type, :montant, :reference, :statut, :details, :date_creation)
+                    INSERT INTO transactions (user_id, type, montant, date, reference, statut, details, date_creation) 
+                    VALUES (:user_id, :type, :montant, :date, :reference, :statut, :details, :date_creation)
                 ";
                 
                 $stmt = $this->pdo->prepare($sql);
@@ -366,6 +366,7 @@ class TransactionRepository extends AbstractRepository
                     'user_id' => $data['user_id'],
                     'type' => $data['type'],
                     'montant' => $data['montant'],
+                    'date' => $data['date'],
                     'reference' => $data['reference'],
                     'statut' => $data['statut'],
                     'details' => $data['details'],
