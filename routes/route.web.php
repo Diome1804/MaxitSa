@@ -2,6 +2,7 @@
 
 use Src\Controller\CompteController;
 use Src\Controller\SecurityController;
+use Src\Controller\WoyofalController;
 
 
 $routes = [
@@ -47,5 +48,27 @@ $routes = [
     "/api/verifier-cni" => [
         'controller' => SecurityController::class,
         'method' => 'verifierCNI'
+    ],
+    
+    // Routes Woyofal
+    "/woyofal" => [
+        'controller' => WoyofalController::class,
+        'method' => 'index',
+        'middlewares' => ['auth']
+    ],
+    "/woyofal/acheter" => [
+        'controller' => WoyofalController::class,
+        'method' => 'acheter',
+        'middlewares' => ['auth']
+    ],
+    "/woyofal/recu" => [
+        'controller' => WoyofalController::class,
+        'method' => 'recu',
+        'middlewares' => ['auth']
+    ],
+    "/woyofal/historique" => [
+        'controller' => WoyofalController::class,
+        'method' => 'historique',
+        'middlewares' => ['auth']
     ],
 ];

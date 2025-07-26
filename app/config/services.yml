@@ -21,7 +21,9 @@ securityServ: Src\Service\SecurityService
 compteServ: Src\Service\CompteService
 transactionServ: Src\Service\TransactionService
 appdafServ: Src\Service\AppDAFService
+woyofalServ: Src\Service\WoyofalService
 
 # Contrôleurs
 compteController: Src\Controller\CompteController
 securityController: Src\Controller\SecurityController
+woyofalController: Src\Controller\WoyofalController

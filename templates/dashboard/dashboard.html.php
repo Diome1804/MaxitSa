@@ -170,12 +170,56 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Bouton Nouveau compte -->
-                                <button id="openCompteModal" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-xs font-semibold ml-4">
-                                    Nouveau compte
-                                </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Actions rapides</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <a href="<?= APP_URL ?>/woyofal" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white p-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">Woyofal</h3>
+                                    <p class="text-sm opacity-90">Acheter de l'électricité</p>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="<?= APP_URL ?>/transactions" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">Transactions</h3>
+                                    <p class="text-sm opacity-90">Consulter l'historique</p>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <button id="openCompteModalBtn" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">Nouveau compte</h3>
+                                    <p class="text-sm opacity-90">Créer un compte secondaire</p>
+                                </div>
+                            </div>
+                        </button>
                     </div>
                 </div>
 
@@ -257,8 +301,8 @@
     </div>
 
     <script>
-        // Ouvre le modal
-        document.getElementById('openCompteModal').onclick = function() {
+        // Ouvre le modal - bouton dans actions rapides
+        document.getElementById('openCompteModalBtn').onclick = function() {
             document.getElementById('compteModal').classList.remove('hidden');
         };
         // Ferme le modal

@@ -72,6 +72,7 @@ class Router
         $mapping = [
             'Src\\Controller\\SecurityController' => 'securityController',
             'Src\\Controller\\CompteController' => 'compteController',
+            'Src\\Controller\\WoyofalController' => 'woyofalController',
         ];
 
         return $mapping[$controllerClass] ?? null;

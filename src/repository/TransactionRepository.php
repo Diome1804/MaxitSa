@@ -195,6 +195,75 @@ class TransactionRepository extends AbstractRepository
         }
     }
 
+    public function findByUserIdAndType(int $userId, string $type, int $limit = 10): array
+    {
+        try {
+            // Pour les transactions Woyofal, on stocke directement user_id
+            if ($type === 'woyofal') {
+                $sql = "
+                    SELECT * FROM transactions 
+                    WHERE user_id = :userId AND type = :type
+                    ORDER BY date_creation DESC 
+                    LIMIT :limit
+                ";
+            } else {
+                $sql = "
+                    SELECT t.*, c.num_compte 
+                    FROM transactions t 
+                    INNER JOIN compte c ON t.compte_id = c.id 
+                    WHERE c.user_id = :userId AND t.type = :type
+                    ORDER BY t.date DESC 
+                    LIMIT :limit
+                ";
+            }
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindParam(':type', $type, PDO::PARAM_STR);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            error_log("Erreur findByUserIdAndType: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function findByIdAndUserId(int $transactionId, int $userId, string $type = null): ?array
+    {
+        try {
+            if ($type === 'woyofal') {
+                $sql = "
+                    SELECT * FROM transactions 
+                    WHERE id = :transactionId AND user_id = :userId AND type = :type
+                ";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindParam(':transactionId', $transactionId, PDO::PARAM_INT);
+                $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+                $stmt->bindParam(':type', $type, PDO::PARAM_STR);
+            } else {
+                $sql = "
+                    SELECT t.*, c.num_compte 
+                    FROM transactions t 
+                    INNER JOIN compte c ON t.compte_id = c.id 
+                    WHERE t.id = :transactionId AND c.user_id = :userId
+                ";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindParam(':transactionId', $transactionId, PDO::PARAM_INT);
+                $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            }
+            
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ?: null;
+        } catch (\Exception $e) {
+            error_log("Erreur findByIdAndUserId: " . $e->getMessage());
+            return null;
+        }
+    }
+
     public function create(array $data): bool
     {
         $sql = "
@@ -223,7 +292,34 @@ class TransactionRepository extends AbstractRepository
 
     public function insert(array $data)
     {
-        return $this->create($data);
+        try {
+            // Pour les transactions Woyofal, on utilise une structure différente
+            if (isset($data['type']) && $data['type'] === 'woyofal') {
+                $sql = "
+                    INSERT INTO transactions (user_id, type, montant, reference, statut, details, date_creation) 
+                    VALUES (:user_id, :type, :montant, :reference, :statut, :details, :date_creation)
+                ";
+                
+                $stmt = $this->pdo->prepare($sql);
+                $result = $stmt->execute([
+                    'user_id' => $data['user_id'],
+                    'type' => $data['type'],
+                    'montant' => $data['montant'],
+                    'reference' => $data['reference'],
+                    'statut' => $data['statut'],
+                    'details' => $data['details'],
+                    'date_creation' => $data['date_creation']
+                ]);
+                
+                return $result ? $this->pdo->lastInsertId() : false;
+            }
+            
+            // Pour les autres transactions, utiliser l'ancienne méthode
+            return $this->create($data);
+        } catch (\Exception $e) {
+            error_log("Erreur insert transaction: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function update() {}

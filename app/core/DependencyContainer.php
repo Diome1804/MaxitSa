@@ -94,6 +94,20 @@ class DependencyContainer
 
         $typeName = $type instanceof \ReflectionNamedType ? $type->getName() : (string)$type;
         
+        // Mapping spécial pour les interfaces
+        $interfaceMapping = [
+            'App\\Core\\Interfaces\\WoyofalServiceInterface' => 'woyofalServ',
+            'App\\Core\\Interfaces\\CompteServiceInterface' => 'compteServ',
+            'App\\Core\\Interfaces\\SecurityServiceInterface' => 'securityServ',
+            'App\\Core\\Interfaces\\TransactionServiceInterface' => 'transactionServ',
+            'App\\Core\\Interfaces\\AppDAFServiceInterface' => 'appdafServ'
+        ];
+        
+        // Vérifier d'abord les interfaces
+        if (isset($interfaceMapping[$typeName])) {
+            return $this->get($interfaceMapping[$typeName]);
+        }
+        
         // Priorité aux services spécialisés (les plus longs en premier)
         $services = $this->config;
         uksort($services, function($a, $b) {

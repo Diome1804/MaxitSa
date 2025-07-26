@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
-use App\Core\MiddlewareLoader;
+use App\Core\DependencyContainer;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -14,8 +14,9 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     echo "Connexion réussie à la base de données\n";
     
-    // Initialiser le middleware loader
-    $middlewareLoader = MiddlewareLoader::getInstance();
+    // Initialiser le container de dépendances
+    $container = DependencyContainer::getInstance();
+    $cryptoMiddleware = $container->get('App\Core\Middleware\CryptoMiddleware');
 } catch (PDOException $e) {
     die("Connexion échouée : " . $e->getMessage());
 }
@@ -39,8 +40,8 @@ try {
 
     // 2. Utilisateurs
     $users = [
-        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', '1453555775775', 'recto1.png','778904433', MiddlewareLoader::execute('crypt', 'passer123'), $typeClientId],
-        ['Abdou', 'Diallo', 'Fann', '145355577577Z', 'recto2.png','778234433', MiddlewareLoader::execute('crypt', 'Dakar2026'), $typeClientId]
+        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', '1453555775775', 'recto1.png','778904433', $cryptoMiddleware->execute('passer123'), $typeClientId],
+        ['Abdou', 'Diallo', 'Fann', '145355577577Z', 'recto2.png','778234433', $cryptoMiddleware->execute('Dakar2026'), $typeClientId]
     ];
     $stmtUser = $pdo->prepare("INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto,telephone, password, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $userIds = [];

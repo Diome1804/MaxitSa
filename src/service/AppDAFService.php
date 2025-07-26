@@ -2,17 +2,10 @@
 
 namespace Src\Service;
 
-class AppDAFService 
+use App\Core\Interfaces\AppDAFServiceInterface;
+
+class AppDAFService implements AppDAFServiceInterface
 {
-
-    private static ?AppDAFService $instance = null;
-
-    public static function getInstance(): AppDAFService{
-        if(self::$instance == null){
-            self::$instance = new AppDAFService();
-        }
-        return self::$instance;
-    }
     private string $baseUrl = 'https://appdaff-zwqf.onrender.com';
     
     /**

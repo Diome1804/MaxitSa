@@ -20,6 +20,11 @@ class CompteService implements CompteServiceInterface
         return $this->compteRepository->getsoldeByUserId($userId);
     }
 
+    public function updateSolde(int $userId, float $nouveauSolde): bool
+    {
+        return $this->compteRepository->updateSolde($userId, $nouveauSolde);
+    }
+
     public function createCompteSecondaire(int $userId, string $numero, float $soldeInitial): array
     {
         $soldePrincipal = $this->compteRepository->getSoldeByUserId($userId);
