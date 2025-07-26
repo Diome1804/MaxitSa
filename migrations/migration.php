@@ -41,7 +41,6 @@ try {
         adresse TEXT,
         num_carte_identite VARCHAR(50),
         photorecto TEXT,
-        photoverso TEXT,
         password VARCHAR(255),
         telephone VARCHAR(50),
         type_id INTEGER REFERENCES type_user(id)

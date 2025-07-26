@@ -39,10 +39,10 @@ try {
 
     // 2. Utilisateurs
     $users = [
-        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', '1453555775775', 'recto1.png', 'verso1.png','778904433', MiddlewareLoader::execute('crypt', 'passer123'), $typeClientId],
-        ['Abdou', 'Diallo', 'Fann', '145355577577Z', 'recto2.png', 'verso2.png','778234433', MiddlewareLoader::execute('crypt', 'Dakar2026'), $typeClientId]
+        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', '1453555775775', 'recto1.png','778904433', MiddlewareLoader::execute('crypt', 'passer123'), $typeClientId],
+        ['Abdou', 'Diallo', 'Fann', '145355577577Z', 'recto2.png','778234433', MiddlewareLoader::execute('crypt', 'Dakar2026'), $typeClientId]
     ];
-    $stmtUser = $pdo->prepare("INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, telephone, password, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmtUser = $pdo->prepare("INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto,telephone, password, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $userIds = [];
     foreach ($users as $user) {
         $stmtUser->execute($user);
@@ -52,9 +52,9 @@ try {
 
     // 3. Comptes
     $comptes = [
-        ['CP001', 150000, $userIds[0], 'ComptePrincipal', '770000001'],
-        ['CP002', 120000, $userIds[1], 'ComptePrincipal', '770000002'],
-        ['CS001', 20000, $userIds[0], 'CompteSecondaire', '770000003']
+        ['CPT17534363326919', 150000, $userIds[0], 'ComptePrincipal', '770000123'],
+        ['CPT17534363326213', 120000, $userIds[1], 'ComptePrincipal', '770800002'],
+        ['CPT17534363326212', 20000, $userIds[0], 'CompteSecondaire', '770000403']
     ];
     $stmtCompte = $pdo->prepare("INSERT INTO compte (num_compte, solde, user_id, type, num_telephone) VALUES (?, ?, ?, ?, ?)");
     $compteIds = [];

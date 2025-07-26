@@ -5,9 +5,7 @@ namespace Src\Service;
 class AppDAFService 
 {
 
-
-
-      private static ?AppDAFService $instance = null;
+    private static ?AppDAFService $instance = null;
 
     public static function getInstance(): AppDAFService{
         if(self::$instance == null){

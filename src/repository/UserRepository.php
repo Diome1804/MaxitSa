@@ -22,8 +22,8 @@ class UserRepository extends AbstractRepository implements RepositoryInterface
     public function insert(array $userData): int|false
     {
         try {
-            $sql = "INSERT INTO {$this->table} (nom, prenom, adresse, num_carte_identite, photorecto, photoverso, telephone, password, type_id) 
-                    VALUES (:nom, :prenom, :adresse, :num_carte_identite, :photorecto, :photoverso, :telephone, :password, :type_id)";
+            $sql = "INSERT INTO {$this->table} (nom, prenom, adresse, num_carte_identite, photorecto,telephone, password, type_id) 
+                    VALUES (:nom, :prenom, :adresse, :num_carte_identite, :photorecto,:telephone, :password, :type_id)";
 
             $stmt = $this->pdo->prepare($sql); // Utiliser $this->pdo
             $result = $stmt->execute([
@@ -32,7 +32,6 @@ class UserRepository extends AbstractRepository implements RepositoryInterface
                 ':adresse' => $userData['adresse'],
                 ':num_carte_identite' => $userData['num_carte_identite'],
                 ':photorecto' => $userData['photorecto'],
-                ':photoverso' => $userData['photoverso'],
                 ':telephone' => $userData['telephone'],
                 ':password' => $userData['password'],
                 ':type_id' => $userData['type_id']

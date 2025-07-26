@@ -20,17 +20,17 @@ class User extends AbstractEntity
     private TypeUser $type;
     private array $comptes = [];
 
-    public function __construct(string $nom, string $prenom, TypeUser $type, string $adresse, string $numCarteIdentite, string $photorecto, string $photoverso, string $telephone, string $password)
+    public function __construct(?string $nom, ?string $prenom, TypeUser $type, ?string $adresse, ?string $numCarteIdentite, ?string $photorecto, ?string $photoverso, ?string $telephone, ?string $password)
     {
-        $this->nom = $nom;
-        $this->prenom = $prenom;
+        $this->nom = $nom ?? '';
+        $this->prenom = $prenom ?? '';
         $this->type = $type;
-        $this->adresse = $adresse;
-        $this->numCarteIdentite = $numCarteIdentite;
-        $this->photorecto = $photorecto;
-        $this->photoverso = $photoverso;
-        $this->telephone = $telephone;
-        $this->password = $password;
+        $this->adresse = $adresse ?? '';
+        $this->numCarteIdentite = $numCarteIdentite ?? '';
+        $this->photorecto = $photorecto ?? '';
+        $this->photoverso = $photoverso ?? '';
+        $this->telephone = $telephone ?? '';
+        $this->password = $password ?? '';
     }
 
     // Getters
@@ -69,6 +69,8 @@ class User extends AbstractEntity
             $tableau['password'] ?? ''
         ]);
 
+        // var_dump($tableau);
+        // die();  
         
         if (isset($tableau['id'])) {
             $reflection = new \ReflectionClass($user);
