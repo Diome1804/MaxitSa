@@ -119,14 +119,20 @@ class TransactionService implements TransactionServiceInterface
 
     public function formatTransactionForDisplay(array $transaction): array
     {
+        // Utiliser la bonne date selon le type de transaction
+        $date = $transaction['date_transaction'] ?? $transaction['date'] ?? $transaction['date_creation'] ?? date('Y-m-d');
+        
         return [
             'id' => $transaction['id'],
             'type' => $this->getTypeLabel($transaction['type']),
             'montant' => number_format($transaction['montant'], 0, ',', ' ') . ' FCFA',
-            'date' => date('d/m/Y', strtotime($transaction['date'])),
-            'numero_compte' => $transaction['num_compte'] ?? '', 
+            'date' => date('d/m/Y', strtotime($date)),
+            'numero_compte' => $transaction['num_compte'] ?? 'N/A', 
             'css_class' => $this->getTypeClass($transaction['type']),
-            'badge_class' => $this->getTypeBadgeClass($transaction['type'])
+            'badge_class' => $this->getTypeBadgeClass($transaction['type']),
+            'description' => $transaction['description'] ?? '',
+            'reference' => $transaction['reference'] ?? '',
+            'statut' => $transaction['statut'] ?? 'success'
         ];
     }
 
@@ -137,6 +143,11 @@ class TransactionService implements TransactionServiceInterface
             'transfert' => 'Transfert',
             'depot' => 'Dépôt',
             'retrait' => 'Retrait',
+            'woyofal' => 'Achat Woyofal',
+            'transfert_sortant' => 'Transfert sortant',
+            'transfert_entrant' => 'Transfert entrant',
+            'frais_transfert' => 'Frais de transfert',
+            'annulation_depot' => 'Annulation dépôt',
             default => ucfirst($type)
         };
     }
@@ -146,8 +157,13 @@ class TransactionService implements TransactionServiceInterface
         return match($type) {
             'paiement' => 'text-green-600',
             'depot' => 'text-green-600',
+            'transfert_entrant' => 'text-green-600',
             'retrait' => 'text-red-600',
+            'transfert_sortant' => 'text-red-600',
+            'frais_transfert' => 'text-red-600',
+            'annulation_depot' => 'text-red-600',
             'transfert' => 'text-blue-600',
+            'woyofal' => 'text-yellow-600',
             default => 'text-gray-600'
         };
     }
@@ -157,8 +173,13 @@ class TransactionService implements TransactionServiceInterface
         return match($type) {
             'paiement' => 'bg-green-100 text-green-800',
             'depot' => 'bg-green-100 text-green-800',
+            'transfert_entrant' => 'bg-green-100 text-green-800',
             'retrait' => 'bg-red-100 text-red-800',
+            'transfert_sortant' => 'bg-red-100 text-red-800',
+            'frais_transfert' => 'bg-red-100 text-red-800',
+            'annulation_depot' => 'bg-red-100 text-red-800',
             'transfert' => 'bg-blue-100 text-blue-800',
+            'woyofal' => 'bg-yellow-100 text-yellow-800',
             default => 'bg-gray-100 text-gray-800'
         };
     }

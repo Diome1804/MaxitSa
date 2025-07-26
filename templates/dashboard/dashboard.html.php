@@ -178,7 +178,7 @@
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Actions rapides</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <a href="<?= APP_URL ?>/woyofal" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white p-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
                             <div class="flex items-center">
                                 <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
@@ -203,6 +203,20 @@
                                 <div>
                                     <h3 class="font-semibold text-lg">Transactions</h3>
                                     <p class="text-sm opacity-90">Consulter l'historique</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="<?= APP_URL ?>/depot" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">Dépôts/Transferts</h3>
+                                    <p class="text-sm opacity-90">Effectuer des opérations</p>
                                 </div>
                             </div>
                         </a>

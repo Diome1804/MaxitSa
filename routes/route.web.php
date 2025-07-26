@@ -3,6 +3,7 @@
 use Src\Controller\CompteController;
 use Src\Controller\SecurityController;
 use Src\Controller\WoyofalController;
+use Src\Controller\DepotController;
 
 
 $routes = [
@@ -69,6 +70,28 @@ $routes = [
     "/woyofal/historique" => [
         'controller' => WoyofalController::class,
         'method' => 'historique',
+        'middlewares' => ['auth']
+    ],
+    
+    // Routes Dépôts et Transferts
+    "/depot" => [
+        'controller' => DepotController::class,
+        'method' => 'index',
+        'middlewares' => ['auth']
+    ],
+    "/depot/effectuer" => [
+        'controller' => DepotController::class,
+        'method' => 'depot',
+        'middlewares' => ['auth']
+    ],
+    "/depot/transfert" => [
+        'controller' => DepotController::class,
+        'method' => 'transfert',
+        'middlewares' => ['auth']
+    ],
+    "/depot/annuler" => [
+        'controller' => DepotController::class,
+        'method' => 'annuler',
         'middlewares' => ['auth']
     ],
 ];

@@ -69,6 +69,35 @@ class CompteRepository extends AbstractRepository{
          }
      }
 
+     public function updateSoldeByCompteId(int $compteId, float $nouveauSolde): bool
+     {
+         try {
+             $sql = "UPDATE $this->table SET solde = :solde WHERE id = :compte_id";
+             $stmt = $this->pdo->prepare($sql);
+             return $stmt->execute([
+                 ':solde' => $nouveauSolde,
+                 ':compte_id' => $compteId
+             ]);
+         } catch (\Exception $e) {
+             error_log("Erreur updateSoldeByCompteId: " . $e->getMessage());
+             return false;
+         }
+     }
+
+     public function findById(int $compteId): ?array
+     {
+         try {
+             $sql = "SELECT * FROM $this->table WHERE id = :compte_id";
+             $stmt = $this->pdo->prepare($sql);
+             $stmt->execute([':compte_id' => $compteId]);
+             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+             return $result ?: null;
+         } catch (\Exception $e) {
+             error_log("Erreur findById: " . $e->getMessage());
+             return null;
+         }
+     }
+
      public function getComptesByUserId(int $userId): array
      {
          try {

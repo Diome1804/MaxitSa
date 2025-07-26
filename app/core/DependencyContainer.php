@@ -100,7 +100,8 @@ class DependencyContainer
             'App\\Core\\Interfaces\\CompteServiceInterface' => 'compteServ',
             'App\\Core\\Interfaces\\SecurityServiceInterface' => 'securityServ',
             'App\\Core\\Interfaces\\TransactionServiceInterface' => 'transactionServ',
-            'App\\Core\\Interfaces\\AppDAFServiceInterface' => 'appdafServ'
+            'App\\Core\\Interfaces\\AppDAFServiceInterface' => 'appdafServ',
+            'App\\Core\\Interfaces\\DepotServiceInterface' => 'depotServ'
         ];
         
         // Vérifier d'abord les interfaces
