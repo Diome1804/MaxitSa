@@ -6,7 +6,12 @@ use App\Core\Interfaces\AppDAFServiceInterface;
 
 class AppDAFService implements AppDAFServiceInterface
 {
-    private string $baseUrl = 'https://appdaff-zwqf.onrender.com';
+    private string $baseUrl;
+    
+    public function __construct()
+    {
+        $this->baseUrl = APPDAF_API_URL;
+    }
     
     /**
      * Recherche un citoyen par son numéro CNI dans l'API AppDAF

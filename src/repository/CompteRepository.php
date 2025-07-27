@@ -31,15 +31,8 @@ class CompteRepository extends AbstractRepository{
         }
     }
 
-  
-
-  
-
-
- 
-
-     public function insert(array $data)
-     {
+         public function insert(array $data)
+    {
          try {
              $sql = "INSERT INTO $this->table (user_id, num_compte, solde, type, num_telephone) VALUES (:user_id, :num_compte, :solde, :type, :num_telephone)";
              $stmt = $this->pdo->prepare($sql);

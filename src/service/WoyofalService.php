@@ -10,7 +10,7 @@ use App\Core\Lang;
 
 class WoyofalService implements WoyofalServiceInterface
 {
-    private string $baseUrl = 'https://appwoyofal.onrender.com';
+    private string $baseUrl;
     private int $timeout = 30;
     private int $maxRetries = 3;
     
@@ -23,6 +23,7 @@ class WoyofalService implements WoyofalServiceInterface
         TransactionRepository $transactionRepository,
         ReflectionFactory $factory
     ) {
+        $this->baseUrl = WOYOFAL_API_URL;
         $this->compteService = $compteService;
         $this->transactionRepository = $transactionRepository;
         $this->factory = $factory;
