@@ -1,32 +1,18 @@
 services:
-  # Application Web PHP
+  # Application Web PHP (sans base de données)
   - type: web
     name: maxitsa-app
     env: docker
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader &&
-      php migrations/migration.php &&
-      php migrations/migration_woyofal.php &&
-      php migrations/migration_depot.php &&
-      php migrations/migration_enum_types.php &&
-      php seeders/seeder.php
+    buildCommand: composer install --no-dev --optimize-autoloader
     startCommand: php -S 0.0.0.0:$PORT -t public
     envVars:
       - key: RENDER
         value: "true"
       - key: APP_URL
         sync: false
-      - key: DB_HOST
-        value: dpg-d23kluumcj7s739g2db0-a.oregon-postgres.render.com
-      - key: DB_PORT
-        value: "5432"
-      - key: DB_NAME
-        value: db_maxit
-      - key: DB_USER
-        value: db_maxit_user
-      - key: DB_PASSWORD
-        value: vk95ejMTRFN7QtFPARj2v5qaqSTCdzv3
+      - key: DATABASE_URL
+        value: postgresql://postgres:IoiQfHDMYkFAXvwkHaawDOlpkKJPLslx@shuttle.proxy.rlwy.net:30832/railway
       - key: APPDAF_API_URL
         value: https://appdaff-zwqf.onrender.com
       - key: WOYOFAL_API_URL

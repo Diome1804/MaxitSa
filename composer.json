@@ -1,34 +1,17 @@
 {
-    "name": "abdoulaye/maxit",
-    "description": "Projet  maxit",
+    "require": {
+        "php": "^8.1",
+        "vlucas/phpdotenv": "^5.4"
+    },
     "autoload": {
         "psr-4": {
-            "App\\Config\\": "app/config/",
-            "App\\Core\\": "app/core/",
-            "App\\Core\\Abstract\\": "app/core/abstract/",
-            "App\\Core\\Interfaces\\": "app/core/interfaces/",
-            "App\\Core\\Middlewares\\": "app/core/middlewares/",
-            "Src\\Controller\\": "src/controller/",
-            "Src\\Entity\\": "src/entity/",
-            "Src\\Repository\\": "src/repository/",
-            "Src\\Service\\": "src/service/"
+            "App\\": "app/",
+            "Src\\": "src/"
         }
-    },
-    "authors": [
-        {
-            "name": "Abdoulaye Diome"
-        }
-    ],
-    "require": {
-        "vlucas/phpdotenv": "^5.6"
     },
     "scripts": {
-        "database:migrate": "php migrations/migration.php",
-        "database:seed": "php seeders/seeder.php",
-        "database:clean": "php seeders/clean.php",
-        "database:fresh": [
-            "@database:clean",
-            "@database:seed"
+        "post-install-cmd": [
+            "echo 'Dependencies installed successfully'"
         ]
     }
 }

@@ -2,19 +2,19 @@
 
 use Dotenv\Dotenv;
 
-// Priorité absolue à l'URL complète de base de données pour Render
-if (getenv('RENDER')) {
-    // Utiliser l'URL complète fournie par Render
-    $databaseUrl = 'postgresql://db_maxit_user:vk95ejM7RFN7QtFPARj2v5qsq5TCd2v3@dpg-d23kluumcj7s739g2db0-a.oregon-postgres.render.com/db_maxit';
-    
+// Priorité à l'URL de base de données (Railway DATABASE_URL ou variables séparées)
+$databaseUrl = getenv('DATABASE_URL');
+
+if ($databaseUrl) {
+    // Utiliser l'URL complète (Railway ou autres services)
     $urlParts = parse_url($databaseUrl);
     $dbHost = $urlParts['host'];
-    $dbPort = $urlParts['port'] ?? '5432'; // Port par défaut si non spécifié
+    $dbPort = $urlParts['port'] ?? '5432';
     $dbName = ltrim($urlParts['path'], '/');
     $dbUser = $urlParts['user'];
     $dbPassword = $urlParts['pass'];
 } else {
-    // Variables d'environnement locales
+    // Variables d'environnement séparées ou locales
     $dbHost = getenv('DB_HOST') ?: $_ENV['DB_HOST'] ?? 'localhost';
     $dbPort = getenv('DB_PORT') ?: $_ENV['DB_PORT'] ?? '5432';
     $dbName = getenv('DB_NAME') ?: $_ENV['DB_NAME'] ?? 'maxitsa';
