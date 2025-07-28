@@ -1,0 +1,49 @@
+services:
+  # Base de données PostgreSQL
+  - type: pserv
+    name: maxitsa-db
+    env: docker
+    plan: free
+    databases:
+      - name: maxitsa
+        user: maxitsa_user
+
+  # Application Web PHP
+  - type: web
+    name: maxitsa-app
+    env: docker
+    plan: free
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader &&
+      php migrations/migration.php &&
+      php migrations/migration_woyofal.php &&
+      php migrations/migration_depot.php &&
+      php migrations/migration_enum_types.php
+    startCommand: php -S 0.0.0.0:$PORT -t public
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: DB_HOST
+        fromDatabase:
+          name: maxitsa-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: maxitsa-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: maxitsa-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: maxitsa-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: maxitsa-db
+          property: password
+      - key: APPDAF_API_URL
+        value: https://appdaff-zwqf.onrender.com
+      - key: WOYOFAL_API_URL
+        value: https://appwoyofal.onrender.com
