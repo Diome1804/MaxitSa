@@ -55,7 +55,7 @@ $dsn = "pgsql:host={$dbHost};dbname={$dbName};port={$dbPort}";
 //ici on defini les constantes qu on va utiliser dans notre application
 define('DB_USER', $dbUser);
 define('DB_PASSWORD', $dbPassword);
-define('APP_URL', getenv('APP_URL') ?: $_ENV['APP_URL'] ?? 'http://localhost:8000');
+define('APP_URL', getenv('APP_URL') ?: $_ENV['APP_URL'] ?? 'https://maxitsa-app.onrender.com');
 define('dsn', $dsn);
 
 // URLs des services externes
