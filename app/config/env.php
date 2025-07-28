@@ -5,11 +5,11 @@ use Dotenv\Dotenv;
 // Priorité absolue à l'URL complète de base de données pour Render
 if (getenv('RENDER')) {
     // Utiliser l'URL complète fournie par Render
-    $databaseUrl = 'postgresql://db_maxit_user:vk95ejMTRFN7QtFPARj2v5qaqSTCdzv3@dpg-d23kluumcj7s739g2db0-a.oregon-postgres.render.com:5432/db_maxit';
+    $databaseUrl = 'postgresql://db_maxit_user:vk95ejM7RFN7QtFPARj2v5qsq5TCd2v3@dpg-d23kluumcj7s739g2db0-a.oregon-postgres.render.com/db_maxit';
     
     $urlParts = parse_url($databaseUrl);
     $dbHost = $urlParts['host'];
-    $dbPort = $urlParts['port'];
+    $dbPort = $urlParts['port'] ?? '5432'; // Port par défaut si non spécifié
     $dbName = ltrim($urlParts['path'], '/');
     $dbUser = $urlParts['user'];
     $dbPassword = $urlParts['pass'];
