@@ -18,10 +18,7 @@ class ComposerStaticInit59b4a818c9f3cf0d9d33f6830976bc43
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
-            'Src\\Service\\' => 12,
-            'Src\\Repository\\' => 15,
-            'Src\\Entity\\' => 11,
-            'Src\\Controller\\' => 15,
+            'Src\\' => 4,
         ),
         'P' => 
         array (
@@ -37,11 +34,7 @@ class ComposerStaticInit59b4a818c9f3cf0d9d33f6830976bc43
         ),
         'A' => 
         array (
-            'App\\Core\\Middlewares\\' => 21,
-            'App\\Core\\Interfaces\\' => 20,
-            'App\\Core\\Abstract\\' => 18,
-            'App\\Core\\' => 9,
-            'App\\Config\\' => 11,
+            'App\\' => 4,
         ),
     );
 
@@ -58,21 +51,9 @@ class ComposerStaticInit59b4a818c9f3cf0d9d33f6830976bc43
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Src\\Service\\' => 
+        'Src\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/service',
-        ),
-        'Src\\Repository\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/repository',
-        ),
-        'Src\\Entity\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/entity',
-        ),
-        'Src\\Controller\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/controller',
+            0 => __DIR__ . '/../..' . '/src',
         ),
         'PhpOption\\' => 
         array (
@@ -86,25 +67,9 @@ class ComposerStaticInit59b4a818c9f3cf0d9d33f6830976bc43
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
-        'App\\Core\\Middlewares\\' => 
+        'App\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/app/core/middlewares',
-        ),
-        'App\\Core\\Interfaces\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/core/interfaces',
-        ),
-        'App\\Core\\Abstract\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/core/abstract',
-        ),
-        'App\\Core\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/core',
-        ),
-        'App\\Config\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app/config',
+            0 => __DIR__ . '/../..' . '/app',
         ),
     );
 

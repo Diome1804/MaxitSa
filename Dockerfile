@@ -17,8 +17,9 @@ WORKDIR /app
 # Copier les fichiers de l'application
 COPY . .
 
-# Installer les dépendances Composer
+# Installer les dépendances Composer et regénérer l'autoload
 RUN composer install --no-dev --optimize-autoloader
+RUN composer dump-autoload --optimize
 
 # Exposer le port
 EXPOSE $PORT
