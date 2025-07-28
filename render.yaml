@@ -21,6 +21,8 @@ services:
       php migrations/migration_enum_types.php
     startCommand: php -S 0.0.0.0:$PORT -t public
     envVars:
+      - key: RENDER
+        value: "true"
       - key: APP_URL
         sync: false
       - key: DB_HOST

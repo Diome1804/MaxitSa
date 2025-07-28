@@ -2,33 +2,37 @@
 
 use Dotenv\Dotenv;
 
-// Charger le fichier .env approprié selon l'environnement
-$envFile = file_exists(__DIR__ . '/../../.env.production') ? '.env.production' : '.env';
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../../', $envFile);
-$dotenv->load();
+// Priorité absolue aux variables d'environnement système (Render)
+$dbHost = getenv('DB_HOST') ?: $_ENV['DB_HOST'] ?? 'localhost';
+$dbPort = getenv('DB_PORT') ?: $_ENV['DB_PORT'] ?? '5432';
+$dbName = getenv('DB_NAME') ?: $_ENV['DB_NAME'] ?? 'maxitsa';
+$dbUser = getenv('DB_USER') ?: $_ENV['DB_USER'] ?? 'postgres';
+$dbPassword = getenv('DB_PASSWORD') ?: $_ENV['DB_PASSWORD'] ?? '';
 
-// Priorité aux variables d'environnement système (Render) puis fichier .env
-$dbHost = $_ENV['DB_HOST'] ?? $_ENV['db_host'] ?? getenv('DB_HOST') ?: 'localhost';
-$dbPort = $_ENV['DB_PORT'] ?? $_ENV['db_port'] ?? getenv('DB_PORT') ?: '5432';
-$dbName = $_ENV['DB_NAME'] ?? $_ENV['db_name'] ?? getenv('DB_NAME') ?: 'maxitsa';
-$dbUser = $_ENV['DB_USER'] ?? $_ENV['db_user'] ?? getenv('DB_USER') ?: 'postgres';
-$dbPassword = $_ENV['DB_PASSWORD'] ?? $_ENV['db_password'] ?? getenv('DB_PASSWORD') ?: '';
+// Si on n'est pas sur Render, charger le fichier .env local
+if (!getenv('RENDER') && !getenv('DB_HOST')) {
+    $envFile = '.env';
+    if (file_exists(__DIR__ . '/../../' . $envFile)) {
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../', $envFile);
+        $dotenv->load();
+        
+        $dbHost = $_ENV['db_host'] ?? 'localhost';
+        $dbPort = $_ENV['db_port'] ?? '5432';
+        $dbName = $_ENV['db_name'] ?? 'maxitsa';
+        $dbUser = $_ENV['db_user'] ?? 'postgres';
+        $dbPassword = $_ENV['db_password'] ?? '';
+    }
+}
 
 // Construction du DSN
-if ($dbHost !== 'localhost' || getenv('RENDER')) {
-    // Environnement de production (Render)
-    $dsn = "pgsql:host={$dbHost};dbname={$dbName};port={$dbPort}";
-} else {
-    // Environnement local
-    $dsn = $_ENV['dsn'] ?? "pgsql:host=localhost;dbname=maxitsa;port=5432";
-}
+$dsn = "pgsql:host={$dbHost};dbname={$dbName};port={$dbPort}";
 
 //ici on defini les constantes qu on va utiliser dans notre application
 define('DB_USER', $dbUser);
 define('DB_PASSWORD', $dbPassword);
-define('APP_URL', $_ENV['APP_URL'] ?? getenv('APP_URL') ?: 'http://localhost:8000');
+define('APP_URL', getenv('APP_URL') ?: $_ENV['APP_URL'] ?? 'http://localhost:8000');
 define('dsn', $dsn);
 
 // URLs des services externes
-define('APPDAF_API_URL', $_ENV['APPDAF_API_URL'] ?? getenv('APPDAF_API_URL') ?: 'https://appdaff-zwqf.onrender.com');
-define('WOYOFAL_API_URL', $_ENV['WOYOFAL_API_URL'] ?? getenv('WOYOFAL_API_URL') ?: 'https://appwoyofal.onrender.com');
+define('APPDAF_API_URL', getenv('APPDAF_API_URL') ?: $_ENV['APPDAF_API_URL'] ?? 'https://appdaff-zwqf.onrender.com');
+define('WOYOFAL_API_URL', getenv('WOYOFAL_API_URL') ?: $_ENV['WOYOFAL_API_URL'] ?? 'https://appwoyofal.onrender.com');

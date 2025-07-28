@@ -7,11 +7,11 @@ echo "🚀 Début du déploiement MAXITSA...\n";
 require_once __DIR__ . '/vendor/autoload.php';
 
 // Construire le DSN depuis les variables d'environnement Render
-$dbHost = $_ENV['DB_HOST'] ?? 'localhost';
-$dbPort = $_ENV['DB_PORT'] ?? '5432';
-$dbName = $_ENV['DB_NAME'] ?? 'maxitsa';
-$dbUser = $_ENV['DB_USER'] ?? 'postgres';
-$dbPassword = $_ENV['DB_PASSWORD'] ?? '';
+$dbHost = getenv('DB_HOST') ?: 'localhost';
+$dbPort = getenv('DB_PORT') ?: '5432';
+$dbName = getenv('DB_NAME') ?: 'maxitsa';
+$dbUser = getenv('DB_USER') ?: 'postgres';
+$dbPassword = getenv('DB_PASSWORD') ?: '';
 
 $dsn = "pgsql:host={$dbHost};port={$dbPort};dbname={$dbName}";
 
