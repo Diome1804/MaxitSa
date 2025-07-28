@@ -1,13 +1,4 @@
 services:
-  # Base de données PostgreSQL
-  - type: pserv
-    name: maxitsa-db
-    env: docker
-    plan: free
-    databases:
-      - name: maxitsa
-        user: maxitsa_user
-
   # Application Web PHP
   - type: web
     name: maxitsa-app
@@ -26,25 +17,15 @@ services:
       - key: APP_URL
         sync: false
       - key: DB_HOST
-        fromDatabase:
-          name: maxitsa-db
-          property: host
+        value: dpg-d23kluumcj7s739g2db0-a.oregon-postgres.render.com
       - key: DB_PORT
-        fromDatabase:
-          name: maxitsa-db
-          property: port
+        value: "5432"
       - key: DB_NAME
-        fromDatabase:
-          name: maxitsa-db
-          property: database
+        value: db_maxit
       - key: DB_USER
-        fromDatabase:
-          name: maxitsa-db
-          property: user
+        value: db_maxit_user
       - key: DB_PASSWORD
-        fromDatabase:
-          name: maxitsa-db
-          property: password
+        value: vk95ejMTRFN7QtFPARj2v5qaqSTCdzv3
       - key: APPDAF_API_URL
         value: https://appdaff-zwqf.onrender.com
       - key: WOYOFAL_API_URL
