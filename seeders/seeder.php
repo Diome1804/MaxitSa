@@ -39,10 +39,22 @@ try {
     $typeClientId = 1; // Premier type inséré
     $typeServiceId = 1; // Même ID car une seule ligne avec les deux types
 
-    // 2. Utilisateurs
+    // 2. Utilisateurs avec données sénégalaises réalistes
+    // CONNEXION: Numéro de téléphone + Mot de passe
+    echo "\n=== COMPTES DE TEST CRÉÉS ===\n";
+    echo "Téléphone: 778232295 | Mot de passe: passer123 | Nom: Fallou Ndiaye\n";
+    echo "Téléphone: 771234567 | Mot de passe: Dakar2026 | Nom: Abdou Diallo\n";
+    echo "Téléphone: 785432198 | Mot de passe: aminata123 | Nom: Aminata Fall\n";
+    echo "Téléphone: 776543210 | Mot de passe: ousmane2024 | Nom: Ousmane Ba\n";
+    echo "Téléphone: 704567891 | Mot de passe: fatou456 | Nom: Fatou Seck\n";
+    echo "==============================\n\n";
+    
     $users = [
-        ['Fallou', 'Ndiaye', 'Dakar Liberté 6', '1453555775775', 'recto1.png','778904433', $cryptoMiddleware->execute('passer123'), $typeClientId],
-        ['Abdou', 'Diallo', 'Fann', '145355577577Z', 'recto2.png','778234433', $cryptoMiddleware->execute('Dakar2026'), $typeClientId]
+        ['Fallou', 'Ndiaye', 'Dakar Liberté 6 Extension', '1987654321098', 'recto1.png','778232295', $cryptoMiddleware->execute('passer123'), $typeClientId],
+        ['Abdou', 'Diallo', 'Fann Résidence', '1456789012345', 'recto2.png','771234567', $cryptoMiddleware->execute('Dakar2026'), $typeClientId],
+        ['Aminata', 'Fall', 'Plateau Médina', '1234567890123', 'recto3.png','785432198', $cryptoMiddleware->execute('aminata123'), $typeClientId],
+        ['Ousmane', 'Ba', 'Parcelles Assainies U10', '1345678901234', 'recto4.png','776543210', $cryptoMiddleware->execute('ousmane2024'), $typeClientId],
+        ['Fatou', 'Seck', 'Grand Yoff', '1567890123456', 'recto5.png','704567891', $cryptoMiddleware->execute('fatou456'), $typeClientId]
     ];
     $stmtUser = $pdo->prepare("INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto,telephone, password, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $userIds = [];
@@ -52,11 +64,14 @@ try {
     }
     echo "Utilisateurs insérés\n";
 
-    // 3. Comptes
+    // 3. Comptes avec numéros sénégalais
     $comptes = [
-        ['CPT17534363326919', 150000, $userIds[0], 'ComptePrincipal', '770000123'],
-        ['CPT17534363326213', 120000, $userIds[1], 'ComptePrincipal', '770800002'],
-        ['CPT17534363326212', 20000, $userIds[0], 'CompteSecondaire', '770000403']
+        ['CPT778232295001', 150000, $userIds[0], 'ComptePrincipal', '778232295'],
+        ['CPT771234567001', 120000, $userIds[1], 'ComptePrincipal', '771234567'],
+        ['CPT785432198001', 85000, $userIds[2], 'ComptePrincipal', '785432198'],
+        ['CPT776543210001', 200000, $userIds[3], 'ComptePrincipal', '776543210'],
+        ['CPT704567891001', 45000, $userIds[4], 'ComptePrincipal', '704567891'],
+        ['CPT778232295002', 25000, $userIds[0], 'CompteSecondaire', '778232295']
     ];
     $stmtCompte = $pdo->prepare("INSERT INTO compte (num_compte, solde, user_id, type, num_telephone) VALUES (?, ?, ?, ?, ?)");
     $compteIds = [];
@@ -66,11 +81,16 @@ try {
     }
     echo "Comptes insérés\n";
 
-    // 4. Transactions
+    // 4. Transactions réalistes 
     $transactions = [
-        ['2025-07-18 12:00:00', $compteIds[0], 10000, 'transfert'],
-        ['2025-07-18 14:00:00', $compteIds[1], 5000, 'paiement'],
-        ['2025-07-18 15:00:00', $compteIds[2], 2000, 'paiement']
+        ['2025-07-20 09:30:00', $compteIds[0], 15000, 'depot'],
+        ['2025-07-20 10:15:00', $compteIds[1], 25000, 'depot'],
+        ['2025-07-20 11:45:00', $compteIds[0], 5000, 'transfert'],
+        ['2025-07-20 14:20:00', $compteIds[2], 3000, 'woyofal'],
+        ['2025-07-20 16:30:00', $compteIds[3], 12000, 'transfert'],
+        ['2025-07-21 08:15:00', $compteIds[1], 2500, 'retrait'],
+        ['2025-07-21 12:00:00', $compteIds[4], 8000, 'depot'],
+        ['2025-07-21 15:45:00', $compteIds[0], 1500, 'woyofal']
     ];
     $stmtTrx = $pdo->prepare("INSERT INTO transactions (date, compte_id, montant, type) VALUES (?, ?, ?, ?)");
     foreach ($transactions as $trx) {
