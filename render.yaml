@@ -9,7 +9,8 @@ services:
       php migrations/migration.php &&
       php migrations/migration_woyofal.php &&
       php migrations/migration_depot.php &&
-      php migrations/migration_enum_types.php
+      php migrations/migration_enum_types.php &&
+      php seeders/seeder.php
     startCommand: php -S 0.0.0.0:$PORT -t public
     envVars:
       - key: RENDER

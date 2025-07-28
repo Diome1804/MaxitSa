@@ -5,14 +5,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Dotenv\Dotenv;
 use App\Core\DependencyContainer;
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+// Charger la configuration avec la même logique que l'application
+require_once __DIR__ . '/../app/config/env.php';
 
 try {
-    $dsn = $_ENV['dsn'] ?? "{$_ENV['DB_DRIVER']}:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']}";
-    $pdo = new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
+    $pdo = new PDO(dsn, DB_USER, DB_PASSWORD);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     echo "Connexion réussie à la base de données\n";
+    echo "DSN: " . dsn . "\n";
+    echo "User: " . DB_USER . "\n";
     
     // Initialiser le container de dépendances
     $container = DependencyContainer::getInstance();
