@@ -5,7 +5,7 @@ services:
     env: docker
     plan: free
     buildCommand: composer install --no-dev --optimize-autoloader
-    startCommand: php -S 0.0.0.0:$PORT -t public
+    startCommand: php -S 0.0.0.0:$PORT -t public public/router.php
     envVars:
       - key: RENDER
         value: "true"
