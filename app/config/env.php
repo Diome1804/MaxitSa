@@ -2,12 +2,25 @@
 
 use Dotenv\Dotenv;
 
-// Priorité absolue aux variables d'environnement système (Render)
-$dbHost = getenv('DB_HOST') ?: $_ENV['DB_HOST'] ?? 'localhost';
-$dbPort = getenv('DB_PORT') ?: $_ENV['DB_PORT'] ?? '5432';
-$dbName = getenv('DB_NAME') ?: $_ENV['DB_NAME'] ?? 'maxitsa';
-$dbUser = getenv('DB_USER') ?: $_ENV['DB_USER'] ?? 'postgres';
-$dbPassword = getenv('DB_PASSWORD') ?: $_ENV['DB_PASSWORD'] ?? '';
+// Priorité absolue à l'URL complète de base de données pour Render
+if (getenv('RENDER')) {
+    // Utiliser l'URL complète fournie par Render
+    $databaseUrl = 'postgresql://db_maxit_user:vk95ejMTRFN7QtFPARj2v5qaqSTCdzv3@dpg-d23kluumcj7s739g2db0-a.oregon-postgres.render.com:5432/db_maxit';
+    
+    $urlParts = parse_url($databaseUrl);
+    $dbHost = $urlParts['host'];
+    $dbPort = $urlParts['port'];
+    $dbName = ltrim($urlParts['path'], '/');
+    $dbUser = $urlParts['user'];
+    $dbPassword = $urlParts['pass'];
+} else {
+    // Variables d'environnement locales
+    $dbHost = getenv('DB_HOST') ?: $_ENV['DB_HOST'] ?? 'localhost';
+    $dbPort = getenv('DB_PORT') ?: $_ENV['DB_PORT'] ?? '5432';
+    $dbName = getenv('DB_NAME') ?: $_ENV['DB_NAME'] ?? 'maxitsa';
+    $dbUser = getenv('DB_USER') ?: $_ENV['DB_USER'] ?? 'postgres';
+    $dbPassword = getenv('DB_PASSWORD') ?: $_ENV['DB_PASSWORD'] ?? '';
+}
 
 // Si on n'est pas sur Render, charger le fichier .env local
 if (!getenv('RENDER') && !getenv('DB_HOST')) {
