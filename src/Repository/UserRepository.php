@@ -34,7 +34,7 @@ class UserRepository extends AbstractRepository implements RepositoryInterface
                 ':photorecto' => $userData['photorecto'],
                 ':telephone' => $userData['telephone'],
                 ':password' => $userData['password'],
-                ':type_id' => $userData['type_id']
+                ':type_user_id' => $userData['type_id']
             ]);
 
             if ($result) {
@@ -52,9 +52,9 @@ class UserRepository extends AbstractRepository implements RepositoryInterface
 
 
         try {
-            $sql = "SELECT u.*, t.type as type_name 
+            $sql = "SELECT u.*, t.libelle as type_name 
                 FROM \"user\" u 
-                JOIN typeuser t ON u.type_id = t.id 
+                JOIN type_user t ON u.type_user_id = t.id 
                 WHERE u.telephone = :telephone";
 
             $stmt = $this->pdo->prepare($sql);
@@ -77,7 +77,7 @@ class UserRepository extends AbstractRepository implements RepositoryInterface
                     $userData['adresse'],
                     $userData['num_carte_identite'],
                     $userData['photorecto'],
-                    $userData['photoverso'],
+                    $userData['photoverso'] ?? null,
                     $userData['telephone'],
                     $userData['password']
                 ]);

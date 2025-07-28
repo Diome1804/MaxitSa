@@ -37,7 +37,7 @@ class SecurityService implements SecurityServiceInterface
 
             // Créer le client
             $userData['password'] = MiddlewareLoader::execute('crypt', $userData['password']);
-            $userData['type_id'] = 1; // Client
+            $userData['type_id'] = 1; // Client (type_user_id dans la base)
             
             $userId = $this->userRepository->insert($userData);
             if (!$userId) {
