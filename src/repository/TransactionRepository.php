@@ -13,7 +13,9 @@ class TransactionRepository extends AbstractRepository
     {
         // Union pour récupérer toutes les transactions (anciennes et nouvelles structures)
         $sql = "
-            (
+            (        
+
+                // hbdshjdshjdshjds
                 SELECT t.*, c.num_compte, t.date as date_transaction, 'compte' as source_type
                 FROM transactions t 
                 INNER JOIN compte c ON t.compte_id = c.id 
