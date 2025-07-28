@@ -23,17 +23,29 @@ if ($databaseUrl) {
 }
 
 // Si on n'est pas sur Render, charger le fichier .env local
-if (!getenv('RENDER') && !getenv('DB_HOST')) {
-    $envFile = '.env';
+if (!getenv('RENDER') && !getenv('DATABASE_URL')) {
+    $envFile = '.env.local';
     if (file_exists(__DIR__ . '/../../' . $envFile)) {
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../../', $envFile);
         $dotenv->load();
         
-        $dbHost = $_ENV['db_host'] ?? 'localhost';
-        $dbPort = $_ENV['db_port'] ?? '5432';
-        $dbName = $_ENV['db_name'] ?? 'maxitsa';
-        $dbUser = $_ENV['db_user'] ?? 'postgres';
-        $dbPassword = $_ENV['db_password'] ?? '';
+        // Recharger les variables après le .env.local
+        $databaseUrl = getenv('DATABASE_URL') ?: $_ENV['DATABASE_URL'] ?? null;
+        
+        if ($databaseUrl) {
+            $urlParts = parse_url($databaseUrl);
+            $dbHost = $urlParts['host'];
+            $dbPort = $urlParts['port'] ?? '5432';
+            $dbName = ltrim($urlParts['path'], '/');
+            $dbUser = $urlParts['user'];
+            $dbPassword = $urlParts['pass'];
+        } else {
+            $dbHost = $_ENV['db_host'] ?? 'localhost';
+            $dbPort = $_ENV['db_port'] ?? '5432';
+            $dbName = $_ENV['db_name'] ?? 'maxitsa';
+            $dbUser = $_ENV['db_user'] ?? 'postgres';
+            $dbPassword = $_ENV['db_password'] ?? '';
+        }
     }
 }
 
