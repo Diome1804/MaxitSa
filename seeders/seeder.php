@@ -17,7 +17,7 @@ try {
     
     // Initialiser le container de dépendances
     $container = DependencyContainer::getInstance();
-    $cryptoMiddleware = $container->get('App\Core\Middleware\CryptoMiddleware');
+    $cryptoMiddleware = $container->get('App\Core\Middlewares\CryptPassword');
 } catch (PDOException $e) {
     die("Connexion échouée : " . $e->getMessage());
 }

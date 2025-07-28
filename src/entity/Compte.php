@@ -1,7 +1,7 @@
 <?php
 
 namespace Src\Entity;
-use App\Core\abstract\AbstractEntity;
+use App\Core\Abstract\AbstractEntity;
 use App\Core\ReflectionFactory;
 
 class Compte extends AbstractEntity

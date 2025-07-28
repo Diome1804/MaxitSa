@@ -11,6 +11,10 @@ lang: App\Core\Lang
 middleware: App\Core\MiddlewareLoader
 reflectionFactory: App\Core\ReflectionFactory
 
+# Middlewares
+App\Core\Middlewares\CryptPassword: App\Core\Middlewares\CryptPassword
+App\Core\Middlewares\Auth: App\Core\Middlewares\Auth
+
 # Repositories
 userRepo: Src\Repository\UserRepository
 compteRepo: Src\Repository\CompteRepository

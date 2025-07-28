@@ -2,7 +2,7 @@
 
 namespace Src\Entity;
 
-use App\Core\abstract\AbstractEntity;
+use App\Core\Abstract\AbstractEntity;
 use Src\Entity\Compte;
 use App\Core\ReflectionFactory;
 
