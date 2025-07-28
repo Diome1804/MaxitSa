@@ -10,7 +10,7 @@ services:
       - key: RENDER
         value: "true"
       - key: APP_URL
-        sync: false
+        value: https://maxitsa-app.onrender.com
       - key: DATABASE_URL
         value: postgresql://postgres:IoiQfHDMYkFAXvwkHaawDOlpkKJPLslx@shuttle.proxy.rlwy.net:30832/railway
       - key: APPDAF_API_URL
