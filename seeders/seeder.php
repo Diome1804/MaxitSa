@@ -84,7 +84,7 @@ try {
     if (empty($validCNIs)) {
         echo "❌ Aucun CNI valide trouvé, utilisation de CNI fictifs...\n";
         $users = [
-            ['Fallou', 'Ndiaye', 'Dakar Liberté 6 Extension', '9876543210987', 'recto1.png','778232295', $cryptoMiddleware('passer123'), $typeClientId],
+            ['Fallou', 'Ndiaye', 'Dakar Liberté 6 Extension', '9876543210987', 'recto1.png','778232295', $cryptoMiddleware(' '), $typeClientId],
             ['Abdou', 'Diallo', 'Fann Résidence', '9876543210988', 'recto2.png','771234567', $cryptoMiddleware('Dakar2026'), $typeClientId],
             ['Aminata', 'Fall', 'Plateau Médina', '9876543210989', 'recto3.png','785432198', $cryptoMiddleware('aminata123'), $typeClientId],
             ['Ousmane', 'Ba', 'Parcelles Assainies U10', '9876543210990', 'recto4.png','776543210', $cryptoMiddleware('ousmane2024'), $typeClientId],

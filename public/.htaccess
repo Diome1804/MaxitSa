@@ -1,5 +1,10 @@
 RewriteEngine On
 
+# Forcer HTTPS sur Render
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTP_HOST} \.onrender\.com$
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # Rediriger toutes les requêtes vers index.php sauf les fichiers existants
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

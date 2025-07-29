@@ -88,7 +88,12 @@ class Router
 
     private static function isHttps(): bool
     {
-        // Vérifier HTTPS de plusieurs manières
+        // Sur Render, toujours considérer comme HTTPS
+        if (getenv('RENDER') === 'true') {
+            return true;
+        }
+        
+        // Vérifier HTTPS de plusieurs manières pour autres environnements
         return (
             (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
             (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
