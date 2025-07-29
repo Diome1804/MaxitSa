@@ -248,13 +248,13 @@ class TransactionRepository extends AbstractRepository
             $types = $stmt->fetchAll(PDO::FETCH_COLUMN);
             
             // Ajouter les types manquants s'ils n'existent pas
-            $defaultTypes = ['depot', 'retrait', 'transfert', 'paiement', 'woyofal', 'transfert_sortant', 'transfert_entrant', 'frais_transfert', 'annulation_depot'];
+            $defaultTypes = ['Depot', 'Retrait', 'Transfert', 'Woyofal'];
             $allTypes = array_unique(array_merge($types, $defaultTypes));
             sort($allTypes);
             
             return $allTypes;
         } catch (\Exception $e) {
-            return ['depot', 'retrait', 'transfert', 'paiement', 'woyofal', 'transfert_sortant', 'transfert_entrant', 'frais_transfert', 'annulation_depot'];
+            return ['Depot', 'Retrait', 'Transfert', 'Woyofal'];
         }
     }
 
@@ -262,7 +262,7 @@ class TransactionRepository extends AbstractRepository
     {
         try {
             // Pour les transactions Woyofal, on stocke directement user_id
-            if ($type === 'woyofal') {
+            if ($type === 'Woyofal') {
                 $sql = "
                     SELECT * FROM transactions 
                     WHERE user_id = :userId AND type = :type
@@ -296,7 +296,7 @@ class TransactionRepository extends AbstractRepository
     public function findByIdAndUserId(int $transactionId, int $userId, string $type = null): ?array
     {
         try {
-            if ($type === 'woyofal') {
+            if ($type === 'Woyofal') {
                 $sql = "
                     SELECT * FROM transactions 
                     WHERE id = :transactionId AND user_id = :userId AND type = :type
@@ -357,7 +357,7 @@ class TransactionRepository extends AbstractRepository
     {
         try {
             // Pour les transactions Woyofal, on utilise une structure différente
-            if (isset($data['type']) && $data['type'] === 'woyofal') {
+            if (isset($data['type']) && $data['type'] === 'Woyofal') {
                 $sql = "
                     INSERT INTO transactions (user_id, type, montant, date, reference, statut, details, date_creation) 
                     VALUES (:user_id, :type, :montant, :date, :reference, :statut, :details, :date_creation)

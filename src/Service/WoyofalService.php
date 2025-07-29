@@ -152,7 +152,7 @@ class WoyofalService implements WoyofalServiceInterface
         try {
             $transactionData = [
                 'user_id' => $userId,
-                'type' => 'woyofal',
+                'type' => 'Woyofal',
                 'montant' => $montant,
                 'date' => date('Y-m-d H:i:s'), // Ajouter la date obligatoire
                 'reference' => $woyofalData['reference'] ?? 'WYF' . uniqid(),

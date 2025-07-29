@@ -32,7 +32,7 @@ class DepotService implements DepotServiceInterface
         $this->factory = $factory;
     }
 
-    public function effectuerDepot(int $compteId, float $montant, int $expediteurId, string $type = 'depot'): array
+    public function effectuerDepot(int $compteId, float $montant, int $expediteurId, string $type = 'Depot'): array
     {
         try {
             // Validation du montant
@@ -184,7 +184,7 @@ class DepotService implements DepotServiceInterface
             // Transaction de débit
             $transactionDebit = [
                 'compte_id' => $compteSourceId,
-                'type' => 'transfert_sortant',
+                'type' => 'Transfert',
                 'montant' => -$montant,
                 'date' => date('Y-m-d H:i:s'),
                 'reference' => $reference,
@@ -195,7 +195,7 @@ class DepotService implements DepotServiceInterface
             // Transaction de crédit
             $transactionCredit = [
                 'compte_id' => $compteDestinationId,
-                'type' => 'transfert_entrant',
+                'type' => 'Transfert',
                 'montant' => $montant,
                 'date' => date('Y-m-d H:i:s'),
                 'reference' => $reference,
@@ -207,7 +207,7 @@ class DepotService implements DepotServiceInterface
             if ($frais > 0) {
                 $transactionFrais = [
                     'compte_id' => $compteSourceId,
-                    'type' => 'frais_transfert',
+                    'type' => 'Retrait',
                     'montant' => -$frais,
                     'date' => date('Y-m-d H:i:s'),
                     'reference' => $reference,
