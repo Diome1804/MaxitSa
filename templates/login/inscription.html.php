@@ -161,7 +161,7 @@
             document.getElementById('cni-loader').classList.remove('hidden');
             
             try {
-                const response = await fetch('/api/verifier-cni', {
+                const response = await fetch('<?= APP_URL ?>/api/verifier-cni', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

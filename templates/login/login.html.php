@@ -101,7 +101,7 @@
             <!-- Lien d'inscription -->
             <div class="text-center pt-4">
                 <p class="text-gray-600 text-sm mb-2">Pas encore de compte ?</p>
-                <a href="/register" class="inline-flex items-center text-blue-600 hover:text-purple-600 transition-colors duration-300 font-medium">
+                <a href="<?= APP_URL ?>/register" class="inline-flex items-center text-blue-600 hover:text-purple-600 transition-colors duration-300 font-medium">
                     <i class="fas fa-user-plus mr-2"></i>
                     Créer un compte
                 </a>
