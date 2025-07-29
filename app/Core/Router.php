@@ -24,10 +24,10 @@ class Router
             session_start();
         }
 
-        // Forcer HTTPS sur Render
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] !== 'https') {
+        // Forcer HTTPS sur les environnements de production
+        if (!self::isHttps() && (getenv('RENDER') === 'true' || getenv('PRODUCTION') === 'true')) {
             $redirectURL = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-            header("Location: $redirectURL");
+            header("Location: $redirectURL", true, 301);
             exit();
         }
 
@@ -84,6 +84,17 @@ class Router
         ];
 
         return $mapping[$controllerClass] ?? null;
+    }
+
+    private static function isHttps(): bool
+    {
+        // Vérifier HTTPS de plusieurs manières
+        return (
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
+            (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on') ||
+            (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
+        );
     }
 
     private static function runMiddlewares(array $middlewares): void

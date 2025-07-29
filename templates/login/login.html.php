@@ -65,7 +65,7 @@
         <?php endif; ?>
         
         <!-- Formulaire de connexion -->
-        <form method="POST" action="/login" class="space-y-6">
+        <form method="POST" action="<?= APP_URL ?>/login" class="space-y-6">
             
             <!-- Champ numéro -->
             <div class="relative">

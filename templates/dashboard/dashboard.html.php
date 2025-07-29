@@ -297,7 +297,7 @@
     <div id="compteModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
             <h3 class="text-lg font-semibold mb-4 text-gray-800">Créer un compte secondaire</h3>
-            <form id="formNouveauCompte" method="POST" action="/create">
+            <form id="formNouveauCompte" method="POST" action="<?= APP_URL ?>/create">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm mb-2">Numéro téléphone</label>
                     <input type="text" name="telephone" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Numéro téléphone">

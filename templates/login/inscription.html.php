@@ -32,7 +32,7 @@
         <?php endif; ?>
         
         <!-- Formulaire simplifié -->
-        <form method="POST" action="/register" enctype="multipart/form-data">
+        <form method="POST" action="<?= APP_URL ?>/register" enctype="multipart/form-data">
             <div class="max-w-md mx-auto space-y-6">
                 
                 <!-- Numéro CNI -->
@@ -119,7 +119,7 @@
                 </button>
                 
                 <!-- Bouton retour à la page de connexion -->
-                <a href="/" class="bg-red-500 text-white hover:bg-red-600 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium inline-block">
+                <a href="<?= APP_URL ?>/" class="bg-red-500 text-white hover:bg-red-600 transition-colors duration-200 px-6 py-3 rounded-full text-sm font-medium inline-block">
                     retour à la page de connexion
                 </a>
                 

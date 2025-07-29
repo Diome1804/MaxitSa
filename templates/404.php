@@ -60,7 +60,7 @@
             
             <!-- Bouton d'action -->
             <div class="mb-10">
-                <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-md transition duration-300 transform hover:scale-105">
+                <a href="<?= APP_URL ?>/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-md transition duration-300 transform hover:scale-105">
                     <i class="fas fa-home mr-2"></i>Retour à l'accueil
                 </a>
             </div>
