@@ -58,7 +58,17 @@ define('DB_PASSWORD', $dbPassword);
 // Détection automatique de l'URL de base
 $appUrl = getenv('APP_URL') ?: $_ENV['APP_URL'] ?? null;
 if (!$appUrl && isset($_SERVER['HTTP_HOST'])) {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
+    // Forcer HTTPS sur Render et autres environnements de production
+    $isRender = strpos($_SERVER['HTTP_HOST'], '.onrender.com') !== false;
+    $isHttps = (
+        (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
+        (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on') ||
+        $_SERVER['SERVER_PORT'] == 443
+    );
+    
+    // Forcer HTTPS sur Render ou si détecté
+    $protocol = ($isRender || $isHttps) ? 'https' : 'http';
     $appUrl = $protocol . '://' . $_SERVER['HTTP_HOST'];
 }
 $appUrl = $appUrl ?: 'https://maxitsa-app.onrender.com';
