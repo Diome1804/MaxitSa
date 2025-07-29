@@ -24,6 +24,13 @@ class Router
             session_start();
         }
 
+        // Forcer HTTPS sur Render
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] !== 'https') {
+            $redirectURL = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            header("Location: $redirectURL");
+            exit();
+        }
+
         $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
         // Extraire seulement le path sans les paramètres GET
         $parsedUri = parse_url($requestUri);

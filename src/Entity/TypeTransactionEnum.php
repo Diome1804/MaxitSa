@@ -1,6 +1,8 @@
 <?php
 
 enum TypeTransactionEnum: string {
-    case Paiement = 'paiement';
-    case Transfert = 'transfert';
+    case Depot = 'Depot';
+    case Retrait = 'Retrait';
+    case Transfert = 'Transfert';
+    case Woyofal = 'Woyofal';
 }

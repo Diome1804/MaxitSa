@@ -30,14 +30,12 @@ try {
     $pdo->exec('TRUNCATE transactions, compte, "user", type_user RESTART IDENTITY CASCADE');
     
     // 1. Types d'utilisateurs
-    $types = ['Client', 'ServiceCom'];
-    $stmtType = $pdo->prepare("INSERT INTO type_user (client, service_com) VALUES (?, ?)");
-    $stmtType->execute(['Client', 'ServiceCom']);
+    $stmtType = $pdo->prepare("INSERT INTO type_user (type) VALUES (?)");
+    $stmtType->execute(['client']);
+    $typeClientId = $pdo->lastInsertId();
+    $stmtType->execute(['serviceCom']);
+    $typeServiceId = $pdo->lastInsertId();
     echo "Types d'utilisateur insérés\n";
-
-    // Récupération des IDs  
-    $typeClientId = 1; // Premier type inséré
-    $typeServiceId = 1; // Même ID car une seule ligne avec les deux types
 
     // 2. Utilisateurs avec données sénégalaises réalistes
     // CONNEXION: Numéro de téléphone + Mot de passe
@@ -50,11 +48,11 @@ try {
     echo "==============================\n\n";
     
     $users = [
-        ['Fallou', 'Ndiaye', 'Dakar Liberté 6 Extension', '1987654321098', 'recto1.png','778232295', $cryptoMiddleware->execute('passer123'), $typeClientId],
-        ['Abdou', 'Diallo', 'Fann Résidence', '1456789012345', 'recto2.png','771234567', $cryptoMiddleware->execute('Dakar2026'), $typeClientId],
-        ['Aminata', 'Fall', 'Plateau Médina', '1234567890123', 'recto3.png','785432198', $cryptoMiddleware->execute('aminata123'), $typeClientId],
-        ['Ousmane', 'Ba', 'Parcelles Assainies U10', '1345678901234', 'recto4.png','776543210', $cryptoMiddleware->execute('ousmane2024'), $typeClientId],
-        ['Fatou', 'Seck', 'Grand Yoff', '1567890123456', 'recto5.png','704567891', $cryptoMiddleware->execute('fatou456'), $typeClientId]
+        ['Fallou', 'Ndiaye', 'Dakar Liberté 6 Extension', '1987654321098', 'recto1.png','778232295', $cryptoMiddleware('passer123'), $typeClientId],
+        ['Abdou', 'Diallo', 'Fann Résidence', '1456789012345', 'recto2.png','771234567', $cryptoMiddleware('Dakar2026'), $typeClientId],
+        ['Aminata', 'Fall', 'Plateau Médina', '1234567890123', 'recto3.png','785432198', $cryptoMiddleware('aminata123'), $typeClientId],
+        ['Ousmane', 'Ba', 'Parcelles Assainies U10', '1345678901234', 'recto4.png','776543210', $cryptoMiddleware('ousmane2024'), $typeClientId],
+        ['Fatou', 'Seck', 'Grand Yoff', '1567890123456', 'recto5.png','704567891', $cryptoMiddleware('passer456'), $typeClientId],
     ];
     $stmtUser = $pdo->prepare("INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto,telephone, password, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $userIds = [];
@@ -83,14 +81,14 @@ try {
 
     // 4. Transactions réalistes 
     $transactions = [
-        ['2025-07-20 09:30:00', $compteIds[0], 15000, 'depot'],
-        ['2025-07-20 10:15:00', $compteIds[1], 25000, 'depot'],
-        ['2025-07-20 11:45:00', $compteIds[0], 5000, 'transfert'],
-        ['2025-07-20 14:20:00', $compteIds[2], 3000, 'woyofal'],
-        ['2025-07-20 16:30:00', $compteIds[3], 12000, 'transfert'],
-        ['2025-07-21 08:15:00', $compteIds[1], 2500, 'retrait'],
-        ['2025-07-21 12:00:00', $compteIds[4], 8000, 'depot'],
-        ['2025-07-21 15:45:00', $compteIds[0], 1500, 'woyofal']
+        ['2025-07-20 09:30:00', $compteIds[0], 15000, 'Depot'],
+        ['2025-07-20 10:15:00', $compteIds[1], 25000, 'Depot'],
+        ['2025-07-20 11:45:00', $compteIds[0], 5000, 'Transfert'],
+        ['2025-07-20 14:20:00', $compteIds[2], 3000, 'Woyofal'],
+        ['2025-07-20 16:30:00', $compteIds[3], 12000, 'Transfert'],
+        ['2025-07-21 08:15:00', $compteIds[1], 2500, 'Retrait'],
+        ['2025-07-21 12:00:00', $compteIds[4], 8000, 'Depot'],
+        ['2025-07-21 15:45:00', $compteIds[0], 1500, 'Woyofal']
     ];
     $stmtTrx = $pdo->prepare("INSERT INTO transactions (date, compte_id, montant, type) VALUES (?, ?, ?, ?)");
     foreach ($transactions as $trx) {
