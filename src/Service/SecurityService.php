@@ -101,9 +101,8 @@ public function login(string $numero, string $password): ?User
             error_log("Utilisateur trouvé: " . $user->getNom());
             error_log("Hash en base: " . $user->getPassword());
             
-            // Vérification du mot de passe
-            $cryptMiddleware = $this->factory->create(\App\Core\Middlewares\CryptPassword::class);
-        if ($cryptMiddleware->verify($password, $user->getPassword())) {
+            // Vérification du mot de passe - utiliser la même méthode que pour le cryptage
+            if (password_verify($password, $user->getPassword())) {
                 // error_log("✅ Connexion réussie");
                 return $user;
             } else {
