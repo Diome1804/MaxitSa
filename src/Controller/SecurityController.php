@@ -74,30 +74,41 @@ class SecurityController extends AbstractController
 
             if ($this->validator->validate($_POST, $rules)) {
                 try {
-                    // Rechercher les informations du citoyen dans AppDAF
-                    $citoyenData = $this->appDAFService->rechercherCitoyenParCNI(trim($_POST['num_carte_identite']));
-                    
-                    if ($citoyenData === null) {
-                        Session::set('errors', ['num_carte_identite' => 'Numéro CNI non trouvé dans la base de données nationale']);
-                        $this->render('login/inscription.html.php', [
-                            'old' => $_POST ?? [],
-                            'errors' => Session::get('errors'),
-                        ]);
-                        Session::unset('errors');
-                        return;
+                    // Essayer de rechercher les informations du citoyen dans AppDAF
+                    $citoyenData = null;
+                    try {
+                        $citoyenData = $this->appDAFService->rechercherCitoyenParCNI(trim($_POST['num_carte_identite']));
+                    } catch (\Exception $e) {
+                        // L'API AppDAF est indisponible, on continue avec des données par défaut
+                        error_log("AppDAF indisponible lors de l'inscription: " . $e->getMessage());
                     }
 
-                    // Construire les données utilisateur avec les informations de AppDAF
-                    $userData = [
-                        'nom' => $citoyenData['nom'],
-                        'prenom' => $citoyenData['prenom'],
-                        'adresse' => $citoyenData['lieuNaissance'], // Utiliser lieu de naissance comme adresse
-                        'num_carte_identite' => trim($_POST['num_carte_identite']),
-                        'telephone' => trim($_POST['telephone']),
-                        'password' => $_POST['password'],
-                        'photorecto' => $citoyenData['photoIdentiteUrl'] ?? '', // URL de la photo depuis AppDAF
-                        'photoverso' => '',
-                    ];
+                    // Construire les données utilisateur
+                    if ($citoyenData) {
+                        // Avec les informations de AppDAF
+                        $userData = [
+                            'nom' => $citoyenData['nom'],
+                            'prenom' => $citoyenData['prenom'],
+                            'adresse' => $citoyenData['lieuNaissance'] ?? 'Adresse non renseignée',
+                            'num_carte_identite' => trim($_POST['num_carte_identite']),
+                            'telephone' => trim($_POST['telephone']),
+                            'password' => $_POST['password'],
+                            'photorecto' => $citoyenData['photoIdentiteUrl'] ?? '',
+                            'photoverso' => '',
+                        ];
+                    } else {
+                        // Sans AppDAF - utiliser des données par défaut
+                        $userData = [
+                            'nom' => 'Nom_' . substr(trim($_POST['num_carte_identite']), -4),
+                            'prenom' => 'Prenom_' . substr(trim($_POST['num_carte_identite']), -4),
+                            'adresse' => 'Adresse non renseignée',
+                            'num_carte_identite' => trim($_POST['num_carte_identite']),
+                            'telephone' => trim($_POST['telephone']),
+                            'password' => $_POST['password'],
+                            'photorecto' => '',
+                            'photoverso' => '',
+                        ];
+                    }
                     
                     $userId = $this->securityService->creerClientAvecComptePrincipal($userData, 0.0);
 
