@@ -40,83 +40,14 @@ try {
     // 2. Utilisateurs avec données sénégalaises réalistes
     // CONNEXION: Numéro de téléphone + Mot de passe
     
-    // Récupération des CNI depuis l'API AppDAF
-    echo "Récupération des CNI depuis l'API AppDAF...\n";
-    $validCNIs = [];
-    $testCNIs = ['1234567890123', '1234567890124', '1234567890125', '1234567890126', '1234567890127'];
-    
-    foreach ($testCNIs as $testCNI) {
-        $url = APPDAF_API_URL . '/api/citoyen/rechercher';
-        $data = ['nci' => $testCNI];
-        
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 10,
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false
-        ]);
-        
-        $result = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        
-        if ($httpCode === 200 && $result) {
-            $response = json_decode($result, true);
-            if (isset($response['statut']) && $response['statut'] === 'success' && isset($response['data'])) {
-                $validCNIs[] = [
-                    'cni' => $testCNI,
-                    'nom' => $response['data']['nom'] ?? 'Nom',
-                    'prenom' => $response['data']['prenom'] ?? 'Prenom'
-                ];
-                echo "✅ CNI $testCNI trouvé: " . $response['data']['nom'] . " " . $response['data']['prenom'] . "\n";
-            }
-        }
-        
-        // Délai pour éviter de surcharger l'API
-        usleep(500000); // 0.5 seconde
-    }
-    
-    if (empty($validCNIs)) {
-        echo "❌ Aucun CNI valide trouvé, utilisation de CNI fictifs...\n";
-        $users = [
-            ['Fallou', 'Ndiaye', 'Dakar Liberté 6 Extension', '9876543210987', 'recto1.png','778232295', $cryptoMiddleware(' '), $typeClientId],
-            ['Abdou', 'Diallo', 'Fann Résidence', '9876543210988', 'recto2.png','771234567', $cryptoMiddleware('    '), $typeClientId],
-            ['Aminata', 'Fall', 'Plateau Médina', '9876543210989', 'recto3.png','785432198', $cryptoMiddleware('aminata123'), $typeClientId],
-            ['Ousmane', 'Ba', 'Parcelles Assainies U10', '9876543210990', 'recto4.png','776543210', $cryptoMiddleware('ousmane2024'), $typeClientId],
-            ['Fatou', 'Seck', 'Grand Yoff', '9876543210991', 'recto5.png','704567891', $cryptoMiddleware('fatou456'), $typeClientId],
-        ];
-    } else {
-        echo "✅ " . count($validCNIs) . " CNI valides récupérés depuis AppDAF\n";
-        $users = [];
-        $telephones = ['778232295', '771234567', '785432198', '776543210', '704567891'];
-        $passwords = ['passer123', 'Dakar2026', 'aminata123', 'ousmane2024', 'fatou456'];
-        $adresses = [
-            'Dakar Liberté 6 Extension',
-            'Fann Résidence', 
-            'Plateau Médina',
-            'Parcelles Assainies U10',
-            'Grand Yoff'
-        ];
-        
-        for ($i = 0; $i < min(count($validCNIs), 5); $i++) {
-            $cniData = $validCNIs[$i];
-            $users[] = [
-                $cniData['nom'],
-                $cniData['prenom'], 
-                $adresses[$i],
-                $cniData['cni'],
-                'recto' . ($i + 1) . '.png',
-                $telephones[$i],
-                $cryptoMiddleware($passwords[$i]),
-                $typeClientId
-            ];
-        }
-    }
+    echo "Création des utilisateurs de test...\n";
+    $users = [
+        ['Fallou', 'Ndiaye', 'Dakar Liberté 6 Extension', '9876543210987', 'recto1.png','778232295', $cryptoMiddleware('passer123'), $typeClientId],
+        ['Abdou', 'Diallo', 'Fann Résidence', '9876543210988', 'recto2.png','771234567', $cryptoMiddleware('Dakar2026'), $typeClientId],
+        ['Aminata', 'Fall', 'Plateau Médina', '9876543210989', 'recto3.png','785432198', $cryptoMiddleware('aminata123'), $typeClientId],
+        ['Ousmane', 'Ba', 'Parcelles Assainies U10', '9876543210990', 'recto4.png','776543210', $cryptoMiddleware('ousmane2024'), $typeClientId],
+        ['Fatou', 'Seck', 'Grand Yoff', '9876543210991', 'recto5.png','704567891', $cryptoMiddleware('fatou456'), $typeClientId],
+    ];
     $stmtUser = $pdo->prepare("INSERT INTO \"user\" (nom, prenom, adresse, num_carte_identite, photorecto,telephone, password, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $userIds = [];
     $telephones = ['778232295', '771234567', '785432198', '776543210', '704567891'];

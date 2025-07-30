@@ -145,3 +145,8 @@ L'intégration est **prête pour utilisation** :
 - **Sessions** pour les messages flash
 - **Responsive design** mobile-friendly
 - **Logs d'erreur** pour le debugging
+
+
+
+#Je vois le problème ! Le problème est dans la détection de l'URL dans env.php. Quand APP_URL est #construite automatiquement, elle peut utiliser HTTP au lieu de HTTPS.
+
