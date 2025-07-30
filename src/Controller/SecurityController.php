@@ -68,8 +68,8 @@ class SecurityController extends AbstractController
 
             $rules = [
                 'telephone' => ['required', 'isSenegalPhone'],
-                'password' => ['required', 'isPassword'],
-                'num_carte_identite' => ['required', 'is@']
+                'password' => ['required'],
+                'num_carte_identite' => ['required']
             ];
 
             if ($this->validator->validate($_POST, $rules)) {
@@ -121,6 +121,8 @@ class SecurityController extends AbstractController
                     }
 
                 } catch (\Exception $e) {
+                    error_log("Erreur d'inscription complète: " . $e->getMessage());
+                    error_log("Stack trace: " . $e->getTraceAsString());
                     Session::set('errors', ['general' => 'Erreur lors de l\'inscription: ' . $e->getMessage()]);
                 }
             } else {
