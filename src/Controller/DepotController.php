@@ -200,9 +200,28 @@ class DepotController extends AbstractController
         $montant = (float)($_GET['montant'] ?? 0);
 
         if ($compteSourceId && $compteDestinationId && $montant > 0) {
-            // Récupérer les types de comptes (simplifié pour cet exemple)
-            $typeSource = 'ComptePrincipal'; // À adapter selon votre logique
-            $typeDestination = 'ComptePrincipal'; // À adapter selon votre logique
+            // Récupérer les vrais types de comptes depuis la base de données
+            $comptes = $this->compteService->getComptesUtilisateur(Session::get('user')['id']);
+            
+            $typeSource = null;
+            $typeDestination = null;
+            
+            foreach ($comptes as $compte) {
+                if ($compte['id'] == $compteSourceId) {
+                    $typeSource = $compte['type'];
+                }
+                if ($compte['id'] == $compteDestinationId) {
+                    $typeDestination = $compte['type'];
+                }
+            }
+            
+            // Si on ne trouve pas les types, définir par défaut comme ComptePrincipal
+            if (!$typeSource) {
+                $typeSource = 'ComptePrincipal';
+            }
+            if (!$typeDestination) {
+                $typeDestination = 'ComptePrincipal';
+            }
             
             $frais = $this->depotService->calculerFraisTransfert($typeSource, $typeDestination, $montant);
             

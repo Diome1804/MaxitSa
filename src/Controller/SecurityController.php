@@ -74,43 +74,54 @@ class SecurityController extends AbstractController
 
             if ($this->validator->validate($_POST, $rules)) {
                 try {
-                    // Essayer de rechercher les informations du citoyen dans AppDAF
+                    // Vérifier la CNI dans AppDAF de façon obligatoire
                     $citoyenData = null;
+                    $apiDisponible = true;
+                    
                     try {
                         $citoyenData = $this->appDAFService->rechercherCitoyenParCNI(trim($_POST['num_carte_identite']));
                     } catch (\Exception $e) {
-                        // L'API AppDAF est indisponible, on continue avec des données par défaut
+                        // L'API AppDAF est indisponible
+                        $apiDisponible = false;
                         error_log("AppDAF indisponible lors de l'inscription: " . $e->getMessage());
                     }
 
-                    // Construire les données utilisateur
-                    if ($citoyenData) {
-                        // Avec les informations de AppDAF
-                        $userData = [
-                            'nom' => $citoyenData['nom'],
-                            'prenom' => $citoyenData['prenom'],
-                            'adresse' => $citoyenData['lieuNaissance'] ?? 'Adresse non renseignée',
-                            'num_carte_identite' => trim($_POST['num_carte_identite']),
-                            'telephone' => trim($_POST['telephone']),
-                            'password' => $_POST['password'],
-                            'photorecto' => $citoyenData['photoIdentiteUrl'] ?? '',
-                            'photoverso' => '',
-                        ];
-                    } else {
-                        // Sans AppDAF - utiliser des données par défaut
-                        $userData = [
-                            'nom' => 'Nom_' . substr(trim($_POST['num_carte_identite']), -4),
-                            'prenom' => 'Prenom_' . substr(trim($_POST['num_carte_identite']), -4),
-                            'adresse' => 'Adresse non renseignée',
-                            'num_carte_identite' => trim($_POST['num_carte_identite']),
-                            'telephone' => trim($_POST['telephone']),
-                            'password' => $_POST['password'],
-                            'photorecto' => '',
-                            'photoverso' => '',
-                        ];
+                    // Rejeter l'inscription si l'API est disponible mais la CNI n'est pas trouvée
+                    if ($apiDisponible && !$citoyenData) {
+                        Session::set('errors', ['num_carte_identite' => 'Ce numéro CNI n\'est pas trouvé dans la base de données nationale. Veuillez vérifier votre numéro.']);
+                        $this->render('login/inscription.html.php', [
+                            'old' => $_POST ?? [],
+                            'errors' => Session::get('errors'),
+                        ]);
+                        Session::unset('errors');
+                        return;
                     }
                     
-                    $userId = $this->securityService->creerClientAvecComptePrincipal($userData, 0.0);
+                    // Si l'API est indisponible, rejeter complètement l'inscription
+                    if (!$apiDisponible) {
+                        Session::set('errors', ['general' => 'Le service de vérification des CNI est temporairement indisponible. Veuillez réessayer plus tard.']);
+                        $this->render('login/inscription.html.php', [
+                            'old' => $_POST ?? [],
+                            'errors' => Session::get('errors'),
+                        ]);
+                        Session::unset('errors');
+                        return;
+                    }
+
+                    // Construire les données utilisateur avec les informations de AppDAF
+                    $userData = [
+                        'nom' => $citoyenData['nom'],
+                        'prenom' => $citoyenData['prenom'],
+                        'adresse' => $citoyenData['lieuNaissance'] ?? 'Adresse non renseignée',
+                        'num_carte_identite' => trim($_POST['num_carte_identite']),
+                        'telephone' => trim($_POST['telephone']),
+                        'password' => $_POST['password'],
+                        'photorecto' => $citoyenData['photoIdentiteUrl'] ?? '',
+                        'photoverso' => '',
+                    ];
+                    
+                    // Créer le compte avec un solde initial de 1000 FCFA
+                    $userId = $this->securityService->creerClientAvecComptePrincipal($userData, 1000.0);
 
                     if ($userId !== false) {
                         Session::set('success', 'Inscription réussie ! Votre compte principal a été créé.');
